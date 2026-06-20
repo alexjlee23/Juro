@@ -1,0 +1,92 @@
+[
+  {
+    "id": "moel_1350",
+    "name": { "ko": "고용노동부 고객상담센터", "en": "Ministry of Employment & Labor" },
+    "number": "1350",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["labor", "wages", "dismissal", "general"],
+    "free": true
+  },
+  {
+    "id": "migrant_1644",
+    "name": { "ko": "외국인력상담센터", "en": "Foreign Worker Consultation Center" },
+    "number": "1644-0644",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko", "en", "vi", "zh", "th", "id", "mn", "km", "my", "uz", "ne", "tl", "sr", "ro", "bg", "ru", "bn", "hi"],
+    "tags": ["migrant", "eps", "wages"],
+    "free": true
+  },
+  {
+    "id": "danuri_1345",
+    "name": { "ko": "외국인종합안내센터", "en": "Immigration & Multicultural Helpline" },
+    "number": "1345",
+    "available": { "ko": "24시간", "en": "24 hours" },
+    "languages": ["ko", "en", "zh", "vi", "ja", "th", "id", "mn", "km", "my", "uz", "ne", "tl", "ru", "fr", "de"],
+    "tags": ["migrant", "immigration", "general"],
+    "free": true
+  },
+  {
+    "id": "danuri_multicultural",
+    "name": { "ko": "다누리콜센터", "en": "Danuri Multicultural Center" },
+    "number": "1577-1366",
+    "available": { "ko": "24시간 365일", "en": "24/7, 365 days" },
+    "languages": ["ko", "en", "zh", "vi", "th", "ja", "tl", "km", "mn", "ru", "uz", "ne", "id"],
+    "tags": ["migrant", "multicultural", "general"],
+    "free": true
+  },
+  {
+    "id": "bbb",
+    "name": { "ko": "BBB 통역 서비스", "en": "BBB Translation Service" },
+    "number": "1588-5644",
+    "available": { "ko": "24시간", "en": "24 hours" },
+    "languages": ["ko", "en", "zh", "ja", "fr", "de", "es", "ru", "ar", "th", "vi", "id"],
+    "tags": ["translation", "general"],
+    "free": true
+  },
+  {
+    "id": "comwel",
+    "name": { "ko": "근로복지공단 (간이대지급금)", "en": "COMWEL (Substitute Wage Payment)" },
+    "number": "1588-0075",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["wages", "industrial_accident", "substitute_pay"],
+    "free": true
+  },
+  {
+    "id": "youth_rights",
+    "name": { "ko": "청소년 근로권익센터", "en": "Youth Worker Rights Center" },
+    "number": "1644-3119",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["youth", "wages", "general"],
+    "free": true
+  },
+  {
+    "id": "seoul_labor",
+    "name": { "ko": "서울 노동권익센터", "en": "Seoul Labor Rights Center" },
+    "number": "1661-2020",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["seoul", "wages", "general", "free_consult"],
+    "free": true
+  },
+  {
+    "id": "kcplaa_nomusa",
+    "name": { "ko": "우아한 노무 해결사 (KCPLAA)", "en": "KCPLAA Free 노무사 Hotline" },
+    "number": "02-6953-9828",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["delivery", "platform", "wages", "free_consult"],
+    "free": true
+  },
+  {
+    "id": "minjoo_union",
+    "name": { "ko": "민주노총 (KCTU)", "en": "Korean Confederation of Trade Unions" },
+    "number": "1577-2260",
+    "available": { "ko": "평일 09:00–18:00", "en": "Weekdays 09:00–18:00" },
+    "languages": ["ko"],
+    "tags": ["union", "wages", "dismissal", "general"],
+    "free": true
+  }
+]

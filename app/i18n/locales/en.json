@@ -1,0 +1,179 @@
+{
+  "common": {
+    "appName": "Jurio 주리오",
+    "tagline": "Know your rights. Walk with confidence.",
+    "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a certified 노무사 or lawyer.",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "offline": "You're offline. Some features may be limited.",
+    "updatedDate": "Updated: {{date}}",
+    "source": "Source",
+    "callNow": "Call now",
+    "getDirections": "Get directions",
+    "reportOutdated": "Report outdated info"
+  },
+  "onboarding": {
+    "language": "Choose your language",
+    "trustTitle": "For workers. By your side.",
+    "trustBody": "We never report you. We never ask for your ID or visa number. This app is for you — free, private, and independent.",
+    "getStarted": "Get started"
+  },
+  "tabs": {
+    "home": "Home",
+    "map": "Map",
+    "community": "Community",
+    "my": "My"
+  },
+  "home": {
+    "greeting": "What's happening?",
+    "subtitle": "Find your rights, get help fast.",
+    "searchPlaceholder": "Search rights, topics, help...",
+    "getHelp": "Get help",
+    "quickActions": {
+      "rightsGuide": "Rights guide",
+      "consult": "Book consult",
+      "emergency": "Emergency"
+    },
+    "issues": {
+      "unpaidWages": "Not paid",
+      "injury": "Injured at work",
+      "dismissal": "Unfair dismissal",
+      "dangerous": "Dangerous work"
+    },
+    "todayInfo": "Today's info",
+    "hotlines": "Hotlines",
+    "urgentHelp": "Urgent help"
+  },
+  "guidedHelp": {
+    "title": "Guided Help",
+    "subtitle": "Answer a few questions — get a clear next step.",
+    "situations": {
+      "unpaidWages": "I wasn't paid",
+      "injury": "I was injured at work",
+      "dismissal": "I was fired",
+      "dangerous": "Dangerous work",
+      "contract": "My contract looks wrong",
+      "visaThreat": "Visa threat"
+    },
+    "progress": "Step {{current}} of {{total}}",
+    "selectOne": "Select one",
+    "outcome": {
+      "yourRight": "Your right",
+      "whatToDo": "What to do — in order",
+      "evidenceTitle": "Evidence to gather",
+      "talkToPerson": "Talk to a real person",
+      "deadlines": "Key deadlines",
+      "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a 노무사 or the labor office shown below."
+    },
+    "q1": {
+      "question": "What's unpaid?",
+      "regular": "My regular wages / salary",
+      "premium": "Overtime / night / holiday extra pay",
+      "severance": "Severance (퇴직금)",
+      "finalPay": "My last paycheck after I left"
+    },
+    "q1a": {
+      "question": "How many people work at your workplace?",
+      "fivePlus": "5 or more",
+      "underFive": "Fewer than 5",
+      "noteFivePlus": "Overtime, night, and holiday work must be paid at +50% of your ordinary wage (근로기준법 제56조).",
+      "noteUnderFive": "At workplaces with fewer than 5 employees, the +50% premium is generally not legally required. Your agreed base wage and minimum wage are still owed."
+    },
+    "q2": {
+      "question": "How are you employed?",
+      "employee": "Employee (regular, part-time, or daily)",
+      "platform": "Platform / delivery rider (배민, 쿠팡이츠, etc.)",
+      "unsure": "\"Freelancer\" / 3.3% / not sure",
+      "notePlatform": "Riders are usually protected as workers (근로자), so the complaint route often still applies. Confirm with 1350 or a 노무사 if unsure.",
+      "noteUnsure": "The label on your contract doesn't decide it — many \"freelancers\" are legally employees. Worth checking with a 노무사 or 1350."
+    },
+    "q3": {
+      "question": "Are you still working there?",
+      "stillWorking": "Still working",
+      "left": "I left / quit / was let go",
+      "noteCurrent": "There are protections against retaliation for claiming unpaid wages. If you're worried, talk to a 노무사 first.",
+      "noteLeft": "Your final pay must be paid within 14 days of leaving (근로기준법 제36조)."
+    },
+    "q4": {
+      "question": "When did the unpaid work happen?",
+      "withinThree": "Within the last 3 years",
+      "overThree": "More than 3 years ago",
+      "noteOverThree": "Wage claims expire after 3 years (근로기준법 제49조). Some may be out of time — talk to a 노무사 soon to check what you can still claim."
+    },
+    "q5": {
+      "question": "Anything that changes who can help you fastest?",
+      "migrant": "I'm a foreign / migrant worker",
+      "youth": "I'm 24 or younger",
+      "neither": "Neither / skip",
+      "noteMigrant": "Korean labor law protects you regardless of visa status, including if you're undocumented. Unpaid wages is also a recognized reason that can let an E-9 worker change workplaces. Multilingual help: 1644-0644, 1345.",
+      "noteYouth": "The 청소년 근로권익센터 gives free 노무사 help to workers aged 24 and under."
+    }
+  },
+  "rights": {
+    "title": "Rights Library",
+    "subtitle": "Plain-language rights, grounded in Korean law.",
+    "searchPlaceholder": "Search rights topics...",
+    "fiveOrFewer": "⚠️ Different rules apply at workplaces with fewer than 5 employees.",
+    "migrantNote": "Migrant worker note",
+    "whatToDoNext": "What to do next",
+    "recommendedHelp": "Recommended help",
+    "sourceLabel": "Source",
+    "viewSource": "View source on law.go.kr",
+    "notLegalAdvice": "This is general information, not legal advice."
+  },
+  "map": {
+    "title": "Find Help",
+    "subtitle": "Nearby 노무사, worker centers, and hotlines.",
+    "searchPlaceholder": "Search by location or issue...",
+    "hotlines": "Hotlines",
+    "nearby": "Nearby help",
+    "filterIssue": "Issue",
+    "filterLanguage": "Language",
+    "filterFree": "Free only",
+    "filterOpen": "Open now",
+    "noResults": "No results nearby. Try the hotlines below — they work anywhere.",
+    "callHotline": "Call hotline",
+    "alwaysAvailable": "Always available, even offline"
+  },
+  "my": {
+    "title": "My",
+    "cases": "My cases",
+    "saved": "Saved",
+    "logbook": "Work logbook",
+    "evidenceExport": "Export evidence",
+    "alerts": "Alerts",
+    "language": "Language",
+    "largeText": "Large text",
+    "privacyCenter": "Privacy Center",
+    "help": "Help & contact",
+    "about": "About Jurio"
+  },
+  "privacy": {
+    "title": "Privacy Center",
+    "subtitle": "What we collect, and what you can do with it.",
+    "neverReport": "We never report you. We never ask for your ID.",
+    "dataCollected": "Data collected",
+    "consent": "Consent status",
+    "download": "Download my data",
+    "deleteAccount": "Delete account",
+    "deleteConfirm": "Are you sure? This permanently deletes all your data.",
+    "deleteButton": "Yes, delete everything",
+    "contact": "Privacy contact"
+  },
+  "hotlines": {
+    "labor": "Labor hotline",
+    "migrant1": "Migrant support",
+    "migrant2": "Foreign worker center",
+    "danuri": "Danuri multicultural",
+    "bbb": "BBB translation",
+    "comwel": "COMWEL (substitute pay)",
+    "youth": "Youth worker rights",
+    "seoul": "Seoul labor center"
+  }
+}
