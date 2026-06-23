@@ -7,10 +7,63 @@ import Banner from '../../components/ui/Banner';
 import SourceBlock from '../../components/ui/SourceBlock';
 import Button from '../../components/ui/Button';
 
+import { Linking } from 'react-native';
 import unpaidWagesData from '../../content/guided-paths/unpaid-wages.json';
 
 const PATHS: Record<string, any> = {
   'unpaid-wages': unpaidWagesData,
+};
+
+const SITUATION_META: Record<string, {
+  emoji: string;
+  ko: string;
+  en: string;
+  hotlines: { label: { ko: string; en: string }; number: string }[];
+}> = {
+  'injury': {
+    emoji: '🤕',
+    ko: '일하다 다쳤어요 (산재)',
+    en: 'I was injured at work',
+    hotlines: [
+      { label: { ko: '근로복지공단 · 1588-0075', en: 'COMWEL · 1588-0075' }, number: '15880075' },
+      { label: { ko: '고용노동부 · 1350', en: 'Labor Ministry · 1350' }, number: '1350' },
+    ],
+  },
+  'dismissal': {
+    emoji: '🚫',
+    ko: '해고됐어요 (부당해고)',
+    en: 'I was fired',
+    hotlines: [
+      { label: { ko: '고용노동부 · 1350', en: 'Labor Ministry · 1350' }, number: '1350' },
+      { label: { ko: '서울노동권익센터 · 1661-2020', en: 'Seoul Labor Rights · 1661-2020' }, number: '16612020' },
+    ],
+  },
+  'dangerous': {
+    emoji: '⚠️',
+    ko: '위험한 일을 시켜요',
+    en: 'Forced to do dangerous work',
+    hotlines: [
+      { label: { ko: '고용노동부 (위험 작업 신고) · 1350', en: 'Labor Ministry (report hazard) · 1350' }, number: '1350' },
+    ],
+  },
+  'contract': {
+    emoji: '📄',
+    ko: '계약이 이상해요',
+    en: 'My contract looks wrong',
+    hotlines: [
+      { label: { ko: '고용노동부 · 1350', en: 'Labor Ministry · 1350' }, number: '1350' },
+    ],
+  },
+  'visa-threat': {
+    emoji: '🛂',
+    ko: '비자로 협박해요 (외국인 노동자)',
+    en: 'Boss is threatening my visa',
+    hotlines: [
+      { label: { ko: '외국인 종합안내 (24시간) · 1345', en: 'Immigration hotline (24h) · 1345' }, number: '1345' },
+      { label: { ko: '외국인력 상담 (18개 언어) · 1644-0644', en: 'Foreign worker hotline · 1644-0644' }, number: '16440644' },
+      { label: { ko: '다누리 (24시간) · 1577-1366', en: 'Danuri (24h) · 1577-1366' }, number: '15771366' },
+    ],
+  },
 };
 
 export default function GuidedHelpFlow() {
@@ -21,12 +74,62 @@ export default function GuidedHelpFlow() {
 
   const data = PATHS[situationId];
   if (!data) {
+    const meta = SITUATION_META[situationId];
     return (
       <SafeAreaView style={styles.safe}>
-        <View style={styles.center}>
-          <Text style={styles.errorText}>{lang === 'ko' ? '준비 중입니다.' : 'Coming soon.'}</Text>
-          <Button label={lang === 'ko' ? '뒤로' : 'Back'} onPress={() => router.back()} variant="secondary" style={{ marginTop: spacing.base }} />
-        </View>
+        <ScrollView contentContainerStyle={styles.content}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Text style={styles.backText}>← {lang === 'ko' ? '뒤로' : 'Back'}</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.comingSoonEmoji}>{meta?.emoji ?? '🔧'}</Text>
+          <Text style={styles.comingSoonTitle}>
+            {meta ? (lang === 'ko' ? meta.ko : meta.en) : (lang === 'ko' ? '준비 중' : 'Coming soon')}
+          </Text>
+          <View style={styles.comingSoonBox}>
+            <Text style={styles.comingSoonBody}>
+              {lang === 'ko'
+                ? '이 안내는 곧 추가됩니다. 지금 당장 도움이 필요하다면 아래 전화 상담을 이용하세요.'
+                : "This guided flow is coming soon. For immediate help, use the hotlines below."}
+            </Text>
+          </View>
+
+          {meta && meta.hotlines.length > 0 && (
+            <View>
+              <Text style={styles.hotlineSectionTitle}>{lang === 'ko' ? '지금 바로 도움받기' : 'Get help right now'}</Text>
+              {meta.hotlines.map((h, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.hotlineRow}
+                  onPress={() => Linking.openURL(`tel:${h.number}`)}
+                  activeOpacity={0.75}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.hotlineEmoji}>📞</Text>
+                  <Text style={styles.hotlineLabel}>{h.label[lang]}</Text>
+                  <View style={styles.callChip}>
+                    <Text style={styles.callChipText}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Always show the general labor line */}
+          <TouchableOpacity
+            style={styles.nomusakRow}
+            onPress={() => router.push('/directory')}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+          >
+            <Text style={styles.hotlineEmoji}>🧑‍⚖️</Text>
+            <Text style={styles.hotlineLabel}>{lang === 'ko' ? '노무사 찾기 (422명 · 지역별 검색)' : 'Find a 노무사 (422 attorneys)'}</Text>
+            <Text style={styles.hotlineArrow}>›</Text>
+          </TouchableOpacity>
+
+          <Banner />
+          <View style={{ height: spacing.xxxl }} />
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -185,6 +288,35 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   errorText: { ...typography.bodyL, color: colors.text },
   content: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  // Coming-soon screen
+  comingSoonEmoji: { fontSize: 48, marginBottom: spacing.sm },
+  comingSoonTitle: { ...typography.headingL, color: colors.text, fontWeight: '700', marginBottom: spacing.md },
+  comingSoonBox: { backgroundColor: colors.infoBg, borderRadius: radius.sm, padding: spacing.md, marginBottom: spacing.lg, borderLeftWidth: 3, borderLeftColor: colors.brand },
+  comingSoonBody: { ...typography.bodyM, color: colors.text, lineHeight: 26 },
+  hotlineSectionTitle: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.sm },
+  hotlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.xs,
+    ...shadow.card,
+  },
+  nomusakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginTop: spacing.sm,
+    marginBottom: spacing.base,
+  },
+  hotlineEmoji: { fontSize: 20, marginRight: spacing.md },
+  hotlineLabel: { flex: 1, ...typography.bodyM, color: colors.text, fontWeight: '600' },
+  hotlineArrow: { ...typography.headingM, color: colors.action },
+  callChip: { backgroundColor: colors.action, borderRadius: 6, paddingHorizontal: spacing.sm, paddingVertical: 4 },
+  callChipText: { ...typography.caption, color: colors.white, fontWeight: '700' },
   backBtn: { marginBottom: spacing.base },
   backText: { ...typography.bodyL, color: colors.action },
   progress: { flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.xs },

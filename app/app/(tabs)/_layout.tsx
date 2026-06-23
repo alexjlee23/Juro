@@ -3,9 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../constants/theme';
 import { Text, View } from 'react-native';
 
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
+const TAB_ICONS: Record<string, string> = {
+  index: '🏠',
+  map: '🔍',
+  community: '💬',
+  my: '👤',
+};
+
+function TabIcon({ emoji, label, focused }: { emoji: string; label: string; focused: boolean }) {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 4 }}>
+      <Text style={{ fontSize: 20, marginBottom: 2 }}>{emoji}</Text>
       <Text
         style={{
           ...typography.caption,
@@ -20,7 +28,8 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 }
 
 export default function TabLayout() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   return (
     <Tabs
@@ -28,31 +37,51 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.action,
         tabBarInactiveTintColor: colors.textCaption,
+        tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: colors.white,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 64,
+          height: 72,
           paddingBottom: 8,
         },
-        tabBarLabelStyle: { ...typography.caption, fontWeight: '600' },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{ title: t('tabs.home'), tabBarLabel: `홈 ${t('tabs.home')}` }}
+        options={{
+          title: t('tabs.home'),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji={TAB_ICONS.index} label={lang === 'ko' ? '홈' : 'Home'} focused={focused} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="map"
-        options={{ title: t('tabs.map'), tabBarLabel: `지도 ${t('tabs.map')}` }}
+        options={{
+          title: lang === 'ko' ? '찾기' : 'Find',
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji={TAB_ICONS.map} label={lang === 'ko' ? '찾기' : 'Find'} focused={focused} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="community"
-        options={{ title: t('tabs.community'), tabBarLabel: `커뮤니티 ${t('tabs.community')}` }}
+        options={{
+          title: t('tabs.community'),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji={TAB_ICONS.community} label={lang === 'ko' ? '커뮤니티' : 'Community'} focused={focused} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="my"
-        options={{ title: t('tabs.my'), tabBarLabel: `내 ${t('tabs.my')}` }}
+        options={{
+          title: t('tabs.my'),
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji={TAB_ICONS.my} label={lang === 'ko' ? '내 정보' : 'My'} focused={focused} />
+          ),
+        }}
       />
     </Tabs>
   );
