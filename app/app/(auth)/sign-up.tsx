@@ -17,8 +17,17 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState('');
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
+
+  const getConfirmRedirectUrl = () => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      return `${window.location.origin}/auth/confirm`;
+    }
+    return 'https://juro-gamma.vercel.app/auth/confirm';
+  };
 
   async function handleSignUp() {
     if (!username.trim() || !email.trim() || !password) {
@@ -49,28 +58,82 @@ export default function SignUpScreen() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        emailRedirectTo: getConfirmRedirectUrl(),
+        data: { username: username.trim() },
+      },
+    });
+
     if (error || !data.user) {
       setLoading(false);
       Alert.alert(t('가입 실패', 'Sign up failed'), error?.message ?? t('오류가 발생했습니다.', 'An error occurred.'));
       return;
     }
 
-    // Create profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({ id: data.user.id, username: username.trim() });
-
-    setLoading(false);
-
-    if (profileError) {
-      Alert.alert(t('오류', 'Error'), t('프로필 생성에 실패했습니다.', 'Failed to create profile.'));
-      return;
+    // Try to create profile now (succeeds when email confirmation is disabled
+    // and a session is returned immediately; silently skipped otherwise —
+    // the confirm page will create it after the user verifies their email).
+    if (data.session) {
+      await supabase
+        .from('profiles')
+        .insert({ id: data.user.id, username: username.trim() })
+        .select()
+        .single();
     }
 
-    router.replace('/(tabs)/community');
+    setLoading(false);
+    setSentEmail(email.trim());
+    setEmailSent(true);
   }
 
+  // ── "Check your email" state ──────────────────────────────────────────────
+  if (emailSent) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.emailSentCard}>
+            <Text style={styles.emailSentIcon}>📬</Text>
+            <Text style={styles.emailSentTitle}>
+              {t('이메일을 확인해 주세요', 'Check your email')}
+            </Text>
+            <Text style={styles.emailSentBody}>
+              {t(
+                `${sentEmail} 로 인증 링크를 보냈습니다.\n링크를 클릭하면 계정이 활성화됩니다.`,
+                `We sent a confirmation link to\n${sentEmail}\n\nClick the link in that email to activate your account.`
+              )}
+            </Text>
+            <View style={styles.emailSentNote}>
+              <Text style={styles.emailSentNoteText}>
+                {t(
+                  '이메일이 안 보이면 스팸 폴더를 확인하세요.',
+                  "Can't find it? Check your spam folder."
+                )}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => router.replace('/(auth)/sign-in')}
+              accessibilityRole="button"
+            >
+              <Text style={styles.btnText}>{t('로그인 화면으로', 'Go to sign in')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.resendBtn}
+              onPress={() => setEmailSent(false)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.resendText}>{t('이메일 다시 입력', 'Use a different email')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // ── Sign-up form ──────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -153,6 +216,32 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
   content: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  // Email-sent state
+  emailSentCard: {
+    marginTop: spacing.xxxl,
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.xl,
+    alignItems: 'center',
+    shadowColor: '#0B1D3A',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  emailSentIcon: { fontSize: 48, marginBottom: spacing.base },
+  emailSentTitle: { ...typography.headingM, color: colors.text, fontWeight: '700', textAlign: 'center', marginBottom: spacing.md },
+  emailSentBody: { ...typography.bodyM, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: spacing.lg },
+  emailSentNote: {
+    backgroundColor: colors.infoBg,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    width: '100%',
+  },
+  emailSentNoteText: { ...typography.bodyS, color: colors.textSecondary, textAlign: 'center' },
+  resendBtn: { marginTop: spacing.md, paddingVertical: spacing.sm },
+  resendText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
   backBtn: { marginBottom: spacing.lg },
   backText: { ...typography.bodyM, color: colors.action },
   title: { ...typography.headingL, color: colors.text, fontWeight: '700', marginBottom: spacing.xs },

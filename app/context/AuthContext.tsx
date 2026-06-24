@@ -53,7 +53,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select('*')
       .eq('id', userId)
       .single();
-    setProfile(data ?? null);
+
+    if (data) {
+      setProfile(data);
+    } else {
+      // Profile missing — create one from user metadata so the app stays usable.
+      // This handles the case where email confirmation was required and the profile
+      // couldn't be created during sign-up.
+      const { data: { user } } = await supabase.auth.getUser();
+      const username =
+        (user?.user_metadata?.username as string | undefined) ??
+        user?.email?.split('@')[0] ??
+        'user';
+      const { data: newProfile } = await supabase
+        .from('profiles')
+        .insert({ id: userId, username })
+        .select()
+        .single();
+      setProfile(newProfile ?? null);
+    }
     setLoading(false);
   }
 

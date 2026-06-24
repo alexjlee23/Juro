@@ -52,6 +52,7 @@ export default function CommunityBoardScreen() {
   const [joining, setJoining] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [postsError, setPostsError] = useState(false);
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
@@ -59,7 +60,9 @@ export default function CommunityBoardScreen() {
 
   async function load() {
     setLoading(true);
-    const [{ data: comm }, { data: postData }] = await Promise.all([
+    setPostsError(false);
+
+    const [{ data: comm }, { data: postData, error: postErr }] = await Promise.all([
       supabase.from('communities').select('*').eq('id', id).single(),
       supabase.from('posts')
         .select('*, profiles(username)')
@@ -67,8 +70,14 @@ export default function CommunityBoardScreen() {
         .order('created_at', { ascending: false })
         .limit(50),
     ]);
+
     setCommunity(comm ?? null);
-    setPosts((postData ?? []) as Post[]);
+    if (postErr) {
+      setPostsError(true);
+      setPosts([]);
+    } else {
+      setPosts((postData ?? []) as Post[]);
+    }
 
     if (user) {
       const { data: mem } = await supabase
@@ -95,12 +104,42 @@ export default function CommunityBoardScreen() {
     }
     setJoining(true);
     if (isJoined) {
-      await supabase.from('community_memberships').delete()
-        .eq('community_id', id).eq('user_id', user.id);
-      setIsJoined(false);
+      const { error } = await supabase
+        .from('community_memberships')
+        .delete()
+        .eq('community_id', id)
+        .eq('user_id', user.id);
+      if (error) {
+        Alert.alert(
+          t('오류', 'Error'),
+          t('커뮤니티를 나가지 못했습니다. 다시 시도해 주세요.', 'Could not leave community. Please try again.')
+        );
+      } else {
+        setIsJoined(false);
+      }
     } else {
-      await supabase.from('community_memberships').insert({ community_id: id, user_id: user.id });
-      setIsJoined(true);
+      const { error } = await supabase
+        .from('community_memberships')
+        .insert({ community_id: id, user_id: user.id });
+      if (error) {
+        Alert.alert(
+          t('참여 실패', 'Join failed'),
+          t('커뮤니티 참여에 실패했습니다. 로그인 상태를 확인해 주세요.', 'Could not join community. Please check you are signed in and try again.')
+        );
+      } else {
+        setIsJoined(true);
+        // Silently re-fetch posts — they may be gated by membership in the DB
+        const { data: newPosts, error: postErr } = await supabase
+          .from('posts')
+          .select('*, profiles(username)')
+          .eq('community_id', id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!postErr) {
+          setPostsError(false);
+          setPosts((newPosts ?? []) as Post[]);
+        }
+      }
     }
     setJoining(false);
   }
@@ -181,13 +220,32 @@ export default function CommunityBoardScreen() {
         </View>
 
         {/* Posts */}
-        {posts.length === 0 ? (
+        {postsError ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyEmoji}>⚠️</Text>
+            <Text style={styles.emptyText}>{t('게시글을 불러오지 못했습니다.', 'Could not load posts.')}</Text>
+            <TouchableOpacity onPress={onRefresh} style={styles.emptyJoinBtn}>
+              <Text style={styles.emptyJoinText}>{t('다시 시도 →', 'Retry →')}</Text>
+            </TouchableOpacity>
+          </View>
+        ) : posts.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyEmoji}>📭</Text>
-            <Text style={styles.emptyText}>{t('아직 게시글이 없습니다. 첫 번째 글을 써보세요!', 'No posts yet. Be the first to write!')}</Text>
+            <Text style={styles.emptyText}>
+              {!user
+                ? t('게시글을 보려면 로그인 후 커뮤니티에 참여하세요.', 'Sign in and join this community to see posts.')
+                : !isJoined
+                ? t('커뮤니티에 참여하면 게시글을 볼 수 있습니다.', 'Join this community to see posts.')
+                : t('아직 게시글이 없습니다. 첫 번째 글을 써보세요!', 'No posts yet. Be the first to write!')}
+            </Text>
             {user && !isJoined && (
               <TouchableOpacity onPress={handleJoinLeave} style={styles.emptyJoinBtn}>
-                <Text style={styles.emptyJoinText}>{t('참여하고 글 쓰기 →', 'Join to write →')}</Text>
+                <Text style={styles.emptyJoinText}>{t('참여하고 글 보기 →', 'Join to see posts →')}</Text>
+              </TouchableOpacity>
+            )}
+            {!user && (
+              <TouchableOpacity onPress={() => router.push('/(auth)/sign-in' as any)} style={styles.emptyJoinBtn}>
+                <Text style={styles.emptyJoinText}>{t('로그인 →', 'Sign in →')}</Text>
               </TouchableOpacity>
             )}
           </View>

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 export const supabase = createClient(
   'https://djdznsoospkpjmlurmng.supabase.co',
@@ -9,7 +10,9 @@ export const supabase = createClient(
       storage: AsyncStorage,
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: false,
+      // On web, detect the access_token Supabase appends to the redirect URL
+      // after email confirmation so the user is logged in automatically.
+      detectSessionInUrl: Platform.OS === 'web',
     },
   }
 );
