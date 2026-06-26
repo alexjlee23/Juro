@@ -44,13 +44,26 @@ export default function MyScreen() {
           </Text>
         </View>
 
+        {/* My Cases */}
+        <Text style={styles.sectionLabel}>{lang === 'ko' ? '내 케이스' : 'My cases'}</Text>
+        <View style={styles.section}>
+          <SettingRow emoji="📂" label={lang === 'ko' ? '내 케이스 & 진행 상황' : 'My cases & progress'} onPress={() => router.push('/my-cases' as any)} />
+        </View>
+
         {/* Menu sections */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '도구' : 'Tools'}</Text>
         <View style={styles.section}>
-          <SettingRow emoji="📋" label={t('my.cases')} onPress={() => {}} />
-          <SettingRow emoji="🔖" label={t('my.saved')} onPress={() => {}} />
-          <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => {}} />
-          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => {}} />
+          <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
+          <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
+          <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
+          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook' as any)} />
+        </View>
+
+        <Text style={styles.sectionLabel}>{lang === 'ko' ? '정보' : 'Reference'}</Text>
+        <View style={styles.section}>
+          <SettingRow emoji="📚" label={lang === 'ko' ? '권리 가이드' : 'Rights guide'} onPress={() => router.push('/rights')} />
+          <SettingRow emoji="📖" label={lang === 'ko' ? '용어사전' : 'Glossary'} onPress={() => router.push('/glossary' as any)} />
+          <SettingRow emoji="🌏" label={lang === 'ko' ? '외국인 노동자 허브' : 'Migrant worker hub'} onPress={() => router.push('/migrant-hub' as any)} />
         </View>
 
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '설정' : 'Settings'}</Text>
@@ -67,14 +80,14 @@ export default function MyScreen() {
             value={largeText}
             onPress={() => setLargeText(!largeText)}
           />
-          <SettingRow emoji="🔔" label={t('my.alerts')} onPress={() => {}} />
+          <SettingRow emoji="🔔" label={t('my.alerts')} onPress={() => router.push('/alerts' as any)} />
         </View>
 
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '개인정보 & 법률' : 'Privacy & Legal'}</Text>
         <View style={styles.section}>
           <SettingRow emoji="🛡️" label={t('my.privacyCenter')} onPress={() => router.push('/privacy')} />
-          <SettingRow emoji="❓" label={t('my.help')} onPress={() => {}} />
-          <SettingRow emoji="ℹ️" label={t('my.about')} onPress={() => {}} />
+          <SettingRow emoji="❓" label={t('my.help')} onPress={() => router.push('/help' as any)} />
+          <SettingRow emoji="ℹ️" label={t('my.about')} onPress={() => router.push('/about' as any)} />
         </View>
 
         <Banner />
