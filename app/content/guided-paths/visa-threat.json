@@ -1,0 +1,117 @@
+{
+  "id": "visa-threat",
+  "version": "2026-06",
+  "title": { "ko": "비자로 협박해요 (외국인 노동자)", "en": "My boss is threatening my visa" },
+  "steps": [
+    {
+      "id": "q1",
+      "question": { "ko": "어떤 협박을 받고 있나요?", "en": "What kind of threat are you facing?" },
+      "options": [
+        {
+          "id": "deportation",
+          "label": { "ko": "\"신고하면 추방시킨다\"고 협박해요", "en": "Threatening to report me to immigration if I speak up" },
+          "sets": { "threat_type": "deportation" },
+          "note": { "ko": "한국 노동법은 비자 상태·국적과 무관하게 모든 근로자를 보호합니다. 미등록 노동자도 포함됩니다. 고용주가 근로자 권리 행사를 막기 위해 추방을 협박하는 것은 불법입니다.", "en": "Korean labor law protects ALL workers regardless of visa status or nationality, including undocumented workers. It is illegal for an employer to threaten deportation to prevent workers from exercising their rights." },
+          "next": "q2"
+        },
+        {
+          "id": "visa_renewal",
+          "label": { "ko": "비자 갱신을 안 해주겠다고 해요", "en": "Threatening not to support my visa renewal" },
+          "sets": { "threat_type": "visa_renewal" },
+          "note": { "ko": "E-9 비자 근로자의 경우, 사용자가 체류 연장에 협조하지 않아도 임금체불·폭행·성희롱 등의 사유로 사업장 변경을 신청할 수 있습니다 (외국인고용법 제25조).", "en": "For E-9 visa workers, you can apply for a workplace change due to wage arrears, violence, or harassment even if your employer refuses to cooperate (외국인고용법 §25)." },
+          "next": "q2"
+        },
+        {
+          "id": "passport",
+          "label": { "ko": "고용주가 여권·신분증을 빼앗았어요", "en": "My employer has taken my passport or ID documents" },
+          "sets": { "threat_type": "passport" },
+          "note": { "ko": "고용주가 근로자의 여권·신분증을 보관하는 것은 불법입니다 (출입국관리법). 즉시 ☎1345 (출입국·외국인 종합안내)나 ☎1644-0644에 신고하세요.", "en": "It is illegal for an employer to hold your passport or ID documents (출입국관리법). Report immediately to ☎1345 or ☎1644-0644." },
+          "next": "q2"
+        },
+        {
+          "id": "workplace_change",
+          "label": { "ko": "사업장 변경(이직)을 막고 있어요", "en": "They are blocking my workplace change" },
+          "sets": { "threat_type": "workplace_change" },
+          "note": { "ko": "E-9 근로자는 임금체불·폭행·성희롱·부당해고 등의 사유가 있으면 사업장 변경을 신청할 수 있습니다 (외국인고용법 제25조 제1항 제2호). 고용주 동의 없이도 가능합니다.", "en": "E-9 workers can apply for a workplace change due to wage arrears, violence, sexual harassment, or unfair dismissal (외국인고용법 §25). This does not require your employer's consent." },
+          "next": "q2"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "question": { "ko": "어떤 비자로 일하고 있나요?", "en": "What type of visa do you have?" },
+      "options": [
+        {
+          "id": "e9",
+          "label": { "ko": "E-9 (비전문취업 — 공장·농업·어업 등)", "en": "E-9 (Non-professional — factory, farm, fishery, etc.)" },
+          "sets": { "visa": "e9" },
+          "note": { "ko": "E-9 사업장 변경: 최초 3년 내 최대 3회, 재고용 기간 최대 2회 추가. 임금체불·폭행·성희롱 등은 사업장 변경 사유입니다. ☎1644-0644 (고용허가제) 에 상담하세요.", "en": "E-9 workplace change: maximum 3 times in the first 3 years, up to 2 more during extended stay. Wage arrears, violence, sexual harassment are valid reasons. Call ☎1644-0644 (EPS hotline)." },
+          "next": "q3"
+        },
+        {
+          "id": "h2",
+          "label": { "ko": "H-2 (방문취업 — 조선족·고려인)", "en": "H-2 (Visit and employment — Korean-Chinese, Koryo-saram)" },
+          "sets": { "visa": "h2" },
+          "note": { "ko": "H-2 비자는 사업장 변경에 제한이 없습니다. 노동법 동일 적용. ☎1345 또는 ☎1644-0644에 상담하세요.", "en": "H-2 visa holders have no restrictions on workplace changes. Labor law applies equally. Call ☎1345 or ☎1644-0644." },
+          "next": "q3"
+        },
+        {
+          "id": "undocumented",
+          "label": { "ko": "미등록 (비자 없음) / 잘 모름", "en": "Undocumented / not sure" },
+          "sets": { "visa": "undocumented" },
+          "note": { "ko": "미등록 상태라도 한국 노동법의 보호를 받습니다. 임금체불·산재 등은 동일하게 청구할 수 있습니다. 상담 기관은 신분을 보고하지 않습니다. ☎1345, ☎1644-0644 모두 익명 상담 가능합니다.", "en": "Even undocumented workers are protected by Korean labor law. You can still claim unpaid wages and workers' comp. Support organizations do not report your status. ☎1345 and ☎1644-0644 offer anonymous consultations." },
+          "next": "q3"
+        },
+        { "id": "other", "label": { "ko": "다른 비자 (E-7, F-4 등)", "en": "Other visa (E-7, F-4, etc.)" }, "sets": { "visa": "other" }, "next": "q3" }
+      ]
+    },
+    {
+      "id": "q3",
+      "question": { "ko": "현재 임금을 제대로 받고 있나요?", "en": "Are you currently being paid properly?" },
+      "options": [
+        {
+          "id": "unpaid",
+          "label": { "ko": "아니요, 임금을 못 받고 있어요", "en": "No, I'm not being paid" },
+          "sets": { "wages": "unpaid" },
+          "note": { "ko": "임금체불은 E-9 비자 사업장 변경의 법적 사유입니다 (외국인고용법 제25조). 노동부에 진정을 제기하면 사업장 변경 서류에 활용할 수 있습니다.", "en": "Wage arrears are a legal reason for E-9 workplace change (외국인고용법 §25). Filing a labor complaint creates documentation you can use for a workplace change application." },
+          "next": "outcome"
+        },
+        { "id": "paid_ok", "label": { "ko": "임금은 받고 있어요", "en": "I am being paid" }, "sets": { "wages": "ok" }, "next": "outcome" },
+        { "id": "unsure", "label": { "ko": "잘 모르겠어요", "en": "Not sure" }, "sets": { "wages": "unsure" }, "next": "outcome" }
+      ]
+    }
+  ],
+  "outcome": {
+    "right": {
+      "ko": "한국 노동법은 비자 상태·국적·등록 여부와 무관하게 모든 근로자를 동등하게 보호합니다. 고용주가 근로자의 권리 행사를 막기 위해 출입국 신고를 협박 수단으로 사용하는 것은 불법입니다. 여권·신분증을 보관하는 것도 불법입니다. E-9 근로자는 임금체불·폭행·성희롱·부당해고 등의 사유로 사업장 변경을 신청할 수 있습니다 (외국인고용법 제25조). 미등록 근로자도 임금·산재 보호를 받을 수 있습니다.",
+      "en": "Korean labor law protects ALL workers equally regardless of visa status, nationality, or immigration status. It is illegal for employers to use deportation threats to prevent workers from exercising their rights. Holding passports or IDs is also illegal. E-9 workers can apply for workplace change due to wage arrears, violence, sexual harassment, or unfair dismissal (외국인고용법 §25). Undocumented workers can still claim unpaid wages and workers' compensation."
+    },
+    "steps": [
+      { "ko": "지금 당장 안전한 곳에 있다면, 24시간 다국어 상담 전화 ☎1345 (약 20개 언어) 또는 ☎1644-0644 (18개 언어)에 전화하세요. 신분을 묻지 않으며, 비밀이 보장됩니다.", "en": "If you are safe right now, call the 24-hour multilingual hotline ☎1345 (~20 languages) or ☎1644-0644 (18 languages). They do not ask about your status and keep your information confidential." },
+      { "ko": "여권·신분증을 빼앗겼다면: 즉시 ☎1345에 신고하세요. 출입국관리법 위반으로 사용자를 처벌할 수 있습니다.", "en": "If your passport or ID was taken: report immediately to ☎1345. This is a violation of 출입국관리법 and your employer can be penalized." },
+      { "ko": "임금이 밀렸다면: 고용노동부 ☎1350에 진정을 제기하거나 labor.moel.go.kr에 온라인 접수하세요. E-9 사업장 변경 서류에도 활용됩니다.", "en": "If wages are unpaid: file a complaint with ☎1350 or at labor.moel.go.kr. This documentation also supports an E-9 workplace change application." },
+      { "ko": "E-9 사업장 변경 신청: 한국산업인력공단(☎1644-0644) 또는 외국인고용관리시스템(eps.hrdkorea.or.kr)에서 신청하세요. 사용자 동의 없이도 임금체불·폭행 등의 사유가 있으면 가능합니다.", "en": "E-9 workplace change application: apply through HRD Korea (☎1644-0644) or the EPS system (eps.hrdkorea.or.kr). No employer consent needed if there are valid grounds like wage arrears or violence." },
+      { "ko": "외국인 노동자 지원센터를 방문하세요. 법률 지원, 통역, 쉼터 연계가 가능합니다.", "en": "Visit a Foreign Worker Support Center. They can provide legal support, interpretation, and emergency shelter referrals." }
+    ],
+    "evidence": [
+      { "ko": "협박·강요 문자·카톡·이메일 캡처", "en": "Screenshots of threatening texts, KakaoTalk messages, or emails" },
+      { "ko": "여권·신분증 보관 상황을 보여주는 증거 (본인 여권이 없는 경우)", "en": "Evidence that your passport or ID was taken (e.g., photos, messages)" },
+      { "ko": "임금 미지급 증거: 통장 기록, 급여명세서", "en": "Wage arrears evidence: bank records, pay slips" },
+      { "ko": "근로계약서 및 취업 관련 서류", "en": "Employment contract and work-related documents" },
+      { "ko": "목격자 이름·연락처", "en": "Names and contact details of witnesses" },
+      { "ko": "음성·영상 녹음 (한국에서는 본인이 참여한 대화 녹음은 합법)", "en": "Audio or video recordings (recording conversations you are part of is legal in Korea)" }
+    ],
+    "deadlines": [
+      { "ko": "E-9 사업장 변경: 구직 기간 3개월 (연장 가능) — 퇴직 후 빠를수록 좋음", "en": "E-9 workplace change: 3-month job search period (extendable) — the sooner after leaving, the better" },
+      { "ko": "임금체불 청구: 3년 이내 (근로기준법 제49조)", "en": "Wage arrears claim: within 3 years (근로기준법 제49조)" },
+      { "ko": "산재 신청: 사고일로부터 3년 이내", "en": "Workers' comp claim: within 3 years of accident" }
+    ],
+    "hotlines": ["외국인 종합안내 1345 (24시간, 약 20개 언어)", "외국인력 상담 1644-0644 (18개 언어)", "다누리 1577-1366 (24시간, 13개 언어)", "고용노동부 1350"],
+    "statutes": [
+      { "name": "외국인고용법 제25조 (사업장 변경)", "url": "https://www.law.go.kr/법령/외국인근로자의고용등에관한법률" },
+      { "name": "근로기준법 제7조 (강제 근로 금지)", "url": "https://www.law.go.kr/법령/근로기준법/제7조" },
+      { "name": "근로기준법 제6조 (균등한 처우)", "url": "https://www.law.go.kr/법령/근로기준법/제6조" }
+    ],
+    "disclaimer": true
+  }
+}

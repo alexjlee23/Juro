@@ -1,0 +1,104 @@
+{
+  "id": "dangerous",
+  "version": "2026-06",
+  "title": { "ko": "위험한 일을 시켜요", "en": "Forced to do dangerous work" },
+  "steps": [
+    {
+      "id": "q1",
+      "question": { "ko": "어떤 상황인가요?", "en": "What is your situation?" },
+      "options": [
+        {
+          "id": "imminent",
+          "label": { "ko": "지금 당장 다칠 것 같은 위험한 상황이에요", "en": "There is an immediate danger — I could get hurt right now" },
+          "sets": { "danger_type": "imminent" },
+          "note": { "ko": "산업안전보건법 제52조: 급박한 위험이 있을 때 작업을 중지하고 대피할 권리가 있습니다. 이를 이유로 해고·불이익을 주는 것은 불법입니다. 지금 대피하세요.", "en": "산업안전보건법 §52: You have the right to stop work and evacuate when there is imminent danger. Retaliating against you for this is illegal. Evacuate now." },
+          "next": "q2"
+        },
+        { "id": "no_equipment", "label": { "ko": "안전장비·보호구를 받지 못했어요", "en": "I was not given safety equipment or protective gear" }, "sets": { "danger_type": "equipment" }, "next": "q2" },
+        { "id": "forced", "label": { "ko": "위험한 일을 거부하면 해고·불이익을 주겠다고 해요", "en": "I'm threatened with dismissal if I refuse the dangerous work" }, "sets": { "danger_type": "forced" }, "next": "q2" },
+        {
+          "id": "already_injured",
+          "label": { "ko": "이미 다쳤어요", "en": "I was already injured" },
+          "sets": { "danger_type": "injured" },
+          "note": { "ko": "산재 신청 안내로 이동하세요. 근로복지공단 ☎1588-0075에 바로 연락하세요.", "en": "Please follow the injury (산재) flow. Contact COMWEL at ☎1588-0075 directly." },
+          "next": "q3"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "question": { "ko": "사용자(고용주)에게 위험 사실을 알렸나요?", "en": "Did you tell your employer about the danger?" },
+      "options": [
+        {
+          "id": "told_ignored",
+          "label": { "ko": "알렸지만 무시당했어요", "en": "Yes, but they ignored me" },
+          "sets": { "employer_response": "ignored" },
+          "note": { "ko": "사용자는 안전·보건 조치를 취할 법적 의무가 있습니다 (산업안전보건법 제38조·39조). 이를 무시하면 ☎1350에 신고하세요.", "en": "Employers are legally required to provide safety measures (산업안전보건법 §38·39). If they ignore you, report to ☎1350." },
+          "next": "q3"
+        },
+        {
+          "id": "afraid",
+          "label": { "ko": "보복이 두려워서 말하지 못하고 있어요", "en": "I'm afraid to say anything because of retaliation" },
+          "sets": { "employer_response": "afraid" },
+          "note": { "ko": "안전보건 신고를 이유로 해고·불이익을 주는 것은 불법입니다 (산업안전보건법 제104조). 고용노동부 ☎1350에 익명으로 신고할 수 있습니다.", "en": "Retaliation for health and safety reports is illegal (산업안전보건법 §104). You can report anonymously to the Ministry of Employment and Labor at ☎1350." },
+          "next": "q3"
+        },
+        { "id": "not_yet", "label": { "ko": "아직 말하지 않았어요", "en": "I haven't told them yet" }, "sets": { "employer_response": "not_yet" }, "next": "q3" }
+      ]
+    },
+    {
+      "id": "q3",
+      "question": { "ko": "어떤 업종·환경에서 일하고 있나요?", "en": "What type of workplace or industry?" },
+      "options": [
+        {
+          "id": "construction",
+          "label": { "ko": "건설현장", "en": "Construction site" },
+          "sets": { "industry": "construction" },
+          "note": { "ko": "건설현장은 추락·붕괴·감전 위험이 높아 산업안전보건법상 특별 규정이 적용됩니다. 안전관리자 배치, 안전대·헬멧 지급이 의무입니다.", "en": "Construction sites are subject to strict safety rules for falls, collapses, and electrocution. Safety managers, harnesses, and helmets are legally required." },
+          "next": "outcome"
+        },
+        {
+          "id": "factory",
+          "label": { "ko": "공장·제조업", "en": "Factory / manufacturing" },
+          "sets": { "industry": "factory" },
+          "note": { "ko": "기계 방호장치, 화학물질 안전보건자료(MSDS), 개인보호구 지급이 의무입니다 (산업안전보건법 제80조·114조).", "en": "Machine guards, chemical safety data sheets (MSDS), and personal protective equipment are legally required (산업안전보건법 §80·114)." },
+          "next": "outcome"
+        },
+        { "id": "other", "label": { "ko": "기타 / 잘 모름", "en": "Other / not sure" }, "sets": { "industry": "other" }, "next": "outcome" }
+      ]
+    }
+  ],
+  "outcome": {
+    "right": {
+      "ko": "급박한 위험이 있을 때 작업을 중지하고 대피할 권리가 있습니다 (산업안전보건법 제52조). 사용자는 안전하고 건강한 작업환경을 제공할 법적 의무가 있습니다 (제38조·39조). 안전 신고를 이유로 해고·불이익을 주는 것은 불법입니다 (제104조). 중대재해(사망·심각한 부상)가 발생하면 사용자는 즉시 작업을 중지해야 합니다 (제54조). 강제노동(폭행·협박으로 일을 강요하는 것)은 근로기준법 제7조 위반으로 형사처벌 대상입니다.",
+      "en": "You have the right to stop work and evacuate in the face of imminent danger (산업안전보건법 §52). Employers are legally required to provide a safe and healthy working environment (§38·39). Retaliation for safety reports is illegal (§104). For serious accidents (death or severe injury), employers must immediately halt work (§54). Forced labor through violence or threats violates 근로기준법 §7 and is a criminal offense."
+    },
+    "steps": [
+      { "ko": "즉각적인 위험이 있다면 지금 바로 작업을 중지하고 안전한 곳으로 대피하세요 (산업안전보건법 제52조). 법적으로 보호받습니다.", "en": "If there is immediate danger, stop work right now and move to a safe location (산업안전보건법 §52). You are legally protected." },
+      { "ko": "위험 상황을 사진·영상으로 기록하세요. 안전장비 미지급, 위험한 기계, 유해물질 등을 기록해두세요.", "en": "Document the dangerous conditions with photos or video. Record missing safety equipment, dangerous machinery, or hazardous substances." },
+      { "ko": "고용노동부 산업안전보건 신고: ☎1350 또는 moel.go.kr → 민원마당 → 산업안전. 익명 신고 가능합니다.", "en": "Report to the Ministry of Employment and Labor: ☎1350 or moel.go.kr → 민원마당 → 산업안전. Anonymous reports are accepted." },
+      { "ko": "사용자에게 서면(문자·이메일)으로 위험 사실과 시정을 요청하세요. 기록이 중요합니다.", "en": "Request in writing (text or email) that your employer address the hazard. This creates a paper trail." },
+      { "ko": "이미 다쳤다면 즉시 근로복지공단(COMWEL ☎1588-0075)에 산재 신청을 하세요.", "en": "If you have already been injured, immediately file a workers' comp claim with COMWEL (☎1588-0075)." }
+    ],
+    "evidence": [
+      { "ko": "위험한 상황·장소 사진 및 영상", "en": "Photos and videos of the dangerous conditions or location" },
+      { "ko": "안전장비 미지급을 보여주는 기록", "en": "Records showing failure to provide safety equipment" },
+      { "ko": "위험 사실을 사용자에게 알린 문자·이메일", "en": "Text messages or emails notifying your employer about the danger" },
+      { "ko": "목격자 이름·연락처", "en": "Names and contact details of witnesses" },
+      { "ko": "사용자가 위험한 일을 강요한 지시 내용 (문자·음성녹음)", "en": "Any records of your employer ordering you to do dangerous work (text, voice recording)" },
+      { "ko": "이미 다쳤다면: 병원 진단서 및 의료 기록", "en": "If already injured: hospital diagnosis and medical records" }
+    ],
+    "deadlines": [
+      { "ko": "산재 신청: 사고일로부터 3년 이내 (산재보험법 제112조)", "en": "Workers' comp claim: within 3 years of the accident" },
+      { "ko": "안전보건 신고: 기한 없음 — 지금 바로 신고하세요", "en": "Safety report: no deadline — report now" }
+    ],
+    "hotlines": ["고용노동부 산업안전보건 신고 1350", "COMWEL 근로복지공단 1588-0075 (부상 시)", "외국인력 상담 1644-0644"],
+    "statutes": [
+      { "name": "산업안전보건법 제52조 (근로자의 작업중지)", "url": "https://www.law.go.kr/법령/산업안전보건법/제52조" },
+      { "name": "산업안전보건법 제38조·39조 (안전·보건 조치 의무)", "url": "https://www.law.go.kr/법령/산업안전보건법" },
+      { "name": "산업안전보건법 제104조 (불이익 처우 금지)", "url": "https://www.law.go.kr/법령/산업안전보건법" },
+      { "name": "근로기준법 제7조 (강제 근로 금지)", "url": "https://www.law.go.kr/법령/근로기준법/제7조" }
+    ],
+    "disclaimer": true
+  }
+}

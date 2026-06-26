@@ -1,0 +1,98 @@
+{
+  "id": "contract",
+  "version": "2026-06",
+  "title": { "ko": "계약이 이상해요", "en": "My contract or pay looks wrong" },
+  "steps": [
+    {
+      "id": "q1",
+      "question": { "ko": "어떤 문제가 있나요?", "en": "What is the problem?" },
+      "options": [
+        {
+          "id": "no_contract",
+          "label": { "ko": "근로계약서를 받지 못했어요", "en": "I never received a written employment contract" },
+          "sets": { "issue": "no_contract" },
+          "note": { "ko": "사용자는 근로계약서를 서면으로 작성하고 반드시 근로자에게 교부해야 합니다 (근로기준법 제17조). 위반 시 500만원 이하 과태료. 지금 요청하세요.", "en": "Employers must provide a written contract to the worker (근로기준법 §17). Penalty up to ₩5M for failure. You can request one now." },
+          "next": "q2"
+        },
+        { "id": "different", "label": { "ko": "계약서 내용과 실제 근무조건이 달라요", "en": "Actual working conditions differ from what the contract says" }, "sets": { "issue": "different" }, "next": "q2" },
+        {
+          "id": "below_min",
+          "label": { "ko": "급여가 최저임금보다 낮아요", "en": "My pay is below the minimum wage" },
+          "sets": { "issue": "below_minimum" },
+          "note": { "ko": "2026년 최저임금은 시간당 ₩10,320입니다. 최저임금 미만으로 지급하면 최저임금법 위반으로 3년 이하 징역 또는 2천만원 이하 벌금입니다.", "en": "The 2026 minimum wage is ₩10,320/hr. Paying below minimum wage violates 최저임금법 — penalty up to 3 years prison or ₩20M fine." },
+          "next": "q2"
+        },
+        {
+          "id": "illegal_clause",
+          "label": { "ko": "계약서에 이상한 조항이 있어요 (벌금, 손해배상 등)", "en": "The contract has suspicious clauses (fines, penalties, etc.)" },
+          "sets": { "issue": "illegal_clause" },
+          "note": { "ko": "법령 기준보다 불리한 계약 조항은 자동으로 무효입니다 (근로기준법 제15조). 예: 무단결근 시 벌금, 퇴사 시 손해배상, 최저임금 이하 급여 조항 등.", "en": "Any contract term that is less favorable than the law is automatically void (근로기준법 §15). Examples: fines for absences, damage claims for leaving, wages below minimum." },
+          "next": "q2"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "question": { "ko": "어떤 항목이 잘못되었나요?", "en": "Which specific item is wrong or missing?" },
+      "options": [
+        { "id": "wage_wrong", "label": { "ko": "임금 (금액이 다르거나, 최저임금 이하)", "en": "Wages (different amount, or below minimum wage)" }, "sets": { "item": "wage" }, "next": "q3" },
+        { "id": "hours_wrong", "label": { "ko": "근무시간·장소·업무 내용이 달라요", "en": "Hours, location, or job duties are different" }, "sets": { "item": "hours" }, "next": "q3" },
+        { "id": "holiday_wrong", "label": { "ko": "휴일·연차·주휴수당이 주어지지 않아요", "en": "Not receiving rest days, annual leave, or weekly holiday pay" }, "sets": { "item": "leave" }, "next": "q3" },
+        { "id": "penalty_clause", "label": { "ko": "계약에 불법적인 벌금·손해배상 조항이 있어요", "en": "There are illegal fine or damage clauses in the contract" }, "sets": { "item": "penalty" }, "next": "q3" }
+      ]
+    },
+    {
+      "id": "q3",
+      "question": { "ko": "아직 재직 중인가요?", "en": "Are you still working there?" },
+      "options": [
+        {
+          "id": "current",
+          "label": { "ko": "네, 재직 중입니다", "en": "Yes, still working" },
+          "sets": { "status": "current" },
+          "note": { "ko": "재직 중이라면 계약서 교부를 사용자에게 요청할 권리가 있습니다. 거부하면 고용노동부 ☎1350에 신고하세요.", "en": "While employed, you can demand a contract from your employer. If refused, report to the Ministry of Employment and Labor at ☎1350." },
+          "next": "outcome"
+        },
+        {
+          "id": "left",
+          "label": { "ko": "아니요, 이미 퇴사했어요", "en": "No, I already left" },
+          "sets": { "status": "left" },
+          "note": { "ko": "퇴사 후에도 임금 차액, 최저임금 미지급분, 주휴수당 등을 3년 이내에 청구할 수 있습니다.", "en": "After leaving, you can still claim wage differences, unpaid minimum wage, and weekly holiday pay within 3 years." },
+          "next": "outcome"
+        }
+      ]
+    }
+  ],
+  "outcome": {
+    "right": {
+      "ko": "사용자는 근로계약서를 서면으로 작성하고 근로자에게 교부해야 합니다 (근로기준법 제17조). 필수 기재 항목: 임금, 소정근로시간, 주휴일, 연차유급휴가, 취업장소·업무. 법 기준보다 불리한 계약 조항은 자동으로 무효이며, 해당 부분은 법이 정한 기준이 적용됩니다 (근로기준법 제15조). 최저임금(2026년 ₩10,320/시간) 이하 급여 조항도 무효입니다. 실제 근무 조건이 계약과 다를 경우, 실제 근무 조건을 기준으로 임금을 청구할 수 있습니다.",
+      "en": "Employers must create a written contract and give it to the worker (근로기준법 §17). Mandatory items: wages, working hours, weekly rest day, annual leave, and work location/duties. Contract terms less favorable than the law are automatically void; the legal standard applies instead (근로기준법 §15). Terms paying below the 2026 minimum wage of ₩10,320/hr are also void. If actual conditions differ from the contract, you can claim based on actual working conditions."
+    },
+    "steps": [
+      { "ko": "계약서 사본을 요청하세요. 사용자가 교부를 거부하면 고용노동부(☎1350 또는 labor.moel.go.kr)에 신고하세요. 과태료 500만원 이하가 부과됩니다.", "en": "Request a copy of your contract. If your employer refuses, report to ☎1350 or labor.moel.go.kr. Penalty: up to ₩5M fine." },
+      { "ko": "실제 지급된 임금이 최저임금(₩10,320/시간, 2026년 기준)에 미달하면 차액을 청구하세요. 고용노동부에 진정을 제기하거나 ☎1350으로 상담하세요.", "en": "If actual pay is below the minimum wage (₩10,320/hr, 2026), claim the difference. File a complaint with the Ministry of Employment and Labor or call ☎1350." },
+      { "ko": "실제 근무시간·장소·업무가 계약과 다르다면 증거를 모으고 노무사와 상담하세요. 계약 변경에는 근로자 동의가 필요합니다.", "en": "If actual hours, location, or duties differ from the contract, gather evidence and consult a 노무사. Contract changes require your agreement." },
+      { "ko": "불법 조항(벌금·손해배상 등)은 법적으로 무효입니다. 사용자가 이를 강요한다면 노무사 또는 ☎1350에 즉시 상담하세요.", "en": "Illegal clauses (fines, damage claims) are void by law. If your employer tries to enforce them, consult a 노무사 or call ☎1350 immediately." },
+      { "ko": "주휴수당, 연차, 야간·연장 수당 등도 누락됐는지 확인하세요. 과거 3년치까지 소급 청구 가능합니다.", "en": "Also check if weekly holiday pay, annual leave, or overtime premiums are missing. You can claim retroactively up to 3 years back." }
+    ],
+    "evidence": [
+      { "ko": "근로계약서 사본 (있는 경우)", "en": "Copy of your employment contract (if you have one)" },
+      { "ko": "채용공고 문자·이메일·사진 (처음에 약속한 조건)", "en": "Job advertisement, texts, or emails showing what you were originally promised" },
+      { "ko": "급여명세서 및 통장 입금 기록", "en": "Pay slips and bank deposit records" },
+      { "ko": "실제 출퇴근 기록 (카메라·앱 기록 포함)", "en": "Actual work schedule records (including camera or app records)" },
+      { "ko": "근무 조건 변경과 관련된 사용자와의 문자·카톡", "en": "Text messages or KakaoTalk about your working conditions" },
+      { "ko": "불법 공제·벌금을 보여주는 급여명세서", "en": "Pay slips showing illegal deductions or fines" }
+    ],
+    "deadlines": [
+      { "ko": "임금 차액·최저임금 미지급분 청구: 3년 이내 (근로기준법 제49조)", "en": "Wage difference / minimum wage underpayment claim: within 3 years (근로기준법 제49조)" },
+      { "ko": "근로계약서 미교부 신고: 기한 없음 — 지금 신고하세요", "en": "Report failure to provide contract: no deadline — report now" }
+    ],
+    "hotlines": ["고용노동부 1350", "서울노동권익센터 1661-2020", "청소년 근로권익센터 1644-3119 (만 24세 이하)"],
+    "statutes": [
+      { "name": "근로기준법 제15조 (이 법을 위반한 근로계약 무효)", "url": "https://www.law.go.kr/법령/근로기준법/제15조" },
+      { "name": "근로기준법 제17조 (근로조건의 명시)", "url": "https://www.law.go.kr/법령/근로기준법/제17조" },
+      { "name": "최저임금법 제6조 (최저임금의 효력)", "url": "https://www.law.go.kr/법령/최저임금법" },
+      { "name": "근로기준법 제49조 (임금채권 소멸시효)", "url": "https://www.law.go.kr/법령/근로기준법/제49조" }
+    ],
+    "disclaimer": true
+  }
+}
