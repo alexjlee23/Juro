@@ -40,7 +40,10 @@ function timeAgo(dateStr: string, lang: string) {
 }
 
 export default function CommunityBoardScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string }>();
+  // useLocalSearchParams can return string | string[] at runtime — always take first value
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
   const router = useRouter();
   const { i18n } = useTranslation();
   const lang = i18n.language as 'ko' | 'en';
@@ -53,31 +56,28 @@ export default function CommunityBoardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [postsError, setPostsError] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  useEffect(() => { load(); }, [id, user]);
+  useEffect(() => { if (id) load(); }, [id, user]);
 
   async function load() {
+    if (!id) { setDebugInfo('ERR: id is undefined'); setLoading(false); return; }
     setLoading(true);
     setPostsError(false);
 
-    const [{ data: comm }, { data: postData, error: postErr }] = await Promise.all([
+    const [{ data: comm }, { data: rawPosts, error: postErr }] = await Promise.all([
       supabase.from('communities').select('*').eq('id', id).single(),
-      supabase.from('posts')
-        .select('*, profiles(username)')
+      supabase.from('posts').select('*')
         .eq('community_id', id)
         .order('created_at', { ascending: false })
         .limit(50),
     ]);
 
+    setDebugInfo(`id=${id} | posts=${rawPosts?.length ?? 'null'} | err=${postErr ? postErr.message : 'none'} | comm=${comm ? comm.name_en : 'null'}`);
+
     setCommunity(comm ?? null);
-    if (postErr) {
-      setPostsError(true);
-      setPosts([]);
-    } else {
-      setPosts((postData ?? []) as Post[]);
-    }
 
     if (user) {
       const { data: mem } = await supabase
@@ -85,9 +85,34 @@ export default function CommunityBoardScreen() {
         .select('user_id')
         .eq('community_id', id)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
       setIsJoined(!!mem);
     }
+
+    if (postErr) {
+      setPostsError(true);
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!rawPosts || rawPosts.length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    const authorIds = [...new Set((rawPosts as any[]).map(p => p.author_id as string))];
+    const { data: profileData } = await supabase
+      .from('profiles').select('id, username').in('id', authorIds);
+    const profileMap: Record<string, { username: string }> =
+      Object.fromEntries((profileData ?? []).map((p: any) => [p.id, { username: p.username }]));
+
+    setPosts((rawPosts as any[]).map(p => ({
+      ...p,
+      profiles: profileMap[p.author_id] ?? null,
+    })) as Post[]);
+
     setLoading(false);
   }
 
@@ -116,6 +141,7 @@ export default function CommunityBoardScreen() {
         );
       } else {
         setIsJoined(false);
+        setCommunity(prev => prev ? { ...prev, member_count: Math.max(0, prev.member_count - 1) } : prev);
       }
     } else {
       const { error } = await supabase
@@ -128,16 +154,20 @@ export default function CommunityBoardScreen() {
         );
       } else {
         setIsJoined(true);
-        // Silently re-fetch posts — they may be gated by membership in the DB
-        const { data: newPosts, error: postErr } = await supabase
-          .from('posts')
-          .select('*, profiles(username)')
-          .eq('community_id', id)
-          .order('created_at', { ascending: false })
-          .limit(50);
-        if (!postErr) {
+        setCommunity(prev => prev ? { ...prev, member_count: prev.member_count + 1 } : prev);
+        // Re-fetch posts with separate profile lookup
+        const { data: rawPosts, error: postErr } = await supabase
+          .from('posts').select('*').eq('community_id', id)
+          .order('created_at', { ascending: false }).limit(50);
+        if (!postErr && rawPosts && rawPosts.length > 0) {
+          const authorIds = [...new Set(rawPosts.map((p: any) => p.author_id))];
+          const { data: profileData } = await supabase
+            .from('profiles').select('id, username').in('id', authorIds);
+          const profileMap = Object.fromEntries((profileData ?? []).map((p: any) => [p.id, p]));
           setPostsError(false);
-          setPosts((newPosts ?? []) as Post[]);
+          setPosts(rawPosts.map((p: any) => ({ ...p, profiles: profileMap[p.author_id] ?? null })) as Post[]);
+        } else if (!postErr) {
+          setPosts([]);
         }
       }
     }
@@ -192,6 +222,13 @@ export default function CommunityBoardScreen() {
             </Text>
           </View>
         </View>
+
+        {/* TEMP DEBUG — remove before launch */}
+        {!!debugInfo && (
+          <View style={{ backgroundColor: '#1e1e1e', borderRadius: 6, padding: 8, marginBottom: 8 }}>
+            <Text style={{ color: '#00ff88', fontFamily: 'monospace', fontSize: 10 }} selectable>{debugInfo}</Text>
+          </View>
+        )}
 
         {/* Join/Leave + Write */}
         <View style={styles.actionRow}>

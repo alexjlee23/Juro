@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
   SafeAreaView, ActivityIndicator, RefreshControl,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -46,6 +46,9 @@ export default function CommunityScreen() {
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
   useEffect(() => { load(); }, [user]);
+
+  // Refresh membership state and counts whenever this tab comes back into focus
+  useFocusEffect(useCallback(() => { load(); }, [user]));
 
   async function load() {
     setLoading(true);
