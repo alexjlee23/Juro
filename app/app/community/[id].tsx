@@ -56,14 +56,13 @@ export default function CommunityBoardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [postsError, setPostsError] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
   useEffect(() => { if (id) load(); }, [id, user]);
 
   async function load() {
-    if (!id) { setDebugInfo('ERR: id is undefined'); setLoading(false); return; }
+    if (!id) return;
     setLoading(true);
     setPostsError(false);
 
@@ -74,8 +73,6 @@ export default function CommunityBoardScreen() {
         .order('created_at', { ascending: false })
         .limit(50),
     ]);
-
-    setDebugInfo(`id=${id} | posts=${rawPosts?.length ?? 'null'} | err=${postErr ? postErr.message : 'none'} | comm=${comm ? comm.name_en : 'null'}`);
 
     setCommunity(comm ?? null);
 
@@ -222,13 +219,6 @@ export default function CommunityBoardScreen() {
             </Text>
           </View>
         </View>
-
-        {/* TEMP DEBUG — remove before launch */}
-        {!!debugInfo && (
-          <View style={{ backgroundColor: '#1e1e1e', borderRadius: 6, padding: 8, marginBottom: 8 }}>
-            <Text style={{ color: '#00ff88', fontFamily: 'monospace', fontSize: 10 }} selectable>{debugInfo}</Text>
-          </View>
-        )}
 
         {/* Join/Leave + Write */}
         <View style={styles.actionRow}>
