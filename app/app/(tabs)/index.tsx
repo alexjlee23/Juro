@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
+import { useConfig } from '../../lib/useConfig';
 
 type SearchItem = {
   type: 'situation' | 'right' | 'hotline' | 'directory';
@@ -68,18 +69,34 @@ export default function HomeScreen() {
   const router = useRouter();
   const lang = i18n.language as 'ko' | 'en';
   const [query, setQuery] = useState('');
+  const { minWageYear, minWageHourly } = useConfig();
+
+  // Patch minimum wage search item with live values from Supabase
+  const SEARCH_INDEX_LIVE = useMemo(() => SEARCH_INDEX.map(item => {
+    if (item.type === 'right' && item.keywords.includes('10320')) {
+      return {
+        ...item,
+        detail: {
+          ko: `${minWageYear}년 ₩${minWageHourly.toLocaleString()}/시간`,
+          en: `${minWageYear}: ₩${minWageHourly.toLocaleString()} per hour`,
+        },
+        keywords: [...item.keywords.filter(k => k !== '10320'), String(minWageHourly)],
+      };
+    }
+    return item;
+  }), [minWageYear, minWageHourly]);
 
   const searchResults = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-    return SEARCH_INDEX.filter(item =>
+    return SEARCH_INDEX_LIVE.filter(item =>
       item.label.ko.includes(q) ||
       item.label.en.toLowerCase().includes(q) ||
       item.detail.ko.includes(q) ||
       item.detail.en.toLowerCase().includes(q) ||
       item.keywords.some(k => k.toLowerCase().includes(q))
     );
-  }, [query]);
+  }, [query, SEARCH_INDEX_LIVE]);
 
   const grouped = searchResults ? {
     situations: searchResults.filter(r => r.type === 'situation'),
@@ -240,6 +257,27 @@ export default function HomeScreen() {
 
           {/* Situation tiles — all 6 */}
           <Text style={styles.sectionTitle}>{lang === 'ko' ? '어떤 상황인가요?' : "What's your situation?"}</Text>
+
+          {/* Quick links — directly above the 6 tiles */}
+          <View style={styles.quickLinks}>
+            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/rights')} accessibilityRole="button">
+              <Text style={styles.quickLinkEmoji}>📖</Text>
+              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '권리 가이드' : 'Rights guide'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/migrant-hub' as any)} accessibilityRole="button">
+              <Text style={styles.quickLinkEmoji}>🌏</Text>
+              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '외국인 노동자' : 'Migrant workers'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/directory')} accessibilityRole="button">
+              <Text style={styles.quickLinkEmoji}>🧑‍⚖️</Text>
+              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '노무사 찾기' : 'Find attorney'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/(tabs)/map')} accessibilityRole="button">
+              <Text style={styles.quickLinkEmoji}>📞</Text>
+              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '상담 전화' : 'Hotlines'}</Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.tilesGrid}>
             {SITUATIONS.map((s) => (
               <TouchableOpacity
@@ -254,22 +292,6 @@ export default function HomeScreen() {
                 <Text style={styles.tileLabel} numberOfLines={2}>{lang === 'ko' ? s.ko : s.en}</Text>
               </TouchableOpacity>
             ))}
-          </View>
-
-          {/* Quick links */}
-          <View style={styles.quickLinks}>
-            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/rights')} accessibilityRole="button">
-              <Text style={styles.quickLinkEmoji}>📖</Text>
-              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '권리 가이드' : 'Rights guide'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/directory')} accessibilityRole="button">
-              <Text style={styles.quickLinkEmoji}>🧑‍⚖️</Text>
-              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '노무사 찾기' : 'Find attorney'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/(tabs)/map')} accessibilityRole="button">
-              <Text style={styles.quickLinkEmoji}>📞</Text>
-              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '상담 전화' : 'Hotlines'}</Text>
-            </TouchableOpacity>
           </View>
 
           {/* Tappable hotlines */}

@@ -29,13 +29,12 @@ export default function GuidedHelpIndex() {
 
         <View style={styles.list}>
           {SITUATIONS.map((s) => {
-            const available = s.id === 'unpaid-wages';
-            return (
+                return (
               <TouchableOpacity
                 key={s.id}
-                style={[styles.card, !available && styles.cardDisabled]}
-                onPress={() => available && router.push(`/guided-help/${s.id}` as any)}
-                activeOpacity={available ? 0.75 : 1}
+                style={styles.card}
+                onPress={() => router.push(`/guided-help/${s.id}` as any)}
+                activeOpacity={0.75}
                 accessibilityRole="button"
                 accessibilityLabel={lang === 'ko' ? s.ko : s.en}
               >
@@ -44,8 +43,7 @@ export default function GuidedHelpIndex() {
                   <Text style={styles.situationKo}>{s.ko}</Text>
                   <Text style={styles.situationEn}>{s.en}</Text>
                 </View>
-                {!available && <Text style={styles.soon}>{lang === 'ko' ? '준비중' : 'Soon'}</Text>}
-                {available && <Text style={styles.arrow}>›</Text>}
+                <Text style={styles.arrow}>›</Text>
               </TouchableOpacity>
             );
           })}

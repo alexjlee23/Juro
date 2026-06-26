@@ -9,9 +9,19 @@ import Button from '../../components/ui/Button';
 
 import { Linking } from 'react-native';
 import unpaidWagesData from '../../content/guided-paths/unpaid-wages.json';
+import injuryData from '../../content/guided-paths/injury.json';
+import dismissalData from '../../content/guided-paths/dismissal.json';
+import dangerousData from '../../content/guided-paths/dangerous.json';
+import contractData from '../../content/guided-paths/contract.json';
+import visaThreatData from '../../content/guided-paths/visa-threat.json';
 
 const PATHS: Record<string, any> = {
   'unpaid-wages': unpaidWagesData,
+  'injury': injuryData,
+  'dismissal': dismissalData,
+  'dangerous': dangerousData,
+  'contract': contractData,
+  'visa-threat': visaThreatData,
 };
 
 const SITUATION_META: Record<string, {
