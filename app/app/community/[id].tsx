@@ -259,20 +259,18 @@ export default function CommunityBoardScreen() {
           <View style={styles.empty}>
             <Text style={styles.emptyEmoji}>📭</Text>
             <Text style={styles.emptyText}>
-              {!user
-                ? t('게시글을 보려면 로그인 후 커뮤니티에 참여하세요.', 'Sign in and join this community to see posts.')
-                : !isJoined
-                ? t('커뮤니티에 참여하면 게시글을 볼 수 있습니다.', 'Join this community to see posts.')
+              {!isJoined && user
+                ? t('커뮤니티에 참여하면 글을 쓸 수 있습니다.', 'Join this community to post.')
                 : t('아직 게시글이 없습니다. 첫 번째 글을 써보세요!', 'No posts yet. Be the first to write!')}
             </Text>
             {user && !isJoined && (
               <TouchableOpacity onPress={handleJoinLeave} style={styles.emptyJoinBtn}>
-                <Text style={styles.emptyJoinText}>{t('참여하고 글 보기 →', 'Join to see posts →')}</Text>
+                <Text style={styles.emptyJoinText}>{t('커뮤니티 참여하기 →', 'Join community →')}</Text>
               </TouchableOpacity>
             )}
             {!user && (
-              <TouchableOpacity onPress={() => router.push('/(auth)/sign-in' as any)} style={styles.emptyJoinBtn}>
-                <Text style={styles.emptyJoinText}>{t('로그인 →', 'Sign in →')}</Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/sign-up' as any)} style={styles.emptyJoinBtn}>
+                <Text style={styles.emptyJoinText}>{t('가입하고 글쓰기 →', 'Sign up to post →')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -303,10 +301,10 @@ export default function CommunityBoardScreen() {
         {!user && (
           <View style={styles.signInPrompt}>
             <Text style={styles.signInPromptText}>
-              {t('로그인하면 글을 쓰고 댓글을 달 수 있어요.', 'Sign in to post and comment.')}
+              {t('가입하면 글을 쓰고 댓글을 달 수 있어요.', 'Sign up to post and comment.')}
             </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/sign-in' as any)}>
-              <Text style={styles.signInLink}>{t('로그인 →', 'Sign in →')}</Text>
+            <TouchableOpacity onPress={() => router.push('/(auth)/sign-up' as any)}>
+              <Text style={styles.signInLink}>{t('무료 가입 →', 'Sign up free →')}</Text>
             </TouchableOpacity>
           </View>
         )}

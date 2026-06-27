@@ -1,9 +1,10 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Switch } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Switch, Alert } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
+import { useAuth } from '../../context/AuthContext';
 
 function SettingRow({ emoji, label, onPress, value, isSwitch }: {
   emoji: string; label: string; onPress?: () => void; value?: boolean; isSwitch?: boolean;
@@ -31,11 +32,38 @@ export default function MyScreen() {
   const router = useRouter();
   const lang = i18n.language;
   const [largeText, setLargeText] = useState(false);
+  const { user, profile, signOut } = useAuth();
+
+  function handleSignOut() {
+    Alert.alert(
+      lang === 'ko' ? '로그아웃' : 'Sign out',
+      lang === 'ko' ? '로그아웃 하시겠습니까?' : 'Are you sure you want to sign out?',
+      [
+        { text: lang === 'ko' ? '취소' : 'Cancel', style: 'cancel' },
+        { text: lang === 'ko' ? '로그아웃' : 'Sign out', style: 'destructive', onPress: signOut },
+      ]
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{t('my.title')}</Text>
+
+        {/* User greeting or sign-in prompt */}
+        {user ? (
+          <View style={styles.userBanner}>
+            <Text style={styles.userBannerText}>👋 {profile?.username ?? ''}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.signInPrompt} onPress={() => router.push('/(auth)/sign-up' as any)}>
+            <Text style={styles.signInPromptText}>
+              {lang === 'ko' ? '로그인하면 글쓰기·케이스 저장이 가능합니다' : 'Sign in to post and save your cases'}
+            </Text>
+            <Text style={styles.signInLink}>{lang === 'ko' ? '로그인 / 회원가입 →' : 'Sign in / Sign up →'}</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Trust badge */}
         <View style={styles.trustBadge}>
@@ -56,7 +84,7 @@ export default function MyScreen() {
           <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
           <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
           <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
-          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook' as any)} />
+          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook?export=true' as any)} />
         </View>
 
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '정보' : 'Reference'}</Text>
@@ -89,6 +117,15 @@ export default function MyScreen() {
           <SettingRow emoji="❓" label={t('my.help')} onPress={() => router.push('/help' as any)} />
           <SettingRow emoji="ℹ️" label={t('my.about')} onPress={() => router.push('/about' as any)} />
         </View>
+
+        {user && (
+          <>
+            <Text style={styles.sectionLabel}>{lang === 'ko' ? '계정' : 'Account'}</Text>
+            <View style={styles.section}>
+              <SettingRow emoji="🚪" label={lang === 'ko' ? '로그아웃' : 'Sign out'} onPress={handleSignOut} />
+            </View>
+          </>
+        )}
 
         <Banner />
         <View style={{ height: spacing.xxxl }} />
@@ -126,4 +163,23 @@ const styles = StyleSheet.create({
   settingEmoji: { fontSize: 20, marginRight: spacing.md },
   settingLabel: { ...typography.bodyM, color: colors.text, flex: 1 },
   arrow: { ...typography.headingM, color: colors.textCaption },
+  userBanner: {
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.base,
+  },
+  userBannerText: { ...typography.bodyM, color: colors.action, fontWeight: '700' },
+  userEmail: { ...typography.caption, color: colors.textCaption, marginTop: 2 },
+  signInPrompt: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.base,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.brand,
+    ...shadow.card,
+  },
+  signInPromptText: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.xs },
+  signInLink: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
 });

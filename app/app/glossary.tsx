@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../constants/theme';
 import Banner from '../components/ui/Banner';
+import { useConfig } from '../lib/useConfig';
 
 const TERMS = [
   {
@@ -152,18 +153,29 @@ export default function GlossaryScreen() {
   const lang = i18n.language as 'ko' | 'en';
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { minWageHourly, minWageMonthly, minWageYear } = useConfig();
+
+  const terms = useMemo(() => TERMS.map(t =>
+    t.id === 'choejeoim'
+      ? {
+          ...t,
+          defKo: `${minWageYear}년: 시간당 ₩${minWageHourly.toLocaleString()} (월 209시간 기준 ₩${minWageMonthly.toLocaleString()}). 외국인 포함 모든 근로자에게 적용. 최저임금 미달 지급은 형사 처벌 대상.`,
+          defEn: `${minWageYear}: ₩${minWageHourly.toLocaleString()}/hr (≈₩${minWageMonthly.toLocaleString()}/month at 209h). Applies to ALL workers including foreign nationals. Paying below minimum wage is a criminal offense.`,
+        }
+      : t
+  ), [minWageHourly, minWageMonthly, minWageYear]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return TERMS;
-    return TERMS.filter(
+    if (!q) return terms;
+    return terms.filter(
       (t) =>
         t.ko.includes(q) ||
         t.en.toLowerCase().includes(q) ||
         t.defKo.includes(q) ||
         t.defEn.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [query, terms]);
 
   return (
     <SafeAreaView style={styles.safe}>

@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { colors, typography, spacing, radius } from '../../constants/theme';
@@ -14,8 +14,9 @@ export default function AuthScreen() {
   const router = useRouter();
   const { i18n } = useTranslation();
   const lang = i18n.language as 'ko' | 'en';
+  const params = useLocalSearchParams<{ mode?: string }>();
 
-  const [mode, setMode] = useState<Mode>('signup');
+  const [mode, setMode] = useState<Mode>(params.mode === 'signin' ? 'signin' : 'signup');
 
   // Sign-up fields
   const [username, setUsername] = useState('');

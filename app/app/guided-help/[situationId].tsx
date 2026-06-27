@@ -76,6 +76,11 @@ const SITUATION_META: Record<string, {
   },
 };
 
+function extractPhone(text: string): string | null {
+  const match = text.match(/[\d]{4}-[\d]{4}|[\d]{3,4}-[\d]{3,4}|1\d{2,3}/);
+  return match ? match[0].replace(/-/g, '') : null;
+}
+
 export default function GuidedHelpFlow() {
   const { situationId } = useLocalSearchParams<{ situationId: string }>();
   const { i18n } = useTranslation();
@@ -148,6 +153,7 @@ export default function GuidedHelpFlow() {
   const [flags, setFlags] = useState<Record<string, string>>({});
   const [stepNote, setStepNote] = useState<string | null>(null);
   const [showOutcome, setShowOutcome] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
 
   const currentStep = data.steps.find((s: any) => s.id === currentStepId);
   const stepIndex = data.steps.findIndex((s: any) => s.id === currentStepId);
@@ -159,12 +165,30 @@ export default function GuidedHelpFlow() {
     const note = option.note ? option.note[lang] : null;
     setStepNote(note);
     if (option.next === 'outcome') {
+      setHistory(h => [...h, currentStepId]);
       setTimeout(() => setShowOutcome(true), note ? 1200 : 0);
     } else {
+      setHistory(h => [...h, currentStepId]);
       setTimeout(() => {
         setCurrentStepId(option.next);
         setStepNote(null);
       }, note ? 1200 : 0);
+    }
+  };
+
+  const handleBack = () => {
+    if (showOutcome) {
+      setShowOutcome(false);
+      setStepNote(null);
+      return;
+    }
+    if (history.length > 0) {
+      const prev = history[history.length - 1];
+      setHistory(h => h.slice(0, -1));
+      setCurrentStepId(prev);
+      setStepNote(null);
+    } else {
+      router.back();
     }
   };
 
@@ -180,8 +204,8 @@ export default function GuidedHelpFlow() {
     return (
       <SafeAreaView style={styles.safe}>
         <ScrollView contentContainerStyle={styles.content}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={styles.backText}>←</Text>
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+            <Text style={styles.backText}>← {lang === 'ko' ? '뒤로' : 'Back'}</Text>
           </TouchableOpacity>
 
           <View style={styles.outcomeHeader}>
@@ -246,9 +270,26 @@ export default function GuidedHelpFlow() {
           {/* Hotlines */}
           <View style={styles.block}>
             <Text style={styles.blockTitle}>④ {lang === 'ko' ? '실제 사람과 상담하기' : 'Talk to a real person'}</Text>
-            {outcome.hotlines.map((h: string) => (
-              <Text key={h} style={styles.hotline}>📞 {h}</Text>
-            ))}
+            {outcome.hotlines.map((h: string) => {
+              const phone = extractPhone(h);
+              return phone ? (
+                <TouchableOpacity
+                  key={h}
+                  style={styles.hotlineRow}
+                  onPress={() => Linking.openURL(`tel:${phone}`)}
+                  activeOpacity={0.75}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.hotlineEmoji}>📞</Text>
+                  <Text style={styles.hotlineRowLabel}>{h}</Text>
+                  <View style={styles.callChip}>
+                    <Text style={styles.callChipText}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <Text key={h} style={styles.hotline}>📞 {h}</Text>
+              );
+            })}
           </View>
 
           {/* Sources */}
@@ -258,6 +299,17 @@ export default function GuidedHelpFlow() {
 
           <Banner />
 
+          {/* Post-outcome CTAs */}
+          <TouchableOpacity
+            style={styles.findHelpBtn}
+            onPress={() => router.push('/directory' as any)}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.findHelpBtnText}>
+              🧑‍⚖️ {lang === 'ko' ? '내 주변 노무사·상담소 찾기' : 'Find nearby help'}
+            </Text>
+          </TouchableOpacity>
+
           <Button
             label={lang === 'ko' ? '처음으로' : 'Start over'}
             onPress={() => {
@@ -265,10 +317,14 @@ export default function GuidedHelpFlow() {
               setStepNote(null);
               setShowOutcome(false);
               setCurrentStepId(data.steps[0].id);
+              setHistory([]);
             }}
             variant="secondary"
-            style={{ marginTop: spacing.lg }}
+            style={{ marginTop: spacing.sm }}
           />
+          <TouchableOpacity style={styles.homeLink} onPress={() => router.push('/(tabs)/' as any)}>
+            <Text style={styles.homeLinkText}>{lang === 'ko' ? '홈으로 돌아가기' : 'Back to home'}</Text>
+          </TouchableOpacity>
           <View style={{ height: spacing.xxxl }} />
         </ScrollView>
       </SafeAreaView>
@@ -278,8 +334,8 @@ export default function GuidedHelpFlow() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>←</Text>
+        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+          <Text style={styles.backText}>← {lang === 'ko' ? '뒤로' : 'Back'}</Text>
         </TouchableOpacity>
 
         {/* Progress */}
@@ -400,6 +456,19 @@ const styles = StyleSheet.create({
   stepText: { ...typography.bodyM, color: colors.text, flex: 1, lineHeight: 26 },
   bulletItem: { ...typography.bodyM, color: colors.text, marginBottom: spacing.xs, lineHeight: 24 },
   hotline: { ...typography.bodyL, color: colors.action, fontWeight: '700', marginBottom: spacing.xs },
+  hotlineRowLabel: { flex: 1, ...typography.bodyM, color: colors.text, fontWeight: '600' },
+  findHelpBtn: {
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    borderWidth: 1.5,
+    borderColor: colors.action,
+  },
+  findHelpBtnText: { ...typography.bodyM, color: colors.action, fontWeight: '700' },
+  homeLink: { alignItems: 'center', paddingVertical: spacing.md },
+  homeLinkText: { ...typography.bodyS, color: colors.textCaption },
   personalizedSection: { marginBottom: spacing.base },
   personalizedHeader: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.sm },
   personalizedNote: { borderRadius: radius.sm, padding: spacing.md, marginBottom: spacing.xs, borderLeftWidth: 3 },

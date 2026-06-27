@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
   SafeAreaView, ActivityIndicator, RefreshControl,
@@ -36,32 +36,37 @@ export default function CommunityScreen() {
   const router = useRouter();
   const { i18n } = useTranslation();
   const lang = i18n.language as 'ko' | 'en';
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [joinedIds, setJoinedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  useEffect(() => { load(); }, [user]);
-
-  // Refresh membership state and counts whenever this tab comes back into focus
+  // Single load on focus — avoids double-fetching on initial mount
   useFocusEffect(useCallback(() => { load(); }, [user]));
 
   async function load() {
     setLoading(true);
-    const { data } = await supabase.from('communities').select('*').order('category').order('name_ko');
-    setCommunities(data ?? []);
-    if (user) {
-      const { data: memberships } = await supabase
-        .from('community_memberships')
-        .select('community_id')
-        .eq('user_id', user.id);
-      setJoinedIds(new Set(memberships?.map((m: any) => m.community_id) ?? []));
-    } else {
-      setJoinedIds(new Set());
+    setLoadError(false);
+    try {
+      const { data, error } = await supabase.from('communities').select('*').order('category').order('name_ko');
+      if (error) { setLoadError(true); setLoading(false); return; }
+      setCommunities(data ?? []);
+      if (user) {
+        const { data: memberships } = await supabase
+          .from('community_memberships')
+          .select('community_id')
+          .eq('user_id', user.id);
+        setJoinedIds(new Set(memberships?.map((m: any) => m.community_id) ?? []));
+      } else {
+        setJoinedIds(new Set());
+      }
+    } catch {
+      setLoadError(true);
     }
     setLoading(false);
   }
@@ -88,6 +93,22 @@ export default function CommunityScreen() {
     );
   }
 
+  if (loadError) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.center}>
+          <Text style={{ fontSize: 36, marginBottom: 12 }}>⚠️</Text>
+          <Text style={[styles.subtitle, { textAlign: 'center', marginBottom: 16 }]}>
+            {t('커뮤니티를 불러오지 못했습니다.\n인터넷 연결을 확인해 주세요.', 'Could not load communities.\nCheck your internet connection.')}
+          </Text>
+          <TouchableOpacity onPress={load} style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: colors.selectedBg, borderRadius: radius.sm }}>
+            <Text style={{ color: colors.action, fontWeight: '700' }}>{t('다시 시도', 'Retry')}</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView
@@ -101,11 +122,6 @@ export default function CommunityScreen() {
             <Text style={styles.title}>{t('커뮤니티', 'Community')}</Text>
             <Text style={styles.subtitle}>{t('비슷한 처지의 노동자들과 이야기하세요', 'Talk with workers like you')}</Text>
           </View>
-          {user && (
-            <TouchableOpacity onPress={signOut} style={styles.logoutBtn}>
-              <Text style={styles.logoutText}>{t('로그아웃', 'Sign out')}</Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Auth banner */}
