@@ -15,7 +15,11 @@ const RIGHTS_TOPICS = [
     summaryKo: '사용자는 매월 정해진 날에 전액을 직접 지급해야 합니다. 미지급 시 3년 이하 징역 또는 3,000만원 이하 벌금. 퇴직 후에도 3년 이내 청구 가능.',
     summaryEn: 'Employer must pay in full on the agreed date. Penalty up to 3 years prison or ₩30M fine. Claims valid for 3 years after leaving.',
     statute: '근로기준법 43·36·49조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제43조',
+    urls: [
+      { article: '제43조', url: 'https://www.law.go.kr/법령/근로기준법/제43조' },
+      { article: '제36조', url: 'https://www.law.go.kr/법령/근로기준법/제36조' },
+      { article: '제49조', url: 'https://www.law.go.kr/법령/근로기준법/제49조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: true,
     migrant: true,
@@ -28,7 +32,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '', // filled dynamically from useConfig
     summaryEn: '',
     statute: '최저임금법',
-    url: 'https://www.minimumwage.go.kr',
+    urls: [
+      { article: '최저임금위원회', url: 'https://www.minimumwage.go.kr' },
+    ],
     lawDateKey: '최저임금법',
     flag5: true,
     migrant: true,
@@ -41,7 +47,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '서면으로 작성하고 반드시 근로자에게 교부해야 합니다. 미교부 시 500만원 이하 과태료. 임금·근무시간·휴일·연차 반드시 명시.',
     summaryEn: 'Must be written and given to the worker. Penalty up to ₩5M for not providing. Must state wages, hours, rest days, and annual leave.',
     statute: '근로기준법 17조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제17조',
+    urls: [
+      { article: '제17조', url: 'https://www.law.go.kr/법령/근로기준법/제17조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: true,
     migrant: true,
@@ -54,7 +62,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '연장·야간(22~06시)·휴일 근로는 통상임금의 +50%. 8시간 초과 휴일 근로는 +100%. 5인 미만 사업장은 가산임금 미적용.',
     summaryEn: 'Overtime, night (22:00–06:00), and holiday each earn +50%. Holiday >8h = +100%. Premiums do NOT apply at <5-person workplaces.',
     statute: '근로기준법 56조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제56조',
+    urls: [
+      { article: '제56조', url: 'https://www.law.go.kr/법령/근로기준법/제56조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: false,
     migrant: false,
@@ -67,7 +77,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '주 15시간 이상 근무하고 소정 근로일을 모두 채우면 1일분 유급 휴일 지급. 아르바이트·단기 근로자도 포함. 미지급 시 청구 가능.',
     summaryEn: 'Work 15+ hours/week and meet scheduled days → 1 paid rest day. Applies to part-time and short-term workers too.',
     statute: '근로기준법 55조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제55조',
+    urls: [
+      { article: '제55조', url: 'https://www.law.go.kr/법령/근로기준법/제55조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: true,
     migrant: false,
@@ -80,7 +92,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '1년 이상 근무(출근율 80% 이상) → 15일. 1년 미만 → 매월 1일 (최대 11일). 상한 25일. 미사용 연차는 수당으로 지급.',
     summaryEn: '1+ year (80%+ attendance) → 15 days. Under 1 year → 1 day/month (max 11). Cap: 25 days. Unused leave must be paid out.',
     statute: '근로기준법 60조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제60조',
+    urls: [
+      { article: '제60조', url: 'https://www.law.go.kr/법령/근로기준법/제60조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: false,
     migrant: false,
@@ -93,7 +107,11 @@ const RIGHTS_TOPICS = [
     summaryKo: '1년 이상 근무 시 평균임금 30일분 이상. 퇴직일로부터 14일 내 지급 의무. 3년 이내 청구 가능. 5인 미만 사업장도 적용.',
     summaryEn: '1+ year → 30+ days avg wage. Must be paid within 14 days of leaving. Claim within 3 years. Applies at <5-person workplaces.',
     statute: '퇴직급여법 8·9·10조',
-    url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제8조',
+    urls: [
+      { article: '제8조', url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제8조' },
+      { article: '제9조', url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제9조' },
+      { article: '제10조', url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제10조' },
+    ],
     lawDateKey: '근로자퇴직급여보장법',
     flag5: true,
     migrant: true,
@@ -106,7 +124,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '30일 이전에 예고하거나, 30일분 이상의 통상임금을 지급해야 합니다. 구두 해고는 무효. 서면 통보 필수.',
     summaryEn: 'Must give 30 days notice or pay 30 days ordinary wage. Verbal dismissal is void. Written notice is required.',
     statute: '근로기준법 26조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제26조',
+    urls: [
+      { article: '제26조', url: 'https://www.law.go.kr/법령/근로기준법/제26조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: true,
     migrant: false,
@@ -119,7 +139,11 @@ const RIGHTS_TOPICS = [
     summaryKo: '해고일로부터 3개월 내 노동위원회에 구제 신청 가능. 서면 통보 없는 해고는 무효. 5인 이상 사업장에 적용.',
     summaryEn: 'Apply to the Labor Relations Commission within 3 months of dismissal. Verbal dismissal is void. Applies at 5+ person workplaces.',
     statute: '근로기준법 23·27·28조',
-    url: 'https://www.law.go.kr/법령/근로기준법/제28조',
+    urls: [
+      { article: '제23조', url: 'https://www.law.go.kr/법령/근로기준법/제23조' },
+      { article: '제27조', url: 'https://www.law.go.kr/법령/근로기준법/제27조' },
+      { article: '제28조', url: 'https://www.law.go.kr/법령/근로기준법/제28조' },
+    ],
     lawDateKey: '근로기준법',
     flag5: false,
     migrant: false,
@@ -132,7 +156,10 @@ const RIGHTS_TOPICS = [
     summaryKo: '사용자는 신고 시 즉시 조사하고 피해자를 보호해야 합니다. 보복 금지. 사용자가 행위자인 경우 최대 1,000만원 과태료.',
     summaryEn: 'Employer must investigate immediately and protect the victim. Retaliation is prohibited. Penalty up to ₩10M if employer is the harasser.',
     statute: '근로기준법 76조의2·3',
-    url: 'https://www.law.go.kr/법령/근로기준법/제76조의2',
+    urls: [
+      { article: '제76조의2', url: 'https://www.law.go.kr/법령/근로기준법/제76조의2' },
+      { article: '제76조의3', url: 'https://www.law.go.kr/법령/근로기준법/제76조의3' },
+    ],
     lawDateKey: '근로기준법',
     flag5: false,
     migrant: true,
@@ -145,7 +172,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '업무상 부상·질병은 근로복지공단(COMWEL)에 산재보험 급여를 신청하세요. 국적·비자 무관 적용. 의료비·휴업급여 지원.',
     summaryEn: 'File with COMWEL (☎1588-0075) for work injuries or illness. Applies regardless of nationality or visa. Covers medical and lost wages.',
     statute: '산업재해보상보험법 37조',
-    url: 'https://www.law.go.kr/법령/산업재해보상보험법/제37조',
+    urls: [
+      { article: '제37조', url: 'https://www.law.go.kr/법령/산업재해보상보험법/제37조' },
+    ],
     lawDateKey: '산업재해보상보험법',
     flag5: true,
     migrant: true,
@@ -158,7 +187,9 @@ const RIGHTS_TOPICS = [
     summaryKo: '급박한 위험 시 작업 중지·대피할 권리가 있습니다(제52조). 작업 중지를 이유로 불이익 금지. 안전 신고는 ☎1350.',
     summaryEn: 'Right to stop work and evacuate in imminent danger (§52). No retaliation for using this right. Report hazards to ☎1350.',
     statute: '산업안전보건법 52조',
-    url: 'https://www.law.go.kr/법령/산업안전보건법/제52조',
+    urls: [
+      { article: '제52조', url: 'https://www.law.go.kr/법령/산업안전보건법/제52조' },
+    ],
     lawDateKey: '산업안전보건법',
     flag5: true,
     migrant: true,
@@ -187,14 +218,21 @@ function GridCard({
       </View>
       <Text style={styles.gridTitle}>{lang === 'ko' ? topic.ko : topic.en}</Text>
       <Text style={styles.gridSummary}>{lang === 'ko' ? topic.summaryKo : topic.summaryEn}</Text>
-      <TouchableOpacity
-        style={styles.gridSourceRow}
-        onPress={() => Linking.openURL(topic.url)}
-        accessibilityRole="link"
-      >
+      <View style={styles.gridSourceRow}>
         <Text style={styles.gridStatute} numberOfLines={1}>📜 {topic.statute}</Text>
-        <Text style={styles.gridSourceLink}>{lang === 'ko' ? '원문 →' : 'Source →'}</Text>
-      </TouchableOpacity>
+      </View>
+      <View style={styles.gridArticleLinks}>
+        {topic.urls.map((u, i) => (
+          <TouchableOpacity
+            key={i}
+            style={styles.articleChip}
+            onPress={() => Linking.openURL(u.url)}
+            accessibilityRole="link"
+          >
+            <Text style={styles.articleChipText}>{u.article} →</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       {updatedLabel ? (
         <Text style={styles.updatedLabel}>
           {lang === 'ko' ? `시행 ${updatedLabel}` : `In effect ${updatedLabel}`}
@@ -319,9 +357,11 @@ const styles = StyleSheet.create({
   badgeMigrant: { color: colors.teal, backgroundColor: '#CCFBF1', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, fontWeight: '700', fontSize: 9 },
   gridTitle: { ...typography.bodyS, color: colors.text, fontWeight: '700', marginBottom: spacing.xs, lineHeight: 18 },
   gridSummary: { fontSize: 11, color: colors.textSecondary, lineHeight: 16, marginBottom: spacing.sm, flexGrow: 1 },
-  gridSourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: spacing.xs, borderTopWidth: 1, borderTopColor: colors.border, gap: 4 },
-  gridStatute: { fontSize: 9, color: colors.textCaption, flex: 1 },
-  gridSourceLink: { fontSize: 9, color: colors.action, fontWeight: '700' },
+  gridSourceRow: { paddingTop: spacing.xs, borderTopWidth: 1, borderTopColor: colors.border, marginBottom: 4 },
+  gridStatute: { fontSize: 9, color: colors.textCaption },
+  gridArticleLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 },
+  articleChip: { backgroundColor: colors.selectedBg, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 3 },
+  articleChipText: { fontSize: 9, color: colors.action, fontWeight: '700' },
   updatedLabel: { fontSize: 9, color: colors.textCaption, marginTop: 4 },
 
   callToAction: { backgroundColor: colors.selectedBg, borderRadius: radius.md, padding: spacing.base, marginBottom: spacing.base, marginTop: spacing.sm },

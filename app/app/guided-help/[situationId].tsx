@@ -170,6 +170,13 @@ export default function GuidedHelpFlow() {
 
   if (showOutcome) {
     const outcome = data.outcome;
+    const personalizedNotes = ((outcome.notes_if ?? []) as Array<{
+      type: 'warning' | 'info' | 'tip';
+      when: Record<string, string>;
+      note: { ko: string; en: string };
+    }>).filter(patch =>
+      Object.entries(patch.when).every(([k, v]) => flags[k] === v)
+    );
     return (
       <SafeAreaView style={styles.safe}>
         <ScrollView contentContainerStyle={styles.content}>
@@ -180,6 +187,28 @@ export default function GuidedHelpFlow() {
           <View style={styles.outcomeHeader}>
             <Text style={styles.outcomeTitle}>{lang === 'ko' ? '다음 단계' : 'Your next steps'}</Text>
           </View>
+
+          {/* Personalized notes based on collected flags */}
+          {personalizedNotes.length > 0 && (
+            <View style={styles.personalizedSection}>
+              <Text style={styles.personalizedHeader}>
+                {lang === 'ko' ? '📌 내 상황에 맞는 안내' : '📌 Tailored to your situation'}
+              </Text>
+              {personalizedNotes.map((n, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.personalizedNote,
+                    n.type === 'warning' ? styles.noteWarning :
+                    n.type === 'tip' ? styles.noteTip :
+                    styles.noteInfo,
+                  ]}
+                >
+                  <Text style={styles.personalizedNoteText}>{n.note[lang]}</Text>
+                </View>
+              ))}
+            </View>
+          )}
 
           {/* Right */}
           <View style={styles.block}>
@@ -371,4 +400,11 @@ const styles = StyleSheet.create({
   stepText: { ...typography.bodyM, color: colors.text, flex: 1, lineHeight: 26 },
   bulletItem: { ...typography.bodyM, color: colors.text, marginBottom: spacing.xs, lineHeight: 24 },
   hotline: { ...typography.bodyL, color: colors.action, fontWeight: '700', marginBottom: spacing.xs },
+  personalizedSection: { marginBottom: spacing.base },
+  personalizedHeader: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.sm },
+  personalizedNote: { borderRadius: radius.sm, padding: spacing.md, marginBottom: spacing.xs, borderLeftWidth: 3 },
+  noteWarning: { backgroundColor: '#FEF3C7', borderLeftColor: '#D97706' },
+  noteInfo: { backgroundColor: colors.infoBg, borderLeftColor: colors.action },
+  noteTip: { backgroundColor: '#CCFBF1', borderLeftColor: colors.teal },
+  personalizedNoteText: { ...typography.bodyS, color: colors.text, lineHeight: 20 },
 });

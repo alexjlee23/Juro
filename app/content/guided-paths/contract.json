@@ -93,6 +93,56 @@
       { "name": "최저임금법 제6조 (최저임금의 효력)", "url": "https://www.law.go.kr/법령/최저임금법" },
       { "name": "근로기준법 제49조 (임금채권 소멸시효)", "url": "https://www.law.go.kr/법령/근로기준법/제49조" }
     ],
-    "disclaimer": true
+    "disclaimer": true,
+    "notes_if": [
+      {
+        "type": "info",
+        "when": { "issue": "no_contract" },
+        "note": {
+          "ko": "계약서 미교부: 사용자에게 서면으로 교부를 요청하세요. 거부 시 ☎1350에 신고하면 사용자에게 최대 500만원 과태료가 부과됩니다.",
+          "en": "No contract provided: request it in writing from your employer. If refused, report to ☎1350 — the employer faces up to ₩5M in fines."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "issue": "below_minimum" },
+        "note": {
+          "ko": "최저임금 미달: 2026년 최저임금은 시간당 ₩10,320입니다. 차액은 3년 소급해서 청구할 수 있습니다. 최저임금법 위반 시 사용자는 3년 이하 징역 또는 2천만원 이하 벌금에 처합니다.",
+          "en": "Below minimum wage: the 2026 minimum wage is ₩10,320/hr. You can claim the difference retroactively up to 3 years. The employer faces up to 3 years prison or ₩20M fine for violations."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "issue": "illegal_clause" },
+        "note": {
+          "ko": "불법 계약 조항: 법 기준보다 불리한 조항은 자동으로 무효이며 법 기준이 적용됩니다 (근로기준법 제15조). 이 조항에 서명했더라도 효력이 없습니다. 실제 적용을 강요받고 있다면 ☎1350에 신고하세요.",
+          "en": "Illegal clause: contract terms less favorable than the law are automatically void (근로기준법 §15). Even if you signed them, they have no legal force. If your employer tries to enforce them, report to ☎1350."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "item": "leave" },
+        "note": {
+          "ko": "주휴수당·연차 미지급: 주 15시간 이상 근무 시 주휴수당(1일분 유급 휴가)이 발생합니다. 1년 이상 근무(출근율 80% 이상) 시 연차 15일. 이 역시 3년 소급 청구 가능합니다.",
+          "en": "Unpaid weekly holiday / annual leave: work 15+ hours/week → entitled to weekly holiday pay (1 paid day). Work 1+ year (80%+ attendance) → 15 days annual leave. These can be claimed retroactively up to 3 years."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "item": "penalty" },
+        "note": {
+          "ko": "불법 벌금·손해배상 조항: 결근·지각에 대한 벌금, 퇴사 시 손해배상 요구 등은 모두 무효입니다 (근로기준법 제20·21조). 사용자가 이를 실제로 공제했다면 반환 청구가 가능합니다.",
+          "en": "Illegal fine/penalty clause: fines for absences or lateness, and damage claims for resigning, are all void (근로기준법 §20·21). If the employer already deducted these amounts, you can claim them back."
+        }
+      },
+      {
+        "type": "tip",
+        "when": { "status": "left" },
+        "note": {
+          "ko": "퇴사 후에도 임금 차액, 최저임금 미지급분, 주휴수당, 연차수당 등을 3년 소급해서 청구할 수 있습니다 (근로기준법 제49조). 통장 기록, 급여명세서가 있다면 지금 바로 노무사와 상담하세요.",
+          "en": "After leaving, you can still claim wage differences, underpaid minimum wage, weekly holiday pay, and annual leave pay retroactively up to 3 years (근로기준법 §49). If you have bank records or pay slips, consult a 노무사 now."
+        }
+      }
+    ]
   }
 }

@@ -99,6 +99,64 @@
       { "name": "산업안전보건법 제104조 (불이익 처우 금지)", "url": "https://www.law.go.kr/법령/산업안전보건법" },
       { "name": "근로기준법 제7조 (강제 근로 금지)", "url": "https://www.law.go.kr/법령/근로기준법/제7조" }
     ],
-    "disclaimer": true
+    "disclaimer": true,
+    "notes_if": [
+      {
+        "type": "warning",
+        "when": { "danger_type": "imminent" },
+        "note": {
+          "ko": "⚠️ 급박한 위험: 지금 당장 작업을 중지하고 대피하세요 (산업안전보건법 제52조). 이를 이유로 해고·불이익을 주는 것은 불법입니다. 대피 후 ☎1350에 즉시 신고하세요.",
+          "en": "⚠️ Imminent danger: stop work and evacuate right now (산업안전보건법 §52). Retaliating against you for this is illegal. After evacuating, report to ☎1350 immediately."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "danger_type": "forced" },
+        "note": {
+          "ko": "⚠️ 위험 업무 거부를 이유로 해고·불이익을 주겠다는 협박은 불법입니다 (산업안전보건법 제104조). 거부하는 것은 법적으로 보호된 권리입니다. 협박 내용을 기록하고 ☎1350에 신고하세요.",
+          "en": "⚠️ Threatening you with dismissal for refusing dangerous work is illegal (산업안전보건법 §104). Refusing is a legally protected right. Document the threats and report to ☎1350."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "danger_type": "injured" },
+        "note": {
+          "ko": "이미 다쳤다면: 지금 바로 근로복지공단(COMWEL ☎1588-0075)에 산재 신청을 하세요. 동시에 위험 상황을 ☎1350에 신고할 수 있습니다.",
+          "en": "Already injured: file a workers' comp claim with COMWEL (☎1588-0075) right now. You can also report the unsafe conditions to ☎1350 at the same time."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "employer_response": "ignored" },
+        "note": {
+          "ko": "사용자 묵살: 안전·보건 조치 의무 위반으로 고용노동부 ☎1350에 신고하거나 moel.go.kr → 민원마당에 제보하세요. 익명 신고도 가능합니다.",
+          "en": "Employer ignored you: report the safety violation to ☎1350 or moel.go.kr → 민원마당. Anonymous reports are accepted."
+        }
+      },
+      {
+        "type": "tip",
+        "when": { "employer_response": "afraid" },
+        "note": {
+          "ko": "보복 걱정: 고용노동부에 익명으로 신고할 수 있습니다 (☎1350 또는 온라인). 신고자 정보는 법적으로 보호됩니다 (산업안전보건법 제157조).",
+          "en": "Worried about retaliation: you can report anonymously to the Ministry of Employment and Labor (☎1350 or online). Whistleblower identity is legally protected (산업안전보건법 §157)."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "industry": "construction" },
+        "note": {
+          "ko": "건설현장: 추락·감전 방지를 위한 안전대·헬멧·발판 설치가 의무입니다. 안전관리자 배치도 요구됩니다. 미비 사항을 사진으로 기록하고 ☎1350에 신고하세요.",
+          "en": "Construction sites: safety harnesses, helmets, and scaffold installation are mandatory. A safety manager is also required. Document violations with photos and report to ☎1350."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "industry": "factory" },
+        "note": {
+          "ko": "공장·제조업: 기계 방호장치, 화학물질 MSDS, 개인보호구 지급이 의무입니다. 화학물질에 노출됐다면 MSDS를 요청하고 건강 검진을 받으세요.",
+          "en": "Factory/manufacturing: machine guards, chemical MSDS sheets, and personal protective equipment are legally required. If exposed to chemicals, request the MSDS and get a health check."
+        }
+      }
+    ]
   }
 }

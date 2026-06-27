@@ -121,6 +121,56 @@
       { "name": "근로기준법 제27조 (해고사유 서면통보)", "url": "https://www.law.go.kr/법령/근로기준법/제27조" },
       { "name": "근로기준법 제28조 (구제신청)", "url": "https://www.law.go.kr/법령/근로기준법/제28조" }
     ],
-    "disclaimer": true
+    "disclaimer": true,
+    "notes_if": [
+      {
+        "type": "warning",
+        "when": { "timing": "late" },
+        "note": {
+          "ko": "⚠️ 노동위원회 구제신청 기한(해고일로부터 3개월)이 지났을 수 있습니다. 그러나 해고예고수당 청구(3년 이내), 퇴직금 청구(3년 이내), 민사소송은 여전히 가능합니다. 노무사와 즉시 상담하세요.",
+          "en": "⚠️ The 3-month deadline for the Labor Relations Commission may have passed. However, notice pay (within 3 years), severance (within 3 years), and civil lawsuits remain possible. Consult a 노무사 immediately."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "size": "under5" },
+        "note": {
+          "ko": "5인 미만 사업장: 노동위원회 부당해고 구제신청을 이용할 수 없습니다. 그러나 해고예고(30일 통보 또는 30일분 임금)와 서면 통보 의무, 퇴직금 청구는 동일하게 적용됩니다.",
+          "en": "At <5-person workplaces, the Labor Relations Commission unfair dismissal remedy does not apply. However, 30-day notice or pay, written notice requirement, and severance claims still apply."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "notice": "verbal" },
+        "note": {
+          "ko": "구두 해고는 법적으로 무효입니다 (근로기준법 제27조). 서면 통보 없는 해고에 맞서기에 유리한 상황입니다. 노무사나 노동위원회에 이 사실을 반드시 알리세요.",
+          "en": "Verbal dismissal is legally void (근로기준법 제27조). This works in your favor when challenging the dismissal. Make sure to tell the 노무사 or Labor Relations Commission."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "notice": "forced_resign" },
+        "note": {
+          "ko": "강압에 의한 사직서 서명은 자발적 사직이 아닐 수 있습니다 (대법원 판례). 압박을 받은 경위를 구체적으로 기록해두고 노무사와 즉시 상담하세요.",
+          "en": "A resignation signed under coercion may not count as voluntary (established by Supreme Court precedent). Document exactly how you were pressured and consult a 노무사 immediately."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "type": "nonrenewal" },
+        "note": {
+          "ko": "반복 갱신으로 갱신 기대권이 생긴 경우 갱신 거부는 부당해고가 될 수 있습니다 (기간제법 제4조). 계약을 몇 번, 얼마나 반복 갱신했는지에 대한 증거를 모으세요.",
+          "en": "If repeated renewals created a reasonable expectation, refusal to renew may constitute unfair dismissal (기간제법 제4조). Gather evidence of how many times and for how long your contract was renewed."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "type": "pressured" },
+        "note": {
+          "ko": "권고사직은 자발적 사직처럼 보이지만, 압박·강요가 있었다면 부당해고와 동일하게 다툴 수 있습니다. 압박 내용이 담긴 문자·이메일·증인 진술을 확보하세요.",
+          "en": "A pressured resignation looks voluntary but can be challenged as a dismissal if coercion is proven. Gather messages, emails, or witness accounts showing the pressure you were under."
+        }
+      }
+    ]
   }
 }

@@ -109,6 +109,64 @@
       { "name": "산업재해보상보험법 제112조 (소멸시효)", "url": "https://www.law.go.kr/법령/산업재해보상보험법" },
       { "name": "산업재해보상보험법 제111조 (불이익 금지)", "url": "https://www.law.go.kr/법령/산업재해보상보험법" }
     ],
-    "disclaimer": true
+    "disclaimer": true,
+    "notes_if": [
+      {
+        "type": "tip",
+        "when": { "injury_type": "commute" },
+        "note": {
+          "ko": "출퇴근 중 사고는 2017년부터 산재보험 급여 대상입니다 (산재보험법 제37조). 통상적인 경로·방법으로 이동 중 발생한 경우 적용됩니다.",
+          "en": "Commute injuries have been covered by workers' compensation since 2017 (산재보험법 제37조), if you were using your usual route and method of travel."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "injury_type": "death" },
+        "note": {
+          "ko": "업무상 사망: 유족급여를 청구할 수 있습니다. COMWEL에 직접 연락하세요 ☎1588-0075. 청구 기한은 사망일로부터 5년 이내입니다.",
+          "en": "Work-related death: you can claim 유족급여 (survivor's benefit). Contact COMWEL directly at ☎1588-0075. Deadline: within 5 years of death."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "injury_type": "disease" },
+        "note": {
+          "ko": "직업병: 업무와의 인과관계 입증이 중요합니다. 병원에서 '업무 관련성'을 진단서에 명시해달라고 요청하세요. 인과관계 판정은 COMWEL이 결정합니다.",
+          "en": "Occupational disease: proving the link to work is essential. Ask your doctor to note 'work-related' on the diagnosis. COMWEL determines if it qualifies."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "status": "notyet" },
+        "note": {
+          "ko": "⚠️ 지금 바로 병원에 가세요. 진단서 없이는 산재 신청이 매우 어렵습니다. 치료비는 나중에 산재보험으로 환급됩니다.",
+          "en": "⚠️ Go to a hospital right now. Without a medical diagnosis, your workers' comp claim will be very difficult. Medical costs are reimbursed through workers' comp."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "reported": "no" },
+        "note": {
+          "ko": "사용자 신고 거부: 본인이 직접 COMWEL에 신청할 수 있습니다. 사용자 동의는 필요 없습니다. ☎1588-0075 또는 total.comwel.or.kr.",
+          "en": "Employer refused to report: you can file directly with COMWEL without your employer's permission. ☎1588-0075 or total.comwel.or.kr."
+        }
+      },
+      {
+        "type": "warning",
+        "when": { "flag": "pressure" },
+        "note": {
+          "ko": "⚠️ 산재 신청을 이유로 해고·불이익을 주는 것은 불법입니다 (산재보험법 제111조). 직접 COMWEL에 신청하고, 불이익이 실제 발생하면 ☎1350에 신고하세요.",
+          "en": "⚠️ It is illegal to retaliate against a worker for filing a workers' comp claim (산재보험법 제111조). File directly with COMWEL, and report any retaliation to ☎1350."
+        }
+      },
+      {
+        "type": "tip",
+        "when": { "flag": "migrant" },
+        "note": {
+          "ko": "외국인 노동자: 국적·비자 상태와 무관하게 산재보험이 적용됩니다. 미등록 노동자도 포함. 다국어 상담: ☎1644-0644 (18개 언어) · ☎1345 (24시간).",
+          "en": "Migrant workers: workers' comp applies regardless of nationality or visa status, including undocumented workers. Multilingual help: ☎1644-0644 (18 languages) · ☎1345 (24h)."
+        }
+      }
+    ]
   }
 }

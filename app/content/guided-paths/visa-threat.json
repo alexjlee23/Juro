@@ -112,6 +112,56 @@
       { "name": "근로기준법 제7조 (강제 근로 금지)", "url": "https://www.law.go.kr/법령/근로기준법/제7조" },
       { "name": "근로기준법 제6조 (균등한 처우)", "url": "https://www.law.go.kr/법령/근로기준법/제6조" }
     ],
-    "disclaimer": true
+    "disclaimer": true,
+    "notes_if": [
+      {
+        "type": "warning",
+        "when": { "threat_type": "passport" },
+        "note": {
+          "ko": "⚠️ 여권·신분증 보관은 불법입니다 (출입국관리법). 즉시 ☎1345 (24시간)에 신고하세요. 지원기관이 신분을 당국에 보고하지 않습니다.",
+          "en": "⚠️ Holding your passport or ID is illegal (출입국관리법). Call ☎1345 (24h) immediately. Support organizations do not report your status to authorities."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "threat_type": "deportation" },
+        "note": {
+          "ko": "추방 협박: 한국 노동법은 비자 상태와 무관하게 모든 근로자를 보호합니다. 고용주가 권리 행사를 막기 위해 추방을 협박하는 것은 불법입니다. 이 협박을 ☎1345나 ☎1350에 신고할 수 있습니다.",
+          "en": "Deportation threat: Korean labor law protects all workers regardless of visa status. Using deportation threats to prevent workers from exercising their rights is illegal. You can report this to ☎1345 or ☎1350."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "threat_type": "workplace_change" },
+        "note": {
+          "ko": "사업장 변경 방해: 임금체불·폭행 등의 사유가 있으면 사용자 동의 없이도 한국산업인력공단(☎1644-0644)에 사업장 변경을 신청할 수 있습니다 (외국인고용법 제25조).",
+          "en": "Blocking workplace change: if you have valid grounds (wage arrears, violence, etc.), you can apply for an E-9 workplace change through HRD Korea (☎1644-0644) without employer consent (외국인고용법 §25)."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "visa": "e9" },
+        "note": {
+          "ko": "E-9 사업장 변경: 임금체불·폭행·성희롱·부당해고 등이 있으면 사업장 변경을 신청할 수 있습니다. 사용자 동의 없이도 가능합니다. 최초 3년 이내 최대 3회. ☎1644-0644 (고용허가제)에 상담하세요.",
+          "en": "E-9 workplace change: wage arrears, violence, harassment, or unfair dismissal are all valid grounds. No employer consent needed. Maximum 3 times in the first 3 years. Call ☎1644-0644 (EPS hotline) for guidance."
+        }
+      },
+      {
+        "type": "tip",
+        "when": { "visa": "undocumented" },
+        "note": {
+          "ko": "미등록 노동자도 임금체불, 산재보험, 근로기준법 보호를 받습니다. ☎1345와 ☎1644-0644는 신분을 묻지 않으며 당국에 보고하지 않습니다. 안심하고 상담하세요.",
+          "en": "Undocumented workers are still protected by wage, workers' comp, and labor laws. ☎1345 and ☎1644-0644 do not ask about or report your immigration status. It is safe to call."
+        }
+      },
+      {
+        "type": "info",
+        "when": { "wages": "unpaid" },
+        "note": {
+          "ko": "임금체불: 고용노동부에 진정을 제기하면 E-9 사업장 변경 서류로 활용됩니다. labor.moel.go.kr에 온라인 신청하거나 ☎1350에 전화하세요. 사용자는 최대 3년 이하 징역 또는 3천만원 이하 벌금에 처할 수 있습니다.",
+          "en": "Unpaid wages: filing a labor complaint creates documentation for an E-9 workplace change application. Apply online at labor.moel.go.kr or call ☎1350. The employer can face up to 3 years prison or ₩30M fine."
+        }
+      }
+    ]
   }
 }
