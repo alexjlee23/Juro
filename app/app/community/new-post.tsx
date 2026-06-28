@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
   SafeAreaView, TextInput, KeyboardAvoidingView, Platform,
@@ -21,8 +21,22 @@ export default function NewPostScreen() {
   const [body, setBody] = useState('');
   const [anonymous, setAnonymous] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [communityName, setCommunityName] = useState<{ ko: string; en: string } | null>(null);
+  const [communityEmoji, setCommunityEmoji] = useState<string>('💬');
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
+
+  useEffect(() => {
+    if (communityId) {
+      supabase.from('communities').select('name_ko, name_en, emoji').eq('id', communityId).single()
+        .then(({ data }) => {
+          if (data) {
+            setCommunityName({ ko: data.name_ko, en: data.name_en });
+            setCommunityEmoji(data.emoji);
+          }
+        });
+    }
+  }, [communityId]);
 
   async function handleSubmit() {
     if (!user) { router.push('/(auth)/sign-in' as any); return; }
@@ -62,6 +76,11 @@ export default function NewPostScreen() {
             <Text style={styles.backText}>← {t('뒤로', 'Back')}</Text>
           </TouchableOpacity>
 
+          {communityName && (
+            <Text style={styles.communityLabel}>
+              {communityEmoji} {lang === 'ko' ? communityName.ko : communityName.en}
+            </Text>
+          )}
           <Text style={styles.title}>{t('새 글 쓰기', 'Write a post')}</Text>
 
           <View style={styles.card}>
@@ -136,6 +155,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
   backBtn: { marginBottom: spacing.base },
   backText: { ...typography.bodyM, color: colors.action },
+  communityLabel: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.xs },
   title: { ...typography.headingL, color: colors.text, fontWeight: '700', marginBottom: spacing.base },
   card: { backgroundColor: colors.white, borderRadius: radius.md, padding: spacing.base, marginBottom: spacing.base, ...shadow.card },
   label: { ...typography.bodyS, color: colors.text, fontWeight: '600', marginBottom: spacing.xs },

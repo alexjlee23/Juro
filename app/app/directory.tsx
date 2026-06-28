@@ -134,7 +134,8 @@ export default function DirectoryScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={`Call ${d.name[lang]}`}
                   >
-                    <Text style={styles.callBtnText}>📞</Text>
+                    <Text style={styles.callBtnIcon}>📞</Text>
+                    <Text style={styles.callBtnLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
                   </TouchableOpacity>
                   {d.kcplaaUrl && (
                     <TouchableOpacity
@@ -163,7 +164,7 @@ export default function DirectoryScreen() {
                 </View>
               )}
 
-              <Text style={styles.source}>출처: KCPLAA 한국공인노무사회</Text>
+              <Text style={styles.source}>{lang === 'ko' ? '출처: KCPLAA 한국공인노무사회' : 'Source: KCPLAA'}</Text>
             </View>
           ))
         )}
@@ -207,8 +208,9 @@ const styles = StyleSheet.create({
   affiliation: { ...typography.bodyS, color: colors.textSecondary, marginTop: 2 },
   region: { ...typography.caption, color: colors.textCaption, marginTop: 2 },
   cardActions: { flexDirection: 'row', gap: spacing.xs },
-  callBtn: { backgroundColor: colors.action, borderRadius: radius.sm, width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  callBtnText: { fontSize: 18 },
+  callBtn: { backgroundColor: colors.action, borderRadius: radius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, alignItems: 'center', justifyContent: 'center', minWidth: 52 },
+  callBtnIcon: { fontSize: 16 },
+  callBtnLabel: { ...typography.caption, color: colors.white, fontWeight: '700', marginTop: 1 },
   linkBtn: { backgroundColor: colors.surfaceTint, borderRadius: radius.sm, width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   linkBtnText: { fontSize: 18 },
   phone: { ...typography.bodyS, color: colors.action, fontWeight: '600', marginBottom: spacing.xs },

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
   SafeAreaView, ActivityIndicator, RefreshControl, Alert,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -59,7 +59,7 @@ export default function CommunityBoardScreen() {
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  useEffect(() => { if (id) load(); }, [id, user]);
+  useFocusEffect(useCallback(() => { if (id) load(); }, [id, user]));
 
   async function load() {
     if (!id) return;
@@ -198,7 +198,7 @@ export default function CommunityBoardScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, user && isJoined && { paddingBottom: 88 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.action} />}
       >
@@ -311,6 +311,18 @@ export default function CommunityBoardScreen() {
 
         <View style={{ height: spacing.xxxl }} />
       </ScrollView>
+
+      {/* Floating write button — visible when scrolled down */}
+      {user && isJoined && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push(`/community/new-post?communityId=${id}` as any)}
+          accessibilityRole="button"
+          accessibilityLabel={lang === 'ko' ? '글 쓰기' : 'Write post'}
+        >
+          <Text style={styles.fabIcon}>✏️</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 }
@@ -352,4 +364,21 @@ const styles = StyleSheet.create({
   signInPrompt: { backgroundColor: colors.infoBg, borderRadius: radius.sm, padding: spacing.md, marginTop: spacing.lg, alignItems: 'center' },
   signInPromptText: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.xs },
   signInLink: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    backgroundColor: colors.action,
+    borderRadius: 28,
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  fabIcon: { fontSize: 22 },
 });

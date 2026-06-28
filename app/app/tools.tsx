@@ -119,6 +119,9 @@ function WageCalc({ lang, minWageHourly }: { lang: 'ko' | 'en'; minWageHourly: n
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>{lang === 'ko' ? '휴일 근무(시간)' : 'Holiday work hours'}</Text>
           <TextInput style={styles.input} value={holidayH} onChangeText={setHolidayH} keyboardType="numeric" accessibilityLabel={lang === 'ko' ? '휴일 근무 시간' : 'Holiday hours'} />
+          <Text style={styles.inputHint}>
+            {lang === 'ko' ? '기본급 포함 계산 → +50% 가산분만 표시됩니다' : 'Base pay included above — shows the +50% premium only'}
+          </Text>
         </View>
       )}
 
@@ -290,6 +293,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', marginBottom: spacing.sm },
   inputGroup: { marginBottom: spacing.sm },
   inputLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: 4 },
+  inputHint: { fontSize: 11, color: colors.textCaption, marginTop: 3, lineHeight: 15 },
   input: {
     borderWidth: 1,
     borderColor: colors.border,

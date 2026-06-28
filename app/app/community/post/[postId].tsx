@@ -85,7 +85,7 @@ export default function PostDetailScreen() {
   }
 
   async function handleLike() {
-    if (!user || !post) { router.push('/(auth)/sign-in' as any); return; }
+    if (!user || !post) { router.push('/(auth)/sign-up' as any); return; }
     if (liked) {
       await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.id);
       await supabase.from('posts').update({ like_count: Math.max(0, post.like_count - 1) }).eq('id', postId);
@@ -99,7 +99,7 @@ export default function PostDetailScreen() {
   }
 
   async function handleComment() {
-    if (!user || !post) { router.push('/(auth)/sign-in' as any); return; }
+    if (!user || !post) { router.push('/(auth)/sign-up' as any); return; }
     if (!commentText.trim()) return;
     setSubmitting(true);
     const { data: newComment } = await supabase.from('comments').insert({
@@ -225,9 +225,9 @@ export default function PostDetailScreen() {
             </View>
           ) : (
             <View style={styles.signInPrompt}>
-              <Text style={styles.signInText}>{t('로그인하면 댓글을 달 수 있어요.', 'Sign in to comment.')}</Text>
-              <TouchableOpacity onPress={() => router.push('/(auth)/sign-in' as any)}>
-                <Text style={styles.signInLink}>{t('로그인 →', 'Sign in →')}</Text>
+              <Text style={styles.signInText}>{t('가입하면 댓글을 달 수 있어요.', 'Sign up to comment.')}</Text>
+              <TouchableOpacity onPress={() => router.push('/(auth)/sign-up' as any)}>
+                <Text style={styles.signInLink}>{t('무료 가입 →', 'Sign up free →')}</Text>
               </TouchableOpacity>
             </View>
           )}

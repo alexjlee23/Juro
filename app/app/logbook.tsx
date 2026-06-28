@@ -71,7 +71,12 @@ function AddEntryForm({ lang, onAdd }: { lang: 'ko' | 'en'; onAdd: (e: LogEntry)
 
       <View style={styles.row}>
         <View style={[styles.inputGroup, { flex: 1, marginRight: spacing.sm }]}>
-          <Text style={styles.inputLabel}>{lang === 'ko' ? '날짜 (YYYY-MM-DD)' : 'Date (YYYY-MM-DD)'}</Text>
+          <View style={styles.labelRow}>
+            <Text style={styles.inputLabel}>{lang === 'ko' ? '날짜' : 'Date'}</Text>
+            <TouchableOpacity onPress={() => setDate(todayISO())} style={styles.todayBtn} accessibilityRole="button">
+              <Text style={styles.todayBtnText}>{lang === 'ko' ? '오늘' : 'Today'}</Text>
+            </TouchableOpacity>
+          </View>
           <TextInput
             style={styles.input}
             value={date}
@@ -427,6 +432,9 @@ const styles = StyleSheet.create({
 
   row: { flexDirection: 'row', marginBottom: spacing.xs },
   inputGroup: { marginBottom: spacing.sm },
+  labelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  todayBtn: { backgroundColor: colors.selectedBg, borderRadius: 4, paddingHorizontal: spacing.xs, paddingVertical: 2 },
+  todayBtnText: { ...typography.caption, color: colors.action, fontWeight: '700' },
   inputLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: 4 },
   input: {
     borderWidth: 1,

@@ -240,6 +240,15 @@ export default function HomeScreen() {
             <Text style={styles.greetingSubtitle}>{lang === 'ko' ? '상황을 고르거나 위에서 검색하세요.' : 'Pick your situation or search above.'}</Text>
           </View>
 
+          {/* Trust promise */}
+          <View style={styles.trustBanner}>
+            <Text style={styles.trustText}>
+              🔒 {lang === 'ko'
+                ? '신고하지 않습니다 · 신분증·비자번호 묻지 않습니다'
+                : 'We never report you · Never ask for your ID or visa'}
+            </Text>
+          </View>
+
           {/* Emergency call strip */}
           <TouchableOpacity
             style={styles.emergencyStrip}
@@ -403,6 +412,16 @@ const styles = StyleSheet.create({
   emergencyNumber: { ...typography.headingM, color: colors.white, fontWeight: '700' },
   emergencyDesc: { ...typography.bodyS, color: '#94A3B8', flex: 1, lineHeight: 20 },
 
+  trustBanner: {
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.brand,
+  },
+  trustText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
   sectionTitle: { ...typography.headingM, color: colors.text, fontWeight: '700', marginBottom: spacing.md },
   tilesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
   tile: {

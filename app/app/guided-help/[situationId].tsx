@@ -154,25 +154,39 @@ export default function GuidedHelpFlow() {
   const [stepNote, setStepNote] = useState<string | null>(null);
   const [showOutcome, setShowOutcome] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
+  const [transitioning, setTransitioning] = useState(false);
 
   const currentStep = data.steps.find((s: any) => s.id === currentStepId);
   const stepIndex = data.steps.findIndex((s: any) => s.id === currentStepId);
   const totalSteps = data.steps.length;
 
   const handleOption = (option: any) => {
+    if (transitioning) return;
+    setTransitioning(true);
     const newFlags = { ...flags, ...option.sets };
     setFlags(newFlags);
     const note = option.note ? option.note[lang] : null;
     setStepNote(note);
     if (option.next === 'outcome') {
       setHistory(h => [...h, currentStepId]);
-      setTimeout(() => setShowOutcome(true), note ? 1200 : 0);
+      if (note) {
+        setTimeout(() => { setShowOutcome(true); setTransitioning(false); }, 1200);
+      } else {
+        setShowOutcome(true);
+        setTransitioning(false);
+      }
     } else {
       setHistory(h => [...h, currentStepId]);
-      setTimeout(() => {
+      if (note) {
+        setTimeout(() => {
+          setCurrentStepId(option.next);
+          setStepNote(null);
+          setTransitioning(false);
+        }, 1200);
+      } else {
         setCurrentStepId(option.next);
-        setStepNote(null);
-      }, note ? 1200 : 0);
+        setTransitioning(false);
+      }
     }
   };
 
@@ -361,10 +375,11 @@ export default function GuidedHelpFlow() {
           {currentStep.options.map((option: any) => (
             <TouchableOpacity
               key={option.id}
-              style={styles.optionCard}
+              style={[styles.optionCard, transitioning && styles.optionCardDisabled]}
               onPress={() => handleOption(option)}
               activeOpacity={0.75}
               accessibilityRole="button"
+              disabled={transitioning}
             >
               <Text style={styles.optionLabel}>{option.label[lang]}</Text>
             </TouchableOpacity>
@@ -440,6 +455,7 @@ const styles = StyleSheet.create({
     ...shadow.card,
   },
   optionLabel: { ...typography.bodyM, color: colors.text, fontWeight: '600' },
+  optionCardDisabled: { opacity: 0.5 },
   outcomeHeader: { marginBottom: spacing.lg },
   outcomeTitle: { ...typography.headingL, color: colors.text, fontWeight: '700' },
   block: {
