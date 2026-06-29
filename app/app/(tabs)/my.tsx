@@ -22,9 +22,9 @@ function formatDate(iso: string, lang: 'ko' | 'en') {
   return lang === 'ko' ? `${y}년 ${parseInt(m)}월 ${parseInt(d)}일` : `${y}/${m}/${d}`;
 }
 
-function SettingRow({ emoji, label, onPress, value, isSwitch, danger }: {
-  emoji: string; label: string; onPress?: () => void;
-  value?: boolean; isSwitch?: boolean; danger?: boolean;
+function SettingRow({ emoji, label, subtitle, onPress, value, isSwitch, danger, download }: {
+  emoji: string; label: string; subtitle?: string; onPress?: () => void;
+  value?: boolean; isSwitch?: boolean; danger?: boolean; download?: boolean;
 }) {
   return (
     <TouchableOpacity
@@ -34,9 +34,14 @@ function SettingRow({ emoji, label, onPress, value, isSwitch, danger }: {
       accessibilityRole={isSwitch ? 'switch' : 'button'}
     >
       <Text style={styles.settingEmoji}>{emoji}</Text>
-      <Text style={[styles.settingLabel, danger && styles.settingLabelDanger]}>{label}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.settingLabel, danger && styles.settingLabelDanger]}>{label}</Text>
+        {subtitle ? <Text style={styles.settingSubtitle}>{subtitle}</Text> : null}
+      </View>
       {isSwitch ? (
         <Switch value={value} onValueChange={onPress as any} trackColor={{ true: colors.action }} />
+      ) : download ? (
+        <Text style={styles.downloadIndicator}>↓</Text>
       ) : (
         <Text style={[styles.arrow, danger && styles.arrowDanger]}>›</Text>
       )}
@@ -60,10 +65,10 @@ export default function MyScreen() {
 
       if (entries.length === 0) {
         Alert.alert(
-          lang === 'ko' ? '기록 없음' : 'No records',
+          lang === 'ko' ? '근무 일지 기록 없음' : 'No logbook records',
           lang === 'ko'
-            ? '근무 일지에 기록이 없습니다. 먼저 근무 기록을 추가해주세요.'
-            : 'Your logbook has no entries yet. Add shift records first.'
+            ? '근무 일지에 기록이 없습니다.\n아래 "도구 → 근무 일지"에서 근무 기록을 먼저 추가해주세요.'
+            : 'Your logbook has no entries yet.\nAdd shift records in Work Logbook first.'
         );
         return;
       }
@@ -158,7 +163,13 @@ export default function MyScreen() {
           <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
           <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
           <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
-          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={handleEvidenceExport} />
+          <SettingRow
+            emoji="📤"
+            label={t('my.evidenceExport')}
+            subtitle={t('my.evidenceExportSub')}
+            download
+            onPress={handleEvidenceExport}
+          />
         </View>
 
         {/* Reference */}
@@ -274,10 +285,12 @@ const styles = StyleSheet.create({
     minHeight: 52,
   },
   settingEmoji: { fontSize: 20, marginRight: spacing.md },
-  settingLabel: { ...typography.bodyM, color: colors.text, flex: 1 },
+  settingLabel: { ...typography.bodyM, color: colors.text },
   settingLabelDanger: { color: '#DC2626' },
+  settingSubtitle: { ...typography.caption, color: colors.textCaption, marginTop: 2 },
   arrow: { ...typography.headingM, color: colors.textCaption },
   arrowDanger: { color: '#DC2626' },
+  downloadIndicator: { fontSize: 18, color: colors.action, fontWeight: '700', marginLeft: spacing.sm },
   userBanner: {
     backgroundColor: colors.selectedBg,
     borderRadius: radius.md,
