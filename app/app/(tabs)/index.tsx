@@ -71,7 +71,6 @@ export default function HomeScreen() {
   const [query, setQuery] = useState('');
   const { minWageYear, minWageHourly } = useConfig();
 
-  // Patch minimum wage search item with live values from Supabase
   const SEARCH_INDEX_LIVE = useMemo(() => SEARCH_INDEX.map(item => {
     if (item.type === 'right' && item.keywords.includes('10320')) {
       return {
@@ -101,7 +100,7 @@ export default function HomeScreen() {
   const grouped = searchResults ? {
     situations: searchResults.filter(r => r.type === 'situation'),
     rights: searchResults.filter(r => r.type === 'right'),
-    contacts: searchResults.filter(r => r.type === 'hotline' || r.type === 'directory'),
+    hotlines: searchResults.filter(r => r.type === 'hotline'),
   } : null;
 
   const handleResultPress = (item: SearchItem) => {
@@ -127,7 +126,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Search bar — always visible, below header */}
+      {/* Search bar */}
       <View style={styles.searchOuter}>
         <View style={styles.searchBox}>
           <Text style={styles.searchIcon}>🔍</Text>
@@ -149,15 +148,38 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Search results overlay */}
       {query.length > 0 ? (
+        /* ── Search results ── */
         <ScrollView
           style={styles.flex}
           contentContainerStyle={styles.resultsContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {grouped && searchResults!.length === 0 && (
+          {/* 노무사 — always pinned at the top of any search result */}
+          <TouchableOpacity
+            style={styles.nomusaPinned}
+            onPress={() => router.push('/directory')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.nomusaPinnedLeft}>
+              <Text style={styles.nomusaPinnedEmoji}>🧑‍⚖️</Text>
+              <View>
+                <Text style={styles.nomusaPinnedTitle}>
+                  {lang === 'ko' ? '노무사와 직접 상담하세요' : 'Talk to a certified 노무사'}
+                </Text>
+                <Text style={styles.nomusaPinnedSub}>
+                  {lang === 'ko' ? '공인노무사 422명 · 지역·전문분야 검색' : '422 verified attorneys · Filter by region & specialty'}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.nomusaPinnedBtn}>
+              <Text style={styles.nomusaPinnedBtnText}>{lang === 'ko' ? '찾기 →' : 'Find →'}</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* No matches for the actual query */}
+          {searchResults!.length === 0 && (
             <View style={styles.noResults}>
               <Text style={styles.noResultsEmoji}>🤔</Text>
               <Text style={styles.noResultsTitle}>{lang === 'ko' ? '검색 결과 없음' : 'No results found'}</Text>
@@ -170,6 +192,7 @@ export default function HomeScreen() {
             </View>
           )}
 
+          {/* Guided Help situations */}
           {grouped && grouped.situations.length > 0 && (
             <View style={styles.resultSection}>
               <Text style={styles.resultSectionTitle}>{lang === 'ko' ? '상황별 안내' : 'Guided Help'}</Text>
@@ -186,6 +209,7 @@ export default function HomeScreen() {
             </View>
           )}
 
+          {/* Rights info */}
           {grouped && grouped.rights.length > 0 && (
             <View style={styles.resultSection}>
               <Text style={styles.resultSectionTitle}>{lang === 'ko' ? '권리 정보' : 'Rights info'}</Text>
@@ -202,23 +226,20 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {grouped && grouped.contacts.length > 0 && (
+          {/* Hotlines */}
+          {grouped && grouped.hotlines.length > 0 && (
             <View style={styles.resultSection}>
-              <Text style={styles.resultSectionTitle}>{lang === 'ko' ? '상담 전화 · 전문가' : 'Hotlines · Experts'}</Text>
-              {grouped.contacts.map((item, i) => (
+              <Text style={styles.resultSectionTitle}>{lang === 'ko' ? '상담 전화' : 'Hotlines'}</Text>
+              {grouped.hotlines.map((item, i) => (
                 <TouchableOpacity key={i} style={styles.resultRow} onPress={() => handleResultPress(item)} activeOpacity={0.75}>
                   <Text style={styles.resultEmoji}>{item.emoji}</Text>
                   <View style={styles.resultText}>
                     <Text style={styles.resultLabel}>{item.label[lang]}</Text>
                     <Text style={styles.resultDetail}>{item.detail[lang]}</Text>
                   </View>
-                  {item.number ? (
-                    <View style={styles.callChip}>
-                      <Text style={styles.callChipText}>{lang === 'ko' ? '전화' : 'Call'}</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.arrow}>›</Text>
-                  )}
+                  <View style={styles.callChip}>
+                    <Text style={styles.callChipText}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -264,10 +285,31 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Situation tiles — all 6 */}
+          {/* 노무사 찾기 — prominent full-width banner */}
+          <TouchableOpacity
+            style={styles.nomusaBanner}
+            onPress={() => router.push('/directory')}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+          >
+            <Text style={styles.nomusaBannerEmoji}>🧑‍⚖️</Text>
+            <View style={styles.nomusaBannerText}>
+              <Text style={styles.nomusaBannerTitle}>
+                {lang === 'ko' ? '공인노무사와 직접 상담' : 'Talk to a certified 노무사'}
+              </Text>
+              <Text style={styles.nomusaBannerSub}>
+                {lang === 'ko' ? '422명 · 지역·전문분야 검색 가능' : '422 attorneys · Search by region & specialty'}
+              </Text>
+            </View>
+            <View style={styles.nomusaBannerBtn}>
+              <Text style={styles.nomusaBannerBtnText}>{lang === 'ko' ? '찾기 →' : 'Find →'}</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Situation tiles */}
           <Text style={styles.sectionTitle}>{lang === 'ko' ? '어떤 상황인가요?' : "What's your situation?"}</Text>
 
-          {/* Quick links — directly above the 6 tiles */}
+          {/* Quick links — 3 items (노무사 has its own banner above) */}
           <View style={styles.quickLinks}>
             <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/rights')} accessibilityRole="button">
               <Text style={styles.quickLinkEmoji}>📖</Text>
@@ -276,10 +318,6 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/migrant-hub' as any)} accessibilityRole="button">
               <Text style={styles.quickLinkEmoji}>🌏</Text>
               <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '외국인 노동자' : 'Migrant workers'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/directory')} accessibilityRole="button">
-              <Text style={styles.quickLinkEmoji}>🧑‍⚖️</Text>
-              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '노무사 찾기' : 'Find attorney'}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/(tabs)/map')} accessibilityRole="button">
               <Text style={styles.quickLinkEmoji}>📞</Text>
@@ -362,6 +400,29 @@ const styles = StyleSheet.create({
 
   // Search results
   resultsContent: { paddingHorizontal: spacing.base, paddingTop: spacing.sm },
+
+  // 노무사 pinned card — always top of search results
+  nomusaPinned: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.brand,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.base,
+    gap: spacing.sm,
+  },
+  nomusaPinnedLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: spacing.sm },
+  nomusaPinnedEmoji: { fontSize: 28 },
+  nomusaPinnedTitle: { ...typography.bodyM, color: colors.white, fontWeight: '700' },
+  nomusaPinnedSub: { ...typography.caption, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
+  nomusaPinnedBtn: {
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  nomusaPinnedBtnText: { ...typography.bodyS, color: colors.brand, fontWeight: '700' },
+
   noResults: { alignItems: 'center', paddingVertical: spacing.xl },
   noResultsEmoji: { fontSize: 40, marginBottom: spacing.sm },
   noResultsTitle: { ...typography.bodyL, color: colors.text, fontWeight: '700', marginBottom: spacing.xs },
@@ -373,6 +434,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   callFallbackText: { ...typography.bodyM, color: colors.white, fontWeight: '700' },
+
   resultSection: { marginBottom: spacing.base },
   resultSectionTitle: { ...typography.bodyS, color: colors.textCaption, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: spacing.xs },
   resultRow: {
@@ -404,7 +466,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.navy,
     borderRadius: radius.md,
     padding: spacing.base,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
     gap: spacing.md,
   },
   emergencyLeft: { alignItems: 'flex-start' },
@@ -422,6 +484,32 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.brand,
   },
   trustText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
+
+  // 노무사 prominent banner on home page
+  nomusaBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.lg,
+    borderWidth: 2,
+    borderColor: colors.brand,
+    ...shadow.card,
+    gap: spacing.sm,
+  },
+  nomusaBannerEmoji: { fontSize: 32 },
+  nomusaBannerText: { flex: 1 },
+  nomusaBannerTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700' },
+  nomusaBannerSub: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+  nomusaBannerBtn: {
+    backgroundColor: colors.brand,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  nomusaBannerBtnText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
+
   sectionTitle: { ...typography.headingM, color: colors.text, fontWeight: '700', marginBottom: spacing.md },
   tilesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
   tile: {
