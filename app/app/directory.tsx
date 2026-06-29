@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, TextInput, Linking, SafeAreaView } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, TextInput, Linking, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../constants/theme';
 import directory from '../content/directory.json';
+import { detectNearbyRegion } from '../lib/locationRegion';
 
 const SPECIALIZATIONS = [
   { id: 'unpaid_wages', ko: '임금체불', en: 'Unpaid Wages' },
@@ -24,6 +25,26 @@ export default function DirectoryScreen() {
   const [search, setSearch] = useState('');
   const [selectedSpec, setSelectedSpec] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locatedRegion, setLocatedRegion] = useState<string | null>(null);
+
+  async function handleLocate() {
+    setLocating(true);
+    try {
+      const region = await detectNearbyRegion();
+      if (region) {
+        setLocatedRegion(region);
+        setSelectedRegion(region);
+      }
+    } finally {
+      setLocating(false);
+    }
+  }
+
+  function clearLocation() {
+    setLocatedRegion(null);
+    setSelectedRegion(null);
+  }
 
   const filtered = useMemo(() => {
     return (directory as any[]).filter((d) => {
@@ -50,6 +71,24 @@ export default function DirectoryScreen() {
             <Text style={styles.title}>{lang === 'ko' ? '노무사 찾기' : 'Find a 노무사'}</Text>
             <Text style={styles.count}>{filtered.length}</Text>
           </View>
+
+          {/* Location button */}
+          {locatedRegion ? (
+            <TouchableOpacity style={styles.locatedChip} onPress={clearLocation} activeOpacity={0.8}>
+              <Text style={styles.locatedChipText}>📍 {locatedRegion}</Text>
+              <Text style={styles.locatedChipX}>  ✕</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.locateBtn} onPress={handleLocate} disabled={locating} activeOpacity={0.8}>
+              {locating ? (
+                <ActivityIndicator size="small" color={colors.action} />
+              ) : (
+                <Text style={styles.locateBtnText}>
+                  📍 {lang === 'ko' ? '내 주변 노무사 찾기' : 'Find 노무사 near me'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          )}
 
           {/* Search */}
           <View style={styles.searchBox}>
@@ -190,6 +229,11 @@ const styles = StyleSheet.create({
   backText: { ...typography.bodyL, color: colors.action, marginRight: spacing.md },
   title: { ...typography.headingM, color: colors.text, fontWeight: '700', flex: 1 },
   count: { ...typography.bodyS, color: colors.textCaption, backgroundColor: colors.surfaceTint, borderRadius: 12, paddingHorizontal: spacing.sm, paddingVertical: 2 },
+  locateBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.selectedBg, borderRadius: radius.sm, borderWidth: 1.5, borderColor: colors.brand, paddingVertical: spacing.sm, marginBottom: spacing.sm, minHeight: 40 },
+  locateBtnText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+  locatedChip: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: colors.brand, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, marginBottom: spacing.sm },
+  locatedChipText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
+  locatedChipX: { ...typography.bodyS, color: 'rgba(255,255,255,0.75)' },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md, marginBottom: spacing.sm, minHeight: 44 },
   searchIcon: { fontSize: 16, marginRight: spacing.sm },
   searchInput: { flex: 1, ...typography.bodyM, color: colors.text },

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
-  TextInput, Linking, SafeAreaView,
+  TextInput, Linking, SafeAreaView, ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { colors, typography, spacing, radius, shadow } from '../../constants/the
 import Banner from '../../components/ui/Banner';
 import { useConfig } from '../../lib/useConfig';
 import directoryData from '../../content/directory.json';
+import { detectNearbyRegion } from '../../lib/locationRegion';
 
 const SPECIALIZATIONS = [
   { id: 'unpaid_wages', ko: '임금체불', en: 'Unpaid Wages' },
@@ -80,12 +81,28 @@ export default function HomeScreen() {
   const lang = i18n.language as 'ko' | 'en';
   const [query, setQuery] = useState('');
   const [nomusaQuery, setNomusaQuery] = useState('');
+  const [nomusaRegion, setNomusaRegion] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
   const { minWageYear, minWageHourly } = useConfig();
+
+  async function handleLocate() {
+    setLocating(true);
+    try {
+      const region = await detectNearbyRegion();
+      if (region) {
+        setNomusaRegion(region);
+        setNomusaQuery('');
+      }
+    } finally {
+      setLocating(false);
+    }
+  }
 
   // 노무사 results for the home widget (always-visible inline search)
   const nomusaWidgetResults = useMemo(() => {
     const q = nomusaQuery.trim().toLowerCase();
-    const list = directoryData as any[];
+    let list = directoryData as any[];
+    if (nomusaRegion) list = list.filter(d => d.region.ko === nomusaRegion);
     if (!q) return list.slice(0, 4);
     return list.filter(d =>
       d.name.ko.includes(q) ||
@@ -97,7 +114,7 @@ export default function HomeScreen() {
         return spec && (spec.ko.includes(q) || spec.en.toLowerCase().includes(q));
       })
     );
-  }, [nomusaQuery]);
+  }, [nomusaQuery, nomusaRegion]);
 
   // 노무사 results matched against the main search query
   const nomusaSearchResults = useMemo(() => {
@@ -379,6 +396,23 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               )}
             </View>
+            {/* Location filter row */}
+            <View style={styles.nomusaLocRow}>
+              {nomusaRegion ? (
+                <TouchableOpacity style={styles.nomusaLocChip} onPress={() => setNomusaRegion(null)}>
+                  <Text style={styles.nomusaLocChipText}>📍 {nomusaRegion}</Text>
+                  <Text style={styles.nomusaLocChipX}>  ✕</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.nomusaLocBtn} onPress={handleLocate} disabled={locating}>
+                  {locating
+                    ? <ActivityIndicator size="small" color={colors.action} />
+                    : <Text style={styles.nomusaLocBtnText}>📍 {lang === 'ko' ? '내 주변' : 'Near me'}</Text>
+                  }
+                </TouchableOpacity>
+              )}
+            </View>
+
             {nomusaWidgetResults.map((d: any) => (
               <View key={d.id} style={styles.nomusaCard}>
                 <View style={styles.nomusaCardInfo}>
@@ -599,6 +633,12 @@ const styles = StyleSheet.create({
   nomusaWidgetInput: { flex: 1, ...typography.bodyS, color: colors.text },
   nomusaWidgetClear: { ...typography.bodyS, color: colors.textCaption, paddingLeft: spacing.xs },
   nomusaEmpty: { ...typography.bodyS, color: colors.textCaption, textAlign: 'center', paddingVertical: spacing.sm },
+  nomusaLocRow: { flexDirection: 'row', marginBottom: spacing.xs },
+  nomusaLocBtn: { backgroundColor: colors.selectedBg, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderWidth: 1, borderColor: colors.brand, minWidth: 90, alignItems: 'center' },
+  nomusaLocBtnText: { ...typography.caption, color: colors.action, fontWeight: '700' },
+  nomusaLocChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.brand, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  nomusaLocChipText: { ...typography.caption, color: colors.white, fontWeight: '700' },
+  nomusaLocChipX: { ...typography.caption, color: 'rgba(255,255,255,0.75)' },
 
   // Shared 노무사 card (used in both home widget and search results)
   nomusaCard: {
