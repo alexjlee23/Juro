@@ -1,14 +1,20 @@
+import { useState } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../constants/theme';
 import Banner from '../components/ui/Banner';
 import Button from '../components/ui/Button';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PrivacyScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const lang = i18n.language;
+  const { user, signOut } = useAuth();
+  const [deleting, setDeleting] = useState(false);
 
   const handleDelete = () => {
     Alert.alert(
@@ -16,10 +22,37 @@ export default function PrivacyScreen() {
       t('privacy.deleteConfirm'),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('privacy.deleteButton'), style: 'destructive', onPress: () => {} },
+        { text: t('privacy.deleteButton'), style: 'destructive', onPress: confirmDelete },
       ]
     );
   };
+
+  async function confirmDelete() {
+    if (!user) return;
+    setDeleting(true);
+    try {
+      // Delete all user-generated content and profile data
+      await supabase.from('post_likes').delete().eq('user_id', user.id);
+      await supabase.from('comments').delete().eq('author_id', user.id);
+      await supabase.from('posts').delete().eq('author_id', user.id);
+      await supabase.from('community_memberships').delete().eq('user_id', user.id);
+      await supabase.from('profiles').delete().eq('id', user.id);
+      // Clear local data
+      await AsyncStorage.removeItem('juro_logbook_v1');
+      // Sign out (auth user deletion requires a server-side function — emailed to privacy@jurio.app)
+      await signOut();
+      router.replace('/');
+    } catch {
+      Alert.alert(
+        lang === 'ko' ? '오류' : 'Error',
+        lang === 'ko'
+          ? '삭제 중 오류가 발생했습니다. privacy@jurio.app으로 문의해주세요.'
+          : 'Something went wrong. Email privacy@jurio.app for help.'
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const DATA_ITEMS = lang === 'ko'
     ? ['앱 사용 이벤트 (익명, PII 없음)', '기기 언어 설정', '오프라인 근무 일지 (기기 내 저장)', '앱 충돌 리포트 (Sentry — 익명)']
@@ -63,7 +96,13 @@ export default function PrivacyScreen() {
         {/* Actions */}
         <View style={styles.actions}>
           <Button label={`⬇️ ${t('privacy.download')}`} onPress={() => {}} variant="secondary" style={{ marginBottom: spacing.sm }} />
-          <Button label={`🗑️ ${t('privacy.deleteAccount')}`} onPress={handleDelete} variant="destructive" />
+          <Button
+            label={deleting
+              ? (lang === 'ko' ? '삭제 중...' : 'Deleting...')
+              : `🗑️ ${t('privacy.deleteAccount')}`}
+            onPress={user ? handleDelete : () => router.push('/delete-account' as any)}
+            variant="destructive"
+          />
         </View>
 
         {/* Contact */}
