@@ -1,31 +1,29 @@
 import * as Location from 'expo-location';
 
-// Maps a reverse-geocoded address to one of the directory region keys.
-// Works regardless of device locale (handles both Korean and English names).
-export function geocodeToDirectoryRegion(addr: Location.LocationGeocodedAddress): string | null {
-  const text = `${addr.region ?? ''} ${addr.city ?? ''} ${addr.subregion ?? ''}`.toLowerCase();
-
-  if (text.includes('서울') || text.includes('seoul')) return '서울';
-  if (text.includes('부산') || text.includes('busan')) return '부산';
-  if (text.includes('대구') || text.includes('daegu')) return '대구';
-  if (text.includes('인천') || text.includes('incheon')) return '인천';
-  if (text.includes('광주') || text.includes('gwangju')) return '광주';
-  if (text.includes('대전') || text.includes('daejeon')) return '대전';
-  if (text.includes('울산') || text.includes('ulsan')) return '울산';
-  if (text.includes('세종') || text.includes('sejong')) return '세종';
-  if (text.includes('강원') || text.includes('gangwon')) return '강원';
-  if (text.includes('충북') || text.includes('충청북') || text.includes('north chungcheong')) return '충북';
-  if (text.includes('충남') || text.includes('충청남') || text.includes('south chungcheong')) return '충남';
-  if (text.includes('전북') || text.includes('전라북') || text.includes('north jeolla')) return '전북';
-  if (text.includes('전남') || text.includes('전라남') || text.includes('south jeolla')) return '전남';
-  if (text.includes('경북') || text.includes('경상북') || text.includes('north gyeongsang')) return '경북';
-  if (text.includes('경남') || text.includes('경상남') || text.includes('south gyeongsang')) return '경남';
-  if (text.includes('경기')) {
-    // Rough north/south split — cities north of Suwon go to 경기북부
-    const northCities = ['의정부', '구리', '남양주', '가평', '양주', '동두천', '포천', '연천', '파주', '고양', '김포'];
-    if (northCities.some(c => text.includes(c))) return '경기북부';
-    return '경기남부';
+// Pure coordinate → region lookup. Entirely on-device, works on web + native.
+// Bounding boxes are approximate but accurate enough for regional filtering.
+function coordsToRegion(lat: number, lon: number): string | null {
+  // Metropolitan cities (checked first — more precise boxes)
+  if (lat >= 37.40 && lat <= 37.71 && lon >= 126.75 && lon <= 127.20) return '서울';
+  if (lat >= 35.00 && lat <= 35.40 && lon >= 128.80 && lon <= 129.30) return '부산';
+  if (lat >= 35.70 && lat <= 36.05 && lon >= 128.45 && lon <= 128.85) return '대구';
+  if (lat >= 37.30 && lat <= 37.66 && lon >= 126.40 && lon <= 126.80) return '인천';
+  if (lat >= 35.05 && lat <= 35.30 && lon >= 126.75 && lon <= 127.00) return '광주';
+  if (lat >= 36.20 && lat <= 36.52 && lon >= 127.30 && lon <= 127.56) return '대전';
+  if (lat >= 35.40 && lat <= 35.70 && lon >= 129.00 && lon <= 129.40) return '울산';
+  if (lat >= 36.40 && lat <= 36.70 && lon >= 127.20 && lon <= 127.50) return '세종';
+  // Gyeonggi — split north/south around 37.55 latitude
+  if (lat >= 36.80 && lat <= 38.20 && lon >= 126.50 && lon <= 127.80) {
+    return lat >= 37.55 ? '경기북부' : '경기남부';
   }
+  // Provinces
+  if (lat >= 37.00 && lat <= 38.62 && lon >= 127.50 && lon <= 129.40) return '강원';
+  if (lat >= 36.40 && lat <= 37.20 && lon >= 127.20 && lon <= 128.30) return '충북';
+  if (lat >= 36.00 && lat <= 37.00 && lon >= 125.80 && lon <= 127.50) return '충남';
+  if (lat >= 35.10 && lat <= 36.10 && lon >= 126.40 && lon <= 127.80) return '전북';
+  if (lat >= 33.90 && lat <= 35.10 && lon >= 125.50 && lon <= 127.60) return '전남';
+  if (lat >= 35.60 && lat <= 37.00 && lon >= 127.90 && lon <= 129.60) return '경북';
+  if (lat >= 34.60 && lat <= 35.60 && lon >= 127.60 && lon <= 129.30) return '경남';
   return null;
 }
 
@@ -34,8 +32,5 @@ export async function detectNearbyRegion(): Promise<string | null> {
   if (status !== 'granted') return null;
 
   const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-  const results = await Location.reverseGeocodeAsync(pos.coords);
-  if (!results.length) return null;
-
-  return geocodeToDirectoryRegion(results[0]);
+  return coordsToRegion(pos.coords.latitude, pos.coords.longitude);
 }
