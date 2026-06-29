@@ -23,11 +23,11 @@ type Community = {
 };
 
 const CATEGORY_LABELS: Record<string, { ko: string; en: string }> = {
-  type: { ko: '👤 근로자 유형', en: '👤 Worker type' },
-  region: { ko: '📍 지역별', en: '📍 By region' },
-  industry: { ko: '🏭 업종별', en: '🏭 By industry' },
-  situation: { ko: '⚠️ 상황별', en: '⚠️ By situation' },
-  general: { ko: '💬 자유', en: '💬 General' },
+  type:      { ko: '👤 근로자 유형', en: '👤 Worker type' },
+  region:    { ko: '📍 지역별',      en: '📍 By region' },
+  industry:  { ko: '🏭 업종별',      en: '🏭 By industry' },
+  situation: { ko: '⚠️ 상황별',     en: '⚠️ By situation' },
+  general:   { ko: '💬 자유',        en: '💬 General' },
 };
 
 const CATEGORY_ORDER = ['type', 'region', 'industry', 'situation', 'general'];
@@ -36,7 +36,7 @@ export default function CommunityScreen() {
   const router = useRouter();
   const { i18n } = useTranslation();
   const lang = i18n.language as 'ko' | 'en';
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [joinedIds, setJoinedIds] = useState<Set<string>>(new Set());
@@ -46,14 +46,14 @@ export default function CommunityScreen() {
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  // Single load on focus — avoids double-fetching on initial mount
   useFocusEffect(useCallback(() => { load(); }, [user]));
 
   async function load() {
     setLoading(true);
     setLoadError(false);
     try {
-      const { data, error } = await supabase.from('communities').select('*').order('category').order('name_ko');
+      const { data, error } = await supabase
+        .from('communities').select('*').order('category').order('name_ko');
       if (error) { setLoadError(true); setLoading(false); return; }
       setCommunities(data ?? []);
       if (user) {
@@ -83,6 +83,13 @@ export default function CommunityScreen() {
     return acc;
   }, {});
 
+  const joinedList = communities.filter(c => joinedIds.has(c.id));
+
+  // Only show communities in the browse section that haven't been joined yet
+  const hasUnjoined = CATEGORY_ORDER.some(cat =>
+    (grouped[cat] ?? []).some(c => !joinedIds.has(c.id))
+  );
+
   if (loading) {
     return (
       <SafeAreaView style={styles.safe}>
@@ -98,11 +105,17 @@ export default function CommunityScreen() {
       <SafeAreaView style={styles.safe}>
         <View style={styles.center}>
           <Text style={{ fontSize: 36, marginBottom: 12 }}>⚠️</Text>
-          <Text style={[styles.subtitle, { textAlign: 'center', marginBottom: 16 }]}>
-            {t('커뮤니티를 불러오지 못했습니다.\n인터넷 연결을 확인해 주세요.', 'Could not load communities.\nCheck your internet connection.')}
+          <Text style={[styles.errorText, { textAlign: 'center', marginBottom: 16 }]}>
+            {t(
+              '커뮤니티를 불러오지 못했습니다.\n인터넷 연결을 확인해 주세요.',
+              'Could not load communities.\nCheck your internet connection.'
+            )}
           </Text>
-          <TouchableOpacity onPress={load} style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: colors.selectedBg, borderRadius: radius.sm }}>
-            <Text style={{ color: colors.action, fontWeight: '700' }}>{t('다시 시도', 'Retry')}</Text>
+          <TouchableOpacity
+            onPress={load}
+            style={styles.retryBtn}
+          >
+            <Text style={styles.retryText}>{t('다시 시도', 'Retry')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -118,73 +131,111 @@ export default function CommunityScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>{t('커뮤니티', 'Community')}</Text>
-            <Text style={styles.subtitle}>{t('비슷한 처지의 노동자들과 이야기하세요', 'Talk with workers like you')}</Text>
-          </View>
+          <Text style={styles.title}>{t('커뮤니티', 'Community')}</Text>
+          <Text style={styles.subtitle}>
+            {t('비슷한 처지의 노동자들과 이야기하세요', 'Talk with workers who understand')}
+          </Text>
         </View>
 
-        {/* Auth banner */}
-        {user ? (
-          <View style={styles.userBanner}>
-            <Text style={styles.userBannerText}>
-              👋 {profile?.username ?? ''} {t('님, 환영합니다!', ', welcome!')}
-            </Text>
-          </View>
-        ) : (
+        {/* Auth nudge — logged-out users only */}
+        {!user && (
           <View style={styles.authPrompt}>
-            <Text style={styles.authPromptTitle}>{t('가입하면 글을 쓸 수 있어요', 'Join to post and comment')}</Text>
+            <Text style={styles.authPromptTitle}>
+              {t('가입하면 글을 쓸 수 있어요', 'Sign up to post & comment')}
+            </Text>
             <Text style={styles.authPromptBody}>
-              {t('읽기는 누구나 가능합니다. 글쓰기·참여는 무료 계정이 필요합니다.', 'Anyone can read. Posting requires a free account.')}
+              {t('읽기는 누구나 가능해요. 글쓰기는 무료 계정이 필요해요.', 'Anyone can read. Writing requires a free account.')}
             </Text>
             <View style={styles.authBtns}>
-              <TouchableOpacity style={styles.authBtnPrimary} onPress={() => router.push('/(auth)/sign-up' as any)}>
-                <Text style={styles.authBtnPrimaryText}>{t('무료 회원가입', 'Sign up free')}</Text>
+              <TouchableOpacity
+                style={styles.authBtnPrimary}
+                onPress={() => router.push('/(auth)/sign-up' as any)}
+              >
+                <Text style={styles.authBtnPrimaryText}>{t('무료 가입', 'Sign up free')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.authBtnSecondary} onPress={() => router.push('/(auth)/sign-in' as any)}>
+              <TouchableOpacity
+                style={styles.authBtnSecondary}
+                onPress={() => router.push('/(auth)/sign-in' as any)}
+              >
                 <Text style={styles.authBtnSecondaryText}>{t('로그인', 'Sign in')}</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
 
-        {/* Joined communities */}
-        {user && joinedIds.size > 0 && (
-          <>
-            <Text style={styles.sectionLabel}>{t('✅ 참여 중인 커뮤니티', '✅ My communities')}</Text>
-            <View style={styles.list}>
-              {communities
-                .filter(c => joinedIds.has(c.id))
-                .map(c => (
-                  <CommunityCard key={c.id} community={c} lang={lang} joined
-                    onPress={() => router.push(`/community/${c.id}` as any)} />
-                ))}
-            </View>
-          </>
+        {/* My Communities — horizontal quick-access chips */}
+        {user && joinedList.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>{t('내 커뮤니티', 'My Communities')}</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipsRow}
+            >
+              {joinedList.map(c => (
+                <TouchableOpacity
+                  key={c.id}
+                  style={styles.chip}
+                  onPress={() => router.push(`/community/${c.id}` as any)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={styles.chipEmoji}>{c.emoji}</Text>
+                  <Text style={styles.chipName} numberOfLines={2}>
+                    {lang === 'ko' ? c.name_ko : c.name_en}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         )}
 
-        {/* All communities by category */}
-        {CATEGORY_ORDER.map(cat => {
-          const list = grouped[cat];
-          if (!list?.length) return null;
-          return (
-            <View key={cat}>
-              <Text style={styles.sectionLabel}>{CATEGORY_LABELS[cat]?.[lang] ?? cat}</Text>
-              <View style={styles.list}>
-                {list.map(c => (
-                  <CommunityCard key={c.id} community={c} lang={lang} joined={joinedIds.has(c.id)}
-                    onPress={() => router.push(`/community/${c.id}` as any)} />
-                ))}
-              </View>
-            </View>
-          );
-        })}
+        {/* Browse section — only communities not yet joined */}
+        {hasUnjoined && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>
+              {user && joinedList.length > 0
+                ? t('둘러보기', 'Explore')
+                : t('모든 커뮤니티', 'All Communities')}
+            </Text>
+
+            {CATEGORY_ORDER.map(cat => {
+              const list = (grouped[cat] ?? []).filter(c => !joinedIds.has(c.id));
+              if (!list.length) return null;
+              return (
+                <View key={cat} style={styles.categoryGroup}>
+                  <Text style={styles.categoryLabel}>
+                    {CATEGORY_LABELS[cat]?.[lang] ?? cat}
+                  </Text>
+                  <View style={styles.cardList}>
+                    {list.map(c => (
+                      <CommunityCard
+                        key={c.id}
+                        community={c}
+                        lang={lang}
+                        onPress={() => router.push(`/community/${c.id}` as any)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* All joined — nothing left to browse */}
+        {user && joinedList.length > 0 && !hasUnjoined && (
+          <View style={styles.allJoinedBox}>
+            <Text style={styles.allJoinedText}>
+              {t('모든 커뮤니티에 참여 중입니다 🎉', 'You\'ve joined all communities 🎉')}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
             {t(
-              '커뮤니티 글은 노동자 간 정보 공유이며, 법률 자문이 아닙니다. 법적 판단은 노무사와 상담하세요.',
-              'Community posts are peer information sharing, not legal advice. Consult a 노무사 for legal decisions.'
+              '커뮤니티 글은 노동자 간 정보 공유이며 법률 자문이 아닙니다.',
+              'Community posts are peer information sharing, not legal advice.'
             )}
           </Text>
         </View>
@@ -195,22 +246,24 @@ export default function CommunityScreen() {
 }
 
 function CommunityCard({
-  community, lang, joined, onPress,
-}: { community: Community; lang: 'ko' | 'en'; joined: boolean; onPress: () => void }) {
+  community, lang, onPress,
+}: { community: Community; lang: 'ko' | 'en'; onPress: () => void }) {
   const name = lang === 'ko' ? community.name_ko : community.name_en;
   const desc = lang === 'ko' ? community.description_ko : community.description_en;
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75} accessibilityRole="button">
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.75}
+      accessibilityRole="button"
+    >
       <Text style={styles.cardEmoji}>{community.emoji}</Text>
       <View style={styles.cardBody}>
-        <View style={styles.cardTitleRow}>
-          <Text style={styles.cardName}>{name}</Text>
-          {joined && <Text style={styles.joinedBadge}>{lang === 'ko' ? '참여 중' : 'Joined'}</Text>}
-        </View>
-        <Text style={styles.cardDesc} numberOfLines={2}>{desc}</Text>
+        <Text style={styles.cardName}>{name}</Text>
+        <Text style={styles.cardDesc} numberOfLines={1}>{desc}</Text>
         <Text style={styles.cardMeta}>
-          {'👥 '}{community.member_count.toLocaleString()}{lang === 'ko' ? '명' : ' members'}
-          {'  ·  '}{'📝 '}{community.post_count.toLocaleString()}{lang === 'ko' ? '개' : ' posts'}
+          {'👥 '}{community.member_count.toLocaleString()}
+          {lang === 'ko' ? '명' : ' members'}
         </Text>
       </View>
       <Text style={styles.arrow}>›</Text>
@@ -220,34 +273,124 @@ function CommunityCard({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
   content: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
-  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: spacing.base },
+
+  header: { marginBottom: spacing.lg },
   title: { ...typography.headingL, color: colors.text, fontWeight: '700' },
   subtitle: { ...typography.bodyS, color: colors.textSecondary, marginTop: 2 },
-  logoutBtn: { paddingTop: 4 },
-  logoutText: { ...typography.bodyS, color: colors.textCaption },
-  userBanner: { backgroundColor: colors.selectedBg, borderRadius: radius.sm, padding: spacing.sm, marginBottom: spacing.base },
-  userBannerText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
-  authPrompt: { backgroundColor: colors.white, borderRadius: radius.md, padding: spacing.base, marginBottom: spacing.base, ...shadow.card, borderLeftWidth: 3, borderLeftColor: colors.brand },
+
+  errorText: { ...typography.bodyM, color: colors.text },
+  retryBtn: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.sm,
+  },
+  retryText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+
+  // Auth nudge
+  authPrompt: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.lg,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.brand,
+    ...shadow.card,
+  },
   authPromptTitle: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.xs },
   authPromptBody: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.md },
   authBtns: { flexDirection: 'row', gap: spacing.sm },
-  authBtnPrimary: { backgroundColor: colors.action, borderRadius: radius.sm, paddingHorizontal: spacing.base, paddingVertical: spacing.sm },
+  authBtnPrimary: {
+    backgroundColor: colors.action,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+  },
   authBtnPrimaryText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
-  authBtnSecondary: { backgroundColor: colors.white, borderRadius: radius.sm, paddingHorizontal: spacing.base, paddingVertical: spacing.sm, borderWidth: 1.5, borderColor: colors.action },
+  authBtnSecondary: {
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+    borderWidth: 1.5,
+    borderColor: colors.action,
+  },
   authBtnSecondaryText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
-  sectionLabel: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginTop: spacing.lg, marginBottom: spacing.sm },
-  list: { gap: spacing.sm },
-  card: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, borderRadius: radius.md, padding: spacing.base, ...shadow.card },
-  cardEmoji: { fontSize: 28, marginRight: spacing.md },
+
+  // Section wrapper
+  section: { marginBottom: spacing.lg },
+  sectionLabel: {
+    ...typography.bodyM,
+    color: colors.text,
+    fontWeight: '700',
+    marginBottom: spacing.sm,
+  },
+
+  // Horizontal chips for joined communities
+  chipsRow: { gap: spacing.sm, paddingBottom: spacing.xs },
+  chip: {
+    width: 88,
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    alignItems: 'center',
+    ...shadow.card,
+    borderWidth: 1.5,
+    borderColor: colors.selectedBg,
+  },
+  chipEmoji: { fontSize: 26, marginBottom: spacing.xs },
+  chipName: {
+    ...typography.caption,
+    color: colors.text,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+
+  // Category groups inside browse
+  categoryGroup: { marginBottom: spacing.md },
+  categoryLabel: {
+    ...typography.bodyS,
+    color: colors.textSecondary,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
+    paddingLeft: 2,
+  },
+  cardList: { gap: spacing.sm },
+
+  // Community card
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    ...shadow.card,
+  },
+  cardEmoji: { fontSize: 24, marginRight: spacing.md, width: 32, textAlign: 'center' },
   cardBody: { flex: 1 },
-  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: 2 },
-  cardName: { ...typography.bodyM, color: colors.text, fontWeight: '700' },
-  joinedBadge: { ...typography.caption, color: colors.action, backgroundColor: colors.selectedBg, borderRadius: 4, paddingHorizontal: spacing.xs, paddingVertical: 1, fontWeight: '600' },
-  cardDesc: { ...typography.bodyS, color: colors.textSecondary, lineHeight: 18, marginBottom: spacing.xs },
+  cardName: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: 2 },
+  cardDesc: { ...typography.bodyS, color: colors.textSecondary, lineHeight: 18, marginBottom: 4 },
   cardMeta: { ...typography.caption, color: colors.textCaption },
   arrow: { ...typography.headingM, color: colors.textCaption, marginLeft: spacing.sm },
-  disclaimer: { backgroundColor: colors.surfaceTint, borderRadius: radius.sm, padding: spacing.md, marginTop: spacing.lg },
+
+  // All joined state
+  allJoinedBox: {
+    backgroundColor: colors.selectedBg,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  allJoinedText: { ...typography.bodyS, color: colors.action, fontWeight: '600', textAlign: 'center' },
+
+  disclaimer: {
+    backgroundColor: colors.surfaceTint,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    marginTop: spacing.sm,
+  },
   disclaimerText: { ...typography.caption, color: colors.textCaption, lineHeight: 18 },
 });
