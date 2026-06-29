@@ -1,13 +1,30 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Switch, Alert } from 'react-native';
+import {
+  ScrollView, View, Text, StyleSheet, TouchableOpacity,
+  SafeAreaView, Switch, Alert, Share,
+} from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
 import { useAuth } from '../../context/AuthContext';
 
-function SettingRow({ emoji, label, onPress, value, isSwitch }: {
-  emoji: string; label: string; onPress?: () => void; value?: boolean; isSwitch?: boolean;
+const LOGBOOK_KEY = 'juro_logbook_v1';
+
+interface LogEntry {
+  id: string; date: string; hoursWorked: string;
+  payPromised: string; payReceived: string; note: string; createdAt: string;
+}
+
+function formatDate(iso: string, lang: 'ko' | 'en') {
+  const [y, m, d] = iso.split('-');
+  return lang === 'ko' ? `${y}년 ${parseInt(m)}월 ${parseInt(d)}일` : `${y}/${m}/${d}`;
+}
+
+function SettingRow({ emoji, label, onPress, value, isSwitch, danger }: {
+  emoji: string; label: string; onPress?: () => void;
+  value?: boolean; isSwitch?: boolean; danger?: boolean;
 }) {
   return (
     <TouchableOpacity
@@ -17,11 +34,11 @@ function SettingRow({ emoji, label, onPress, value, isSwitch }: {
       accessibilityRole={isSwitch ? 'switch' : 'button'}
     >
       <Text style={styles.settingEmoji}>{emoji}</Text>
-      <Text style={styles.settingLabel}>{label}</Text>
+      <Text style={[styles.settingLabel, danger && styles.settingLabelDanger]}>{label}</Text>
       {isSwitch ? (
         <Switch value={value} onValueChange={onPress as any} trackColor={{ true: colors.action }} />
       ) : (
-        <Text style={styles.arrow}>›</Text>
+        <Text style={[styles.arrow, danger && styles.arrowDanger]}>›</Text>
       )}
     </TouchableOpacity>
   );
@@ -30,26 +47,76 @@ function SettingRow({ emoji, label, onPress, value, isSwitch }: {
 export default function MyScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const lang = i18n.language;
+  const lang = i18n.language as 'ko' | 'en';
   const [largeText, setLargeText] = useState(false);
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const { user, profile, signOut } = useAuth();
 
-  function handleSignOut() {
-    Alert.alert(
-      lang === 'ko' ? '로그아웃' : 'Sign out',
-      lang === 'ko' ? '로그아웃 하시겠습니까?' : 'Are you sure you want to sign out?',
-      [
-        { text: lang === 'ko' ? '취소' : 'Cancel', style: 'cancel' },
-        {
-          text: lang === 'ko' ? '로그아웃' : 'Sign out',
-          style: 'destructive',
-          onPress: async () => {
-            await signOut();
-            router.replace('/(tabs)' as any);
-          },
-        },
-      ]
-    );
+  // ── Evidence export: reads logbook from device and shares as text ──────────
+  async function handleEvidenceExport() {
+    try {
+      const raw = await AsyncStorage.getItem(LOGBOOK_KEY);
+      const entries: LogEntry[] = raw ? JSON.parse(raw) : [];
+
+      if (entries.length === 0) {
+        Alert.alert(
+          lang === 'ko' ? '기록 없음' : 'No records',
+          lang === 'ko'
+            ? '근무 일지에 기록이 없습니다. 먼저 근무 기록을 추가해주세요.'
+            : 'Your logbook has no entries yet. Add shift records first.'
+        );
+        return;
+      }
+
+      const title = lang === 'ko'
+        ? '주리오 — 근무 일지 (증거 자료)'
+        : 'Jurio — Work Logbook (Evidence Record)';
+
+      const totalPromised = entries.reduce((s, e) => s + (parseFloat(e.payPromised.replace(/,/g, '')) || 0), 0);
+      const totalReceived = entries.reduce((s, e) => s + (parseFloat(e.payReceived.replace(/,/g, '')) || 0), 0);
+      const totalUnpaid = totalPromised - totalReceived;
+
+      const lines: string[] = [title, '='.repeat(40), ''];
+      lines.push(lang === 'ko' ? `📋 총 ${entries.length}건 기록` : `📋 Total ${entries.length} shift records`);
+      if (totalPromised > 0) lines.push(lang === 'ko' ? `💰 약속 임금 합계: ₩${totalPromised.toLocaleString()}` : `💰 Total promised: ₩${totalPromised.toLocaleString()}`);
+      if (totalReceived > 0) lines.push(lang === 'ko' ? `✅ 지급 금액 합계: ₩${totalReceived.toLocaleString()}` : `✅ Total received: ₩${totalReceived.toLocaleString()}`);
+      if (totalUnpaid > 0) lines.push(lang === 'ko' ? `⚠️  미지급 합계: ₩${totalUnpaid.toLocaleString()}` : `⚠️  Total unpaid: ₩${totalUnpaid.toLocaleString()}`);
+      lines.push('', '-'.repeat(40), '');
+
+      entries.forEach((e, i) => {
+        lines.push(`[${i + 1}] ${formatDate(e.date, lang)}`);
+        if (e.hoursWorked) lines.push(`  ${lang === 'ko' ? '근무' : 'Hours'}: ${e.hoursWorked}${lang === 'ko' ? '시간' : 'h'}`);
+        if (e.payPromised) lines.push(`  ${lang === 'ko' ? '약속' : 'Promised'}: ₩${e.payPromised}`);
+        if (e.payReceived) lines.push(`  ${lang === 'ko' ? '지급' : 'Received'}: ₩${e.payReceived}`);
+        const p = parseFloat(e.payPromised.replace(/,/g, '')) || 0;
+        const r = parseFloat(e.payReceived.replace(/,/g, '')) || 0;
+        if (p > r) lines.push(`  ${lang === 'ko' ? '⚠️ 미지급' : '⚠️ Unpaid'}: ₩${(p - r).toLocaleString()}`);
+        if (e.note) lines.push(`  ${lang === 'ko' ? '메모' : 'Note'}: ${e.note}`);
+        lines.push('');
+      });
+
+      lines.push('-'.repeat(40));
+      lines.push(lang === 'ko'
+        ? '이 문서는 노동부 진정 또는 노무사 상담에 활용할 수 있습니다.'
+        : 'This document can be used for a labor complaint or 노무사 consultation.');
+      lines.push(lang === 'ko' ? '고용노동부: ☎1350 · labor.moel.go.kr' : 'Ministry of Labor: ☎1350 · labor.moel.go.kr');
+      lines.push(lang === 'ko' ? '외국인 노동자: ☎1644-0644 · ☎1345' : 'Migrant workers: ☎1644-0644 · ☎1345');
+      lines.push('', lang === 'ko' ? `내보낸 날짜: ${new Date().toLocaleString('ko-KR')}` : `Exported: ${new Date().toLocaleString('en-GB')}`);
+
+      await Share.share({ title, message: lines.join('\n') });
+    } catch {
+      Alert.alert(
+        lang === 'ko' ? '오류' : 'Error',
+        lang === 'ko' ? '내보내기 중 오류가 발생했습니다.' : 'Something went wrong during export.'
+      );
+    }
+  }
+
+  // ── Sign out ───────────────────────────────────────────────────────────────
+  async function handleConfirmSignOut() {
+    setConfirmingSignOut(false);
+    await signOut();
+    router.replace('/');
   }
 
   return (
@@ -85,15 +152,16 @@ export default function MyScreen() {
           <SettingRow emoji="📂" label={lang === 'ko' ? '내 케이스 & 진행 상황' : 'My cases & progress'} onPress={() => router.push('/my-cases' as any)} />
         </View>
 
-        {/* Menu sections */}
+        {/* Tools */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '도구' : 'Tools'}</Text>
         <View style={styles.section}>
           <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
           <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
           <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
-          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook' as any)} />
+          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={handleEvidenceExport} />
         </View>
 
+        {/* Reference */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '정보' : 'Reference'}</Text>
         <View style={styles.section}>
           <SettingRow emoji="📚" label={lang === 'ko' ? '권리 가이드' : 'Rights guide'} onPress={() => router.push('/rights')} />
@@ -101,6 +169,7 @@ export default function MyScreen() {
           <SettingRow emoji="🌏" label={lang === 'ko' ? '외국인 노동자 허브' : 'Migrant worker hub'} onPress={() => router.push('/migrant-hub' as any)} />
         </View>
 
+        {/* Settings */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '설정' : 'Settings'}</Text>
         <View style={styles.section}>
           <SettingRow
@@ -118,6 +187,7 @@ export default function MyScreen() {
           <SettingRow emoji="🔔" label={t('my.alerts')} onPress={() => router.push('/alerts' as any)} />
         </View>
 
+        {/* Privacy & Legal */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '개인정보 & 법률' : 'Privacy & Legal'}</Text>
         <View style={styles.section}>
           <SettingRow emoji="🛡️" label={t('my.privacyCenter')} onPress={() => router.push('/privacy')} />
@@ -125,11 +195,39 @@ export default function MyScreen() {
           <SettingRow emoji="ℹ️" label={t('my.about')} onPress={() => router.push('/about' as any)} />
         </View>
 
+        {/* Account — sign out with inline confirmation */}
         {user && (
           <>
             <Text style={styles.sectionLabel}>{lang === 'ko' ? '계정' : 'Account'}</Text>
             <View style={styles.section}>
-              <SettingRow emoji="🚪" label={lang === 'ko' ? '로그아웃' : 'Sign out'} onPress={handleSignOut} />
+              {confirmingSignOut ? (
+                <View style={styles.signOutConfirm}>
+                  <Text style={styles.signOutQuestion}>
+                    {lang === 'ko' ? '정말 로그아웃 하시겠습니까?' : 'Are you sure you want to sign out?'}
+                  </Text>
+                  <View style={styles.signOutBtns}>
+                    <TouchableOpacity
+                      style={styles.cancelBtn}
+                      onPress={() => setConfirmingSignOut(false)}
+                    >
+                      <Text style={styles.cancelBtnText}>{lang === 'ko' ? '취소' : 'Cancel'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.confirmBtn}
+                      onPress={handleConfirmSignOut}
+                    >
+                      <Text style={styles.confirmBtnText}>{lang === 'ko' ? '로그아웃' : 'Sign out'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <SettingRow
+                  emoji="🚪"
+                  label={lang === 'ko' ? '로그아웃' : 'Sign out'}
+                  danger
+                  onPress={() => setConfirmingSignOut(true)}
+                />
+              )}
             </View>
           </>
         )}
@@ -152,7 +250,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   trustText: { ...typography.bodyS, color: colors.action, fontWeight: '600', textAlign: 'center' },
-  sectionLabel: { ...typography.bodyS, color: colors.textCaption, fontWeight: '700', marginBottom: spacing.xs, marginTop: spacing.base, textTransform: 'uppercase', letterSpacing: 0.5 },
+  sectionLabel: {
+    ...typography.bodyS,
+    color: colors.textCaption,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
+    marginTop: spacing.base,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   section: {
     backgroundColor: colors.white,
     borderRadius: radius.md,
@@ -169,7 +275,9 @@ const styles = StyleSheet.create({
   },
   settingEmoji: { fontSize: 20, marginRight: spacing.md },
   settingLabel: { ...typography.bodyM, color: colors.text, flex: 1 },
+  settingLabelDanger: { color: '#DC2626' },
   arrow: { ...typography.headingM, color: colors.textCaption },
+  arrowDanger: { color: '#DC2626' },
   userBanner: {
     backgroundColor: colors.selectedBg,
     borderRadius: radius.md,
@@ -189,4 +297,43 @@ const styles = StyleSheet.create({
   },
   signInPromptText: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.xs },
   signInLink: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+
+  // Inline sign-out confirmation
+  signOutConfirm: {
+    padding: spacing.base,
+  },
+  signOutQuestion: {
+    ...typography.bodyM,
+    color: colors.text,
+    fontWeight: '600',
+    marginBottom: spacing.md,
+  },
+  signOutBtns: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  cancelBtn: {
+    flex: 1,
+    backgroundColor: colors.surfaceTint,
+    borderRadius: radius.sm,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  cancelBtnText: {
+    ...typography.bodyS,
+    color: colors.textSecondary,
+    fontWeight: '700',
+  },
+  confirmBtn: {
+    flex: 1,
+    backgroundColor: '#DC2626',
+    borderRadius: radius.sm,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  confirmBtnText: {
+    ...typography.bodyS,
+    color: colors.white,
+    fontWeight: '700',
+  },
 });
