@@ -40,7 +40,14 @@ export default function MyScreen() {
       lang === 'ko' ? '로그아웃 하시겠습니까?' : 'Are you sure you want to sign out?',
       [
         { text: lang === 'ko' ? '취소' : 'Cancel', style: 'cancel' },
-        { text: lang === 'ko' ? '로그아웃' : 'Sign out', style: 'destructive', onPress: signOut },
+        {
+          text: lang === 'ko' ? '로그아웃' : 'Sign out',
+          style: 'destructive',
+          onPress: async () => {
+            await signOut();
+            router.replace('/(tabs)' as any);
+          },
+        },
       ]
     );
   }
@@ -84,7 +91,7 @@ export default function MyScreen() {
           <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
           <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
           <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
-          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook?export=true' as any)} />
+          <SettingRow emoji="📤" label={t('my.evidenceExport')} onPress={() => router.push('/logbook' as any)} />
         </View>
 
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '정보' : 'Reference'}</Text>

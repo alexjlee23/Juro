@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       profile,
       loading,
-      signOut: async () => supabase.auth.signOut(),
+      signOut: async () => { await supabase.auth.signOut(); },
       refreshProfile: () => session ? fetchProfile(session.user.id) : Promise.resolve(),
     }}>
       {children}
