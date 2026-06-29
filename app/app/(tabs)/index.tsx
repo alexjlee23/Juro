@@ -8,6 +8,16 @@ import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
 import { useConfig } from '../../lib/useConfig';
+import directoryData from '../../content/directory.json';
+
+const SPECIALIZATIONS = [
+  { id: 'unpaid_wages', ko: '임금체불', en: 'Unpaid Wages' },
+  { id: 'unfair_dismissal', ko: '부당해고', en: 'Unfair Dismissal' },
+  { id: 'harassment', ko: '괴롭힘', en: 'Harassment' },
+  { id: 'industrial_accident', ko: '산업재해', en: 'Industrial Accident' },
+  { id: 'hr_labor', ko: '인사노무', en: 'HR & Labor' },
+  { id: 'safety', ko: '산업안전', en: 'Safety' },
+];
 
 type SearchItem = {
   type: 'situation' | 'right' | 'hotline' | 'directory';
@@ -69,7 +79,42 @@ export default function HomeScreen() {
   const router = useRouter();
   const lang = i18n.language as 'ko' | 'en';
   const [query, setQuery] = useState('');
+  const [nomusaQuery, setNomusaQuery] = useState('');
   const { minWageYear, minWageHourly } = useConfig();
+
+  // 노무사 results for the home widget (always-visible inline search)
+  const nomusaWidgetResults = useMemo(() => {
+    const q = nomusaQuery.trim().toLowerCase();
+    const list = directoryData as any[];
+    if (!q) return list.slice(0, 4);
+    return list.filter(d =>
+      d.name.ko.includes(q) ||
+      d.name.en.toLowerCase().includes(q) ||
+      d.affiliation.ko.includes(q) ||
+      d.region.ko.includes(q) ||
+      d.specializations.some((s: string) => {
+        const spec = SPECIALIZATIONS.find(x => x.id === s);
+        return spec && (spec.ko.includes(q) || spec.en.toLowerCase().includes(q));
+      })
+    );
+  }, [nomusaQuery]);
+
+  // 노무사 results matched against the main search query
+  const nomusaSearchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const list = directoryData as any[];
+    return list.filter(d =>
+      d.name.ko.includes(q) ||
+      d.name.en.toLowerCase().includes(q) ||
+      d.affiliation.ko.includes(q) ||
+      d.region.ko.includes(q) ||
+      d.specializations.some((s: string) => {
+        const spec = SPECIALIZATIONS.find(x => x.id === s);
+        return spec && (spec.ko.includes(q) || spec.en.toLowerCase().includes(q));
+      })
+    ).slice(0, 5);
+  }, [query]);
 
   const SEARCH_INDEX_LIVE = useMemo(() => SEARCH_INDEX.map(item => {
     if (item.type === 'right' && item.keywords.includes('10320')) {
@@ -156,27 +201,51 @@ export default function HomeScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* 노무사 — always pinned at the top of any search result */}
-          <TouchableOpacity
-            style={styles.nomusaPinned}
-            onPress={() => router.push('/directory')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.nomusaPinnedLeft}>
-              <Text style={styles.nomusaPinnedEmoji}>🧑‍⚖️</Text>
-              <View>
-                <Text style={styles.nomusaPinnedTitle}>
-                  {lang === 'ko' ? '노무사와 직접 상담하세요' : 'Talk to a certified 노무사'}
-                </Text>
-                <Text style={styles.nomusaPinnedSub}>
-                  {lang === 'ko' ? '공인노무사 422명 · 지역·전문분야 검색' : '422 verified attorneys · Filter by region & specialty'}
-                </Text>
-              </View>
+          {/* 노무사 — inline results at the top of every search */}
+          <View style={styles.nomusaSearchSection}>
+            <View style={styles.nomusaSearchHeader}>
+              <Text style={styles.nomusaSearchTitle}>🧑‍⚖️ {lang === 'ko' ? '노무사 상담' : '노무사 Consultation'}</Text>
+              <TouchableOpacity onPress={() => router.push('/directory')}>
+                <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? '전체 보기 →' : 'See all →'}</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.nomusaPinnedBtn}>
-              <Text style={styles.nomusaPinnedBtnText}>{lang === 'ko' ? '찾기 →' : 'Find →'}</Text>
-            </View>
-          </TouchableOpacity>
+            {nomusaSearchResults.length > 0 ? (
+              nomusaSearchResults.map((d: any) => (
+                <View key={d.id} style={styles.nomusaCard}>
+                  <View style={styles.nomusaCardInfo}>
+                    <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
+                    <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
+                    <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.nomusaCallBtn}
+                    onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
+                  >
+                    <Text style={styles.nomusaCallIcon}>📞</Text>
+                    <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            ) : (
+              /* No matching 노무사 — show top 3 as a default */
+              (directoryData as any[]).slice(0, 3).map((d: any) => (
+                <View key={d.id} style={styles.nomusaCard}>
+                  <View style={styles.nomusaCardInfo}>
+                    <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
+                    <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
+                    <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.nomusaCallBtn}
+                    onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
+                  >
+                    <Text style={styles.nomusaCallIcon}>📞</Text>
+                    <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+          </View>
 
           {/* No matches for the actual query */}
           {searchResults!.length === 0 && (
@@ -285,26 +354,52 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* 노무사 찾기 — prominent full-width banner */}
-          <TouchableOpacity
-            style={styles.nomusaBanner}
-            onPress={() => router.push('/directory')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-          >
-            <Text style={styles.nomusaBannerEmoji}>🧑‍⚖️</Text>
-            <View style={styles.nomusaBannerText}>
-              <Text style={styles.nomusaBannerTitle}>
-                {lang === 'ko' ? '공인노무사와 직접 상담' : 'Talk to a certified 노무사'}
-              </Text>
-              <Text style={styles.nomusaBannerSub}>
-                {lang === 'ko' ? '422명 · 지역·전문분야 검색 가능' : '422 attorneys · Search by region & specialty'}
-              </Text>
+          {/* 노무사 inline search widget */}
+          <View style={styles.nomusaWidget}>
+            <View style={styles.nomusaWidgetHeader}>
+              <Text style={styles.nomusaWidgetTitle}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a certified 노무사'}</Text>
+              <TouchableOpacity onPress={() => router.push('/directory')}>
+                <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 422명 →` : 'See all 422 →'}</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.nomusaBannerBtn}>
-              <Text style={styles.nomusaBannerBtnText}>{lang === 'ko' ? '찾기 →' : 'Find →'}</Text>
+            <View style={styles.nomusaWidgetSearch}>
+              <Text style={styles.nomusaWidgetSearchIcon}>🔍</Text>
+              <TextInput
+                style={styles.nomusaWidgetInput}
+                placeholder={lang === 'ko' ? '이름, 지역, 전문분야...' : 'Name, region, specialty...'}
+                placeholderTextColor={colors.textCaption}
+                value={nomusaQuery}
+                onChangeText={setNomusaQuery}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {nomusaQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setNomusaQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Text style={styles.nomusaWidgetClear}>✕</Text>
+                </TouchableOpacity>
+              )}
             </View>
-          </TouchableOpacity>
+            {nomusaWidgetResults.map((d: any) => (
+              <View key={d.id} style={styles.nomusaCard}>
+                <View style={styles.nomusaCardInfo}>
+                  <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
+                  <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
+                  <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.nomusaCallBtn}
+                  onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.nomusaCallIcon}>📞</Text>
+                  <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            {nomusaWidgetResults.length === 0 && (
+              <Text style={styles.nomusaEmpty}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No results found.'}</Text>
+            )}
+          </View>
 
           {/* Situation tiles */}
           <Text style={styles.sectionTitle}>{lang === 'ko' ? '어떤 상황인가요?' : "What's your situation?"}</Text>
@@ -401,27 +496,18 @@ const styles = StyleSheet.create({
   // Search results
   resultsContent: { paddingHorizontal: spacing.base, paddingTop: spacing.sm },
 
-  // 노무사 pinned card — always top of search results
-  nomusaPinned: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.brand,
+  // 노무사 search section in search results
+  nomusaSearchSection: {
+    backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.base,
     marginBottom: spacing.base,
-    gap: spacing.sm,
+    borderWidth: 1.5,
+    borderColor: colors.brand,
+    ...shadow.card,
   },
-  nomusaPinnedLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: spacing.sm },
-  nomusaPinnedEmoji: { fontSize: 28 },
-  nomusaPinnedTitle: { ...typography.bodyM, color: colors.white, fontWeight: '700' },
-  nomusaPinnedSub: { ...typography.caption, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  nomusaPinnedBtn: {
-    backgroundColor: colors.white,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  nomusaPinnedBtnText: { ...typography.bodyS, color: colors.brand, fontWeight: '700' },
+  nomusaSearchHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm },
+  nomusaSearchTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700' },
 
   noResults: { alignItems: 'center', paddingVertical: spacing.xl },
   noResultsEmoji: { fontSize: 40, marginBottom: spacing.sm },
@@ -485,30 +571,57 @@ const styles = StyleSheet.create({
   },
   trustText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
 
-  // 노무사 prominent banner on home page
-  nomusaBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  // 노무사 inline search widget on home page
+  nomusaWidget: {
     backgroundColor: colors.white,
     borderRadius: radius.md,
     padding: spacing.base,
     marginBottom: spacing.lg,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: colors.brand,
     ...shadow.card,
-    gap: spacing.sm,
   },
-  nomusaBannerEmoji: { fontSize: 32 },
-  nomusaBannerText: { flex: 1 },
-  nomusaBannerTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700' },
-  nomusaBannerSub: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
-  nomusaBannerBtn: {
-    backgroundColor: colors.brand,
+  nomusaWidgetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm },
+  nomusaWidgetTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700' },
+  nomusaSeeAll: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
+  nomusaWidgetSearch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background,
     borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
+    minHeight: 40,
   },
-  nomusaBannerBtnText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
+  nomusaWidgetSearchIcon: { fontSize: 14, marginRight: spacing.xs },
+  nomusaWidgetInput: { flex: 1, ...typography.bodyS, color: colors.text },
+  nomusaWidgetClear: { ...typography.bodyS, color: colors.textCaption, paddingLeft: spacing.xs },
+  nomusaEmpty: { ...typography.bodyS, color: colors.textCaption, textAlign: 'center', paddingVertical: spacing.sm },
+
+  // Shared 노무사 card (used in both home widget and search results)
+  nomusaCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  nomusaCardInfo: { flex: 1 },
+  nomusaName: { ...typography.bodyS, color: colors.text, fontWeight: '700' },
+  nomusaAffil: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
+  nomusaRegion: { ...typography.caption, color: colors.textCaption, marginTop: 1 },
+  nomusaCallBtn: {
+    backgroundColor: colors.action,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    alignItems: 'center',
+    minWidth: 52,
+  },
+  nomusaCallIcon: { fontSize: 14 },
+  nomusaCallLabel: { ...typography.caption, color: colors.white, fontWeight: '700', marginTop: 1 },
 
   sectionTitle: { ...typography.headingM, color: colors.text, fontWeight: '700', marginBottom: spacing.md },
   tilesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
