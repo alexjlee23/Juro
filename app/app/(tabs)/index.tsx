@@ -75,6 +75,38 @@ const QUICK_HOTLINES = [
   { number: '1588-0075', dialNumber: '15880075', ko: 'COMWEL', en: 'COMWEL' },
 ];
 
+function NomusaCard({ d, lang }: { d: any; lang: 'ko' | 'en' }) {
+  return (
+    <View style={styles.nomusaCard}>
+      <View style={styles.nomusaCardInfo}>
+        <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
+        <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
+        <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
+      </View>
+      {d.kcplaaUrl && (
+        <TouchableOpacity
+          style={styles.nomusaLinkBtn}
+          onPress={() => Linking.openURL(d.kcplaaUrl)}
+          accessibilityRole="link"
+          accessibilityLabel={lang === 'ko' ? `${d.name.ko} 프로필 보기` : `View ${d.name.en}'s profile`}
+        >
+          <Text style={styles.nomusaLinkIcon}>🔗</Text>
+          <Text style={styles.nomusaLinkLabel}>{lang === 'ko' ? '정보' : 'Info'}</Text>
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity
+        style={styles.nomusaCallBtn}
+        onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
+        accessibilityRole="button"
+        accessibilityLabel={lang === 'ko' ? `${d.name.ko}에게 전화` : `Call ${d.name.en}`}
+      >
+        <Text style={styles.nomusaCallIcon}>📞</Text>
+        <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 export default function HomeScreen() {
   const { i18n } = useTranslation();
   const router = useRouter();
@@ -228,40 +260,10 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
             {nomusaSearchResults.length > 0 ? (
-              nomusaSearchResults.map((d: any) => (
-                <View key={d.id} style={styles.nomusaCard}>
-                  <View style={styles.nomusaCardInfo}>
-                    <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
-                    <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
-                    <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.nomusaCallBtn}
-                    onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
-                  >
-                    <Text style={styles.nomusaCallIcon}>📞</Text>
-                    <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
+              nomusaSearchResults.map((d: any) => <NomusaCard key={d.id} d={d} lang={lang} />)
             ) : (
               /* No matching 노무사 — show top 3 as a default */
-              (directoryData as any[]).slice(0, 3).map((d: any) => (
-                <View key={d.id} style={styles.nomusaCard}>
-                  <View style={styles.nomusaCardInfo}>
-                    <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
-                    <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
-                    <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.nomusaCallBtn}
-                    onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
-                  >
-                    <Text style={styles.nomusaCallIcon}>📞</Text>
-                    <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
+              (directoryData as any[]).slice(0, 3).map((d: any) => <NomusaCard key={d.id} d={d} lang={lang} />)
             )}
           </View>
 
@@ -437,23 +439,7 @@ export default function HomeScreen() {
               )}
             </View>
 
-            {nomusaWidgetResults.map((d: any) => (
-              <View key={d.id} style={styles.nomusaCard}>
-                <View style={styles.nomusaCardInfo}>
-                  <Text style={styles.nomusaName}>{d.name[lang === 'ko' ? 'ko' : 'en']}</Text>
-                  <Text style={styles.nomusaAffil}>{d.affiliation[lang === 'ko' ? 'ko' : 'en']}</Text>
-                  <Text style={styles.nomusaRegion}>📍 {d.region[lang === 'ko' ? 'ko' : 'en']}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.nomusaCallBtn}
-                  onPress={() => Linking.openURL(`tel:${d.phone.replace(/-/g, '')}`)}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.nomusaCallIcon}>📞</Text>
-                  <Text style={styles.nomusaCallLabel}>{lang === 'ko' ? '전화' : 'Call'}</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+            {nomusaWidgetResults.map((d: any) => <NomusaCard key={d.id} d={d} lang={lang} />)}
             {nomusaWidgetResults.length === 0 && (
               <Text style={styles.nomusaEmpty}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No results found.'}</Text>
             )}
@@ -680,6 +666,19 @@ const styles = StyleSheet.create({
   nomusaName: { ...typography.bodyS, color: colors.text, fontWeight: '700' },
   nomusaAffil: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
   nomusaRegion: { ...typography.caption, color: colors.textCaption, marginTop: 1 },
+  nomusaLinkBtn: {
+    backgroundColor: colors.surfaceTint,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    alignItems: 'center',
+    minWidth: 52,
+    marginRight: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  nomusaLinkIcon: { fontSize: 14 },
+  nomusaLinkLabel: { ...typography.caption, color: colors.textSecondary, fontWeight: '700', marginTop: 1 },
   nomusaCallBtn: {
     backgroundColor: colors.action,
     borderRadius: radius.sm,
