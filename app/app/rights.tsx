@@ -5,8 +5,10 @@ import { colors, typography, spacing, radius, shadow } from '../constants/theme'
 import Banner from '../components/ui/Banner';
 import { useConfig } from '../lib/useConfig';
 
-// lawDateKey maps each topic to the app_config key for its amendment date
+// section: 'universal' = applies to ALL workplaces regardless of size
+//          'five_plus' = ONLY applies to workplaces with 5+ employees
 const RIGHTS_TOPICS = [
+  // ── UNIVERSAL ────────────────────────────────────────────────────────────
   {
     id: 'unpaid-wages',
     emoji: '💰',
@@ -21,7 +23,7 @@ const RIGHTS_TOPICS = [
       { article: '제49조', url: 'https://www.law.go.kr/법령/근로기준법/제49조' },
     ],
     lawDateKey: '근로기준법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: true,
   },
   {
@@ -36,7 +38,7 @@ const RIGHTS_TOPICS = [
       { article: '최저임금위원회', url: 'https://www.minimumwage.go.kr' },
     ],
     lawDateKey: '최저임금법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: true,
   },
   {
@@ -51,23 +53,23 @@ const RIGHTS_TOPICS = [
       { article: '제17조', url: 'https://www.law.go.kr/법령/근로기준법/제17조' },
     ],
     lawDateKey: '근로기준법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: true,
   },
   {
-    id: 'overtime',
-    emoji: '⏰',
-    ko: '연장·야간·휴일 수당',
-    en: 'Overtime & premium pay',
-    summaryKo: '연장·야간(22~06시)·휴일 근로는 통상임금의 +50%. 8시간 초과 휴일 근로는 +100%. 5인 미만 사업장은 가산임금 미적용.',
-    summaryEn: 'Overtime, night (22:00–06:00), and holiday each earn +50%. Holiday >8h = +100%. Premiums do NOT apply at <5-person workplaces.',
-    statute: '근로기준법 56조',
+    id: 'pay-stub',
+    emoji: '🧾',
+    ko: '임금명세서',
+    en: 'Pay stub (payslip)',
+    summaryKo: '2021년 11월부터 모든 사업주는 임금 지급 시 항목별 계산 내역이 담긴 명세서를 교부해야 합니다. 미교부 시 최대 500만원 과태료. 받지 못했다면 요청하세요.',
+    summaryEn: 'Since Nov 2021, all employers must provide a pay stub with itemized breakdown at every pay period. Penalty up to ₩5M. If you haven\'t received one, ask.',
+    statute: '근로기준법 48조',
     urls: [
-      { article: '제56조', url: 'https://www.law.go.kr/법령/근로기준법/제56조' },
+      { article: '제48조', url: 'https://www.law.go.kr/법령/근로기준법/제48조' },
     ],
     lawDateKey: '근로기준법',
-    flag5: false,
-    migrant: false,
+    section: 'universal' as const,
+    migrant: true,
   },
   {
     id: 'weekly-holiday',
@@ -81,22 +83,7 @@ const RIGHTS_TOPICS = [
       { article: '제55조', url: 'https://www.law.go.kr/법령/근로기준법/제55조' },
     ],
     lawDateKey: '근로기준법',
-    flag5: true,
-    migrant: false,
-  },
-  {
-    id: 'annual-leave',
-    emoji: '🌴',
-    ko: '연차휴가',
-    en: 'Annual leave',
-    summaryKo: '1년 이상 근무(출근율 80% 이상) → 15일. 1년 미만 → 매월 1일 (최대 11일). 상한 25일. 미사용 연차는 수당으로 지급.',
-    summaryEn: '1+ year (80%+ attendance) → 15 days. Under 1 year → 1 day/month (max 11). Cap: 25 days. Unused leave must be paid out.',
-    statute: '근로기준법 60조',
-    urls: [
-      { article: '제60조', url: 'https://www.law.go.kr/법령/근로기준법/제60조' },
-    ],
-    lawDateKey: '근로기준법',
-    flag5: false,
+    section: 'universal' as const,
     migrant: false,
   },
   {
@@ -104,8 +91,8 @@ const RIGHTS_TOPICS = [
     emoji: '💼',
     ko: '퇴직금',
     en: 'Severance pay',
-    summaryKo: '1년 이상 근무 시 평균임금 30일분 이상. 퇴직일로부터 14일 내 지급 의무. 3년 이내 청구 가능. 5인 미만 사업장도 적용.',
-    summaryEn: '1+ year → 30+ days avg wage. Must be paid within 14 days of leaving. Claim within 3 years. Applies at <5-person workplaces.',
+    summaryKo: '1년 이상 근무 시 평균임금 30일분 이상. 퇴직일로부터 14일 내 지급 의무. 3년 이내 청구 가능. 사업장 규모 무관 적용.',
+    summaryEn: '1+ year → 30+ days avg wage. Must be paid within 14 days of leaving. Claim within 3 years. Applies at all workplace sizes.',
     statute: '퇴직급여법 8·9·10조',
     urls: [
       { article: '제8조', url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제8조' },
@@ -113,7 +100,7 @@ const RIGHTS_TOPICS = [
       { article: '제10조', url: 'https://www.law.go.kr/법령/근로자퇴직급여보장법/제10조' },
     ],
     lawDateKey: '근로자퇴직급여보장법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: true,
   },
   {
@@ -128,41 +115,8 @@ const RIGHTS_TOPICS = [
       { article: '제26조', url: 'https://www.law.go.kr/법령/근로기준법/제26조' },
     ],
     lawDateKey: '근로기준법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: false,
-  },
-  {
-    id: 'unfair-dismissal',
-    emoji: '🏛️',
-    ko: '부당해고 구제',
-    en: 'Unfair dismissal',
-    summaryKo: '해고일로부터 3개월 내 노동위원회에 구제 신청 가능. 서면 통보 없는 해고는 무효. 5인 이상 사업장에 적용.',
-    summaryEn: 'Apply to the Labor Relations Commission within 3 months of dismissal. Verbal dismissal is void. Applies at 5+ person workplaces.',
-    statute: '근로기준법 23·27·28조',
-    urls: [
-      { article: '제23조', url: 'https://www.law.go.kr/법령/근로기준법/제23조' },
-      { article: '제27조', url: 'https://www.law.go.kr/법령/근로기준법/제27조' },
-      { article: '제28조', url: 'https://www.law.go.kr/법령/근로기준법/제28조' },
-    ],
-    lawDateKey: '근로기준법',
-    flag5: false,
-    migrant: false,
-  },
-  {
-    id: 'harassment',
-    emoji: '🛑',
-    ko: '직장 내 괴롭힘',
-    en: 'Workplace harassment',
-    summaryKo: '사용자는 신고 시 즉시 조사하고 피해자를 보호해야 합니다. 보복 금지. 사용자가 행위자인 경우 최대 1,000만원 과태료.',
-    summaryEn: 'Employer must investigate immediately and protect the victim. Retaliation is prohibited. Penalty up to ₩10M if employer is the harasser.',
-    statute: '근로기준법 76조의2·3',
-    urls: [
-      { article: '제76조의2', url: 'https://www.law.go.kr/법령/근로기준법/제76조의2' },
-      { article: '제76조의3', url: 'https://www.law.go.kr/법령/근로기준법/제76조의3' },
-    ],
-    lawDateKey: '근로기준법',
-    flag5: false,
-    migrant: true,
   },
   {
     id: 'industrial-accident',
@@ -176,7 +130,7 @@ const RIGHTS_TOPICS = [
       { article: '제37조', url: 'https://www.law.go.kr/법령/산업재해보상보험법/제37조' },
     ],
     lawDateKey: '산업재해보상보험법',
-    flag5: true,
+    section: 'universal' as const,
     migrant: true,
   },
   {
@@ -191,12 +145,131 @@ const RIGHTS_TOPICS = [
       { article: '제52조', url: 'https://www.law.go.kr/법령/산업안전보건법/제52조' },
     ],
     lawDateKey: '산업안전보건법',
-    flag5: true,
+    section: 'universal' as const,
+    migrant: true,
+  },
+  {
+    id: 'social-insurance',
+    emoji: '🛡️',
+    ko: '4대 사회보험',
+    en: 'Social insurance (4대보험)',
+    summaryKo: '대부분의 근로자는 국민건강보험·국민연금·고용보험·산재보험에 가입됩니다. 사업주가 신고·납부 의무를 집니다. 가입 누락 시 근로복지공단(☎1588-0075)에 신고하세요.',
+    summaryEn: 'Most workers are covered by health, pension, employment, and accident insurance. The employer must enroll and pay. If not enrolled, report to COMWEL ☎1588-0075.',
+    statute: '국민건강보험법 · 국민연금법 · 고용보험법 · 산재보험법',
+    urls: [
+      { article: '근로복지공단', url: 'https://www.comwel.or.kr' },
+    ],
+    lawDateKey: '산업재해보상보험법',
+    section: 'universal' as const,
+    migrant: true,
+  },
+  {
+    id: 'parental-leave',
+    emoji: '👶',
+    ko: '출산·육아 휴직',
+    en: 'Maternity & parental leave',
+    summaryKo: '출산전후휴가 90일(다태아 120일), 육아휴직 최대 1년(자녀 만 8세 이하). 급여는 고용보험에서 지급. 모든 사업장에 적용되며 거부 시 사업주 처벌.',
+    summaryEn: 'Maternity leave: 90 days (120 for multiples). Parental leave: up to 1 year (child ≤8). Paid via employment insurance. Applies to ALL employers; refusing it is punishable.',
+    statute: '남녀고용평등법 19조',
+    urls: [
+      { article: '제19조', url: 'https://www.law.go.kr/법령/남녀고용평등과일·가정양립지원에관한법률/제19조' },
+    ],
+    lawDateKey: '남녀고용평등과일·가정양립지원에관한법률',
+    section: 'universal' as const,
+    migrant: false,
+  },
+
+  // ── 5인 이상 사업장만 ──────────────────────────────────────────────────
+  {
+    id: 'overtime',
+    emoji: '⏰',
+    ko: '연장·야간·휴일 수당',
+    en: 'Overtime & premium pay',
+    summaryKo: '연장·야간(22~06시)·휴일 근로는 통상임금의 +50%. 8시간 초과 휴일 근로는 +100%. 5인 미만 사업장은 가산임금 미적용.',
+    summaryEn: 'Overtime, night (22:00–06:00), and holiday each earn +50%. Holiday >8h = +100%. This premium does NOT apply at workplaces with fewer than 5 employees.',
+    statute: '근로기준법 56조',
+    urls: [
+      { article: '제56조', url: 'https://www.law.go.kr/법령/근로기준법/제56조' },
+    ],
+    lawDateKey: '근로기준법',
+    section: 'five_plus' as const,
+    migrant: false,
+  },
+  {
+    id: 'working-hours',
+    emoji: '🕐',
+    ko: '근로시간 · 52시간제',
+    en: 'Working hours & 52-hour limit',
+    summaryKo: '법정 근로시간은 주 40시간(1일 8시간). 5인 이상 사업장에서는 연장 포함 주 최대 52시간. 이를 초과하는 근로 지시는 거부할 수 있으며 사업주는 처벌을 받습니다.',
+    summaryEn: 'Standard hours: 40h/week (8h/day). At 5+ workplaces, max 52h/week including overtime. You can refuse orders that exceed this, and the employer faces penalties.',
+    statute: '근로기준법 50·53조',
+    urls: [
+      { article: '제50조', url: 'https://www.law.go.kr/법령/근로기준법/제50조' },
+      { article: '제53조', url: 'https://www.law.go.kr/법령/근로기준법/제53조' },
+    ],
+    lawDateKey: '근로기준법',
+    section: 'five_plus' as const,
+    migrant: false,
+  },
+  {
+    id: 'annual-leave',
+    emoji: '🌴',
+    ko: '연차휴가',
+    en: 'Annual leave',
+    summaryKo: '1년 이상 근무(출근율 80% 이상) → 15일. 1년 미만 → 매월 1일(최대 11일). 상한 25일. 미사용 연차는 수당으로 지급. 5인 이상 사업장 적용.',
+    summaryEn: '1+ year (80%+ attendance) → 15 days. Under 1 year → 1 day/month (max 11). Cap: 25 days. Unused leave must be paid out. Applies to 5+ workplaces.',
+    statute: '근로기준법 60조',
+    urls: [
+      { article: '제60조', url: 'https://www.law.go.kr/법령/근로기준법/제60조' },
+    ],
+    lawDateKey: '근로기준법',
+    section: 'five_plus' as const,
+    migrant: false,
+  },
+  {
+    id: 'unfair-dismissal',
+    emoji: '🏛️',
+    ko: '부당해고 구제',
+    en: 'Unfair dismissal remedy',
+    summaryKo: '해고일로부터 3개월 내 노동위원회에 구제 신청 가능. 서면 통보 없는 해고는 무효. 복직 또는 금전 보상 명령 가능. 5인 이상 사업장 적용.',
+    summaryEn: 'Apply to the Labor Relations Commission within 3 months of dismissal. Verbal-only dismissal is void. Can order reinstatement or monetary compensation. Applies to 5+ workplaces.',
+    statute: '근로기준법 23·27·28조',
+    urls: [
+      { article: '제23조', url: 'https://www.law.go.kr/법령/근로기준법/제23조' },
+      { article: '제27조', url: 'https://www.law.go.kr/법령/근로기준법/제27조' },
+      { article: '제28조', url: 'https://www.law.go.kr/법령/근로기준법/제28조' },
+    ],
+    lawDateKey: '근로기준법',
+    section: 'five_plus' as const,
+    migrant: false,
+  },
+  {
+    id: 'harassment',
+    emoji: '🛑',
+    ko: '직장 내 괴롭힘',
+    en: 'Workplace harassment',
+    summaryKo: '사용자는 신고 시 즉시 조사하고 피해자를 보호해야 합니다. 보복 금지. 사용자가 행위자인 경우 최대 1,000만원 과태료. 5인 이상 사업장 적용.',
+    summaryEn: 'Employer must investigate immediately and protect the victim. Retaliation is prohibited. Penalty up to ₩10M if employer is the harasser. Applies to 5+ workplaces.',
+    statute: '근로기준법 76조의2·3',
+    urls: [
+      { article: '제76조의2', url: 'https://www.law.go.kr/법령/근로기준법/제76조의2' },
+      { article: '제76조의3', url: 'https://www.law.go.kr/법령/근로기준법/제76조의3' },
+    ],
+    lawDateKey: '근로기준법',
+    section: 'five_plus' as const,
     migrant: true,
   },
 ];
 
 type Topic = (typeof RIGHTS_TOPICS)[0] & { summaryKo: string; summaryEn: string };
+
+function SectionHeader({ ko, en, lang }: { ko: string; en: string; lang: 'ko' | 'en' }) {
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{lang === 'ko' ? ko : en}</Text>
+    </View>
+  );
+}
 
 function GridCard({
   topic,
@@ -212,7 +285,7 @@ function GridCard({
       <View style={styles.gridCardTop}>
         <Text style={styles.gridEmoji}>{topic.emoji}</Text>
         <View style={styles.badgeCol}>
-          {topic.flag5 && <Text style={styles.badge5}>5인↓</Text>}
+          {topic.section === 'five_plus' && <Text style={styles.badge5Plus}>5인+</Text>}
           {topic.migrant && <Text style={styles.badgeMigrant}>외국인</Text>}
         </View>
       </View>
@@ -242,13 +315,20 @@ function GridCard({
   );
 }
 
+function makeRows(items: Topic[]) {
+  const rows: Topic[][] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    rows.push(items.slice(i, i + 2));
+  }
+  return rows;
+}
+
 export default function RightsScreen() {
   const { i18n } = useTranslation();
   const router = useRouter();
   const lang = i18n.language as 'ko' | 'en';
   const { minWageYear, minWageHourly, minWageMonthly, lawDate } = useConfig();
 
-  // Build topics with dynamic minimum wage summary
   const topics: Topic[] = RIGHTS_TOPICS.map((t) => {
     if (t.id === 'minimum-wage') {
       const h = minWageHourly.toLocaleString();
@@ -262,10 +342,11 @@ export default function RightsScreen() {
     return t;
   });
 
-  const rows: Topic[][] = [];
-  for (let i = 0; i < topics.length; i += 2) {
-    rows.push(topics.slice(i, i + 2));
-  }
+  const universalTopics = topics.filter(t => t.section === 'universal');
+  const fivePlusTopics = topics.filter(t => t.section === 'five_plus');
+
+  const universalRows = makeRows(universalTopics);
+  const fivePlusRows = makeRows(fivePlusTopics);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -283,8 +364,8 @@ export default function RightsScreen() {
 
         <View style={styles.legend}>
           <View style={styles.legendItem}>
-            <Text style={styles.legendBadge}>5인↓</Text>
-            <Text style={styles.legendText}>{lang === 'ko' ? '5인 미만도 적용' : '<5-person workplaces'}</Text>
+            <Text style={styles.legendBadge5Plus}>5인+</Text>
+            <Text style={styles.legendText}>{lang === 'ko' ? '5인 이상 사업장에만 적용' : 'Applies only to 5+ workplaces'}</Text>
           </View>
           <View style={styles.legendItem}>
             <Text style={styles.legendBadgeMigrant}>외국인</Text>
@@ -292,19 +373,41 @@ export default function RightsScreen() {
           </View>
         </View>
 
-        {rows.map((pair, i) => (
-          <View key={i} style={styles.gridRow}>
-            <GridCard
-              topic={pair[0]}
-              lang={lang}
-              updatedLabel={lawDate(pair[0].lawDateKey)}
-            />
+        {/* Section 1: Universal rights */}
+        <SectionHeader
+          ko="모든 근로자 · 사업장 규모 무관"
+          en="All workers — regardless of company size"
+          lang={lang}
+        />
+
+        {universalRows.map((pair, i) => (
+          <View key={`u-${i}`} style={styles.gridRow}>
+            <GridCard topic={pair[0]} lang={lang} updatedLabel={lawDate(pair[0].lawDateKey)} />
             {pair[1] ? (
-              <GridCard
-                topic={pair[1]}
-                lang={lang}
-                updatedLabel={lawDate(pair[1].lawDateKey)}
-              />
+              <GridCard topic={pair[1]} lang={lang} updatedLabel={lawDate(pair[1].lawDateKey)} />
+            ) : (
+              <View style={styles.gridCardPlaceholder} />
+            )}
+          </View>
+        ))}
+
+        {/* Section 2: 5+ employee workplace rights */}
+        <SectionHeader
+          ko="5인 이상 사업장 추가 권리"
+          en="Additional rights — 5+ employee workplaces"
+          lang={lang}
+        />
+        <Text style={styles.sectionNote}>
+          {lang === 'ko'
+            ? '아래 권리는 5인 이상 사업장에만 법적으로 보장됩니다. 5인 미만 사업장도 최저임금·임금명세서·퇴직금 등 위 권리는 모두 동일하게 적용됩니다.'
+            : 'The rights below are only guaranteed by law at workplaces with 5+ employees. Workplaces with fewer than 5 employees are still covered by all rights in the section above.'}
+        </Text>
+
+        {fivePlusRows.map((pair, i) => (
+          <View key={`f-${i}`} style={styles.gridRow}>
+            <GridCard topic={pair[0]} lang={lang} updatedLabel={lawDate(pair[0].lawDateKey)} />
+            {pair[1] ? (
+              <GridCard topic={pair[1]} lang={lang} updatedLabel={lawDate(pair[1].lawDateKey)} />
             ) : (
               <View style={styles.gridCardPlaceholder} />
             )}
@@ -337,9 +440,20 @@ const styles = StyleSheet.create({
   subtitle: { ...typography.bodyS, color: colors.textSecondary, marginBottom: spacing.base },
   legend: { flexDirection: 'row', gap: spacing.base, marginBottom: spacing.base, flexWrap: 'wrap' },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  legendBadge: { ...typography.caption, color: colors.warning, backgroundColor: '#FEF3C7', borderRadius: 4, paddingHorizontal: spacing.xs, paddingVertical: 2, fontWeight: '700' },
+  legendBadge5Plus: { ...typography.caption, color: colors.action, backgroundColor: colors.selectedBg, borderRadius: 4, paddingHorizontal: spacing.xs, paddingVertical: 2, fontWeight: '700' },
   legendBadgeMigrant: { ...typography.caption, color: colors.teal, backgroundColor: '#CCFBF1', borderRadius: 4, paddingHorizontal: spacing.xs, paddingVertical: 2, fontWeight: '700' },
   legendText: { ...typography.caption, color: colors.textCaption },
+
+  sectionHeader: {
+    backgroundColor: colors.action,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
+    marginTop: spacing.base,
+  },
+  sectionHeaderText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
+  sectionNote: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.sm, lineHeight: 18 },
 
   gridRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
   gridCard: {
@@ -353,7 +467,7 @@ const styles = StyleSheet.create({
   gridCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.xs },
   gridEmoji: { fontSize: 20 },
   badgeCol: { alignItems: 'flex-end', gap: 2 },
-  badge5: { color: colors.warning, backgroundColor: '#FEF3C7', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, fontWeight: '700', fontSize: 9 },
+  badge5Plus: { color: colors.action, backgroundColor: colors.selectedBg, borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, fontWeight: '700', fontSize: 9 },
   badgeMigrant: { color: colors.teal, backgroundColor: '#CCFBF1', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1, fontWeight: '700', fontSize: 9 },
   gridTitle: { ...typography.bodyS, color: colors.text, fontWeight: '700', marginBottom: spacing.xs, lineHeight: 18 },
   gridSummary: { fontSize: 11, color: colors.textSecondary, lineHeight: 16, marginBottom: spacing.sm, flexGrow: 1 },
