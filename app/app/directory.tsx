@@ -155,7 +155,29 @@ export default function DirectoryScreen() {
         {/* Results */}
         {filtered.length === 0 ? (
           <View style={styles.empty}>
+            <Text style={styles.emptyEmoji}>🔍</Text>
             <Text style={styles.emptyText}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No results found.'}</Text>
+            <Text style={styles.emptyHint}>
+              {lang === 'ko'
+                ? '필터를 지우거나 다른 지역을 선택해 보세요.'
+                : 'Try clearing the filters or choosing a different region.'}
+            </Text>
+            {(search || selectedSpec || selectedRegion) && (
+              <TouchableOpacity
+                style={styles.clearFiltersBtn}
+                onPress={() => { setSearch(''); setSelectedSpec(null); setSelectedRegion(null); setLocatedRegion(null); }}
+                accessibilityRole="button"
+              >
+                <Text style={styles.clearFiltersText}>{lang === 'ko' ? '필터 모두 지우기' : 'Clear all filters'}</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.emptyCallBtn}
+              onPress={() => Linking.openURL('tel:1350')}
+              accessibilityRole="button"
+            >
+              <Text style={styles.emptyCallText}>📞 {lang === 'ko' ? '고용노동부 1350 전화 상담' : 'Call Labor Ministry 1350 instead'}</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           filtered.map((d: any) => (
@@ -244,7 +266,13 @@ const styles = StyleSheet.create({
   chipText: { ...typography.caption, color: colors.text, fontWeight: '600' },
   chipTextActive: { color: colors.white },
   empty: { alignItems: 'center', padding: spacing.xl },
-  emptyText: { ...typography.bodyM, color: colors.textSecondary },
+  emptyEmoji: { fontSize: 36, marginBottom: spacing.sm },
+  emptyText: { ...typography.bodyM, color: colors.text, fontWeight: '700' },
+  emptyHint: { ...typography.bodyS, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.xs, marginBottom: spacing.base },
+  clearFiltersBtn: { backgroundColor: colors.selectedBg, borderRadius: radius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, marginBottom: spacing.sm },
+  clearFiltersText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+  emptyCallBtn: { backgroundColor: colors.action, borderRadius: radius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
+  emptyCallText: { ...typography.bodyS, color: colors.white, fontWeight: '700' },
   card: { backgroundColor: colors.white, borderRadius: radius.md, padding: spacing.base, marginHorizontal: spacing.base, marginBottom: spacing.sm, ...shadow.card },
   cardTop: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.xs },
   cardInfo: { flex: 1 },

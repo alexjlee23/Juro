@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
 import hotlines from '../../content/hotlines.json';
+import directoryData from '../../content/directory.json';
 
 const HOTLINE_CATEGORIES = {
   gov: ['moel_1350', 'comwel', 'seoul_labor'],
@@ -63,7 +64,9 @@ export default function FindScreen() {
               {lang === 'ko' ? '노무사 찾기' : 'Find a 노무사'}
             </Text>
             <Text style={styles.directoryCtaDetail}>
-              {lang === 'ko' ? '422명 · 지역·전문분야 검색 · KCPLAA 공인' : '422 attorneys · Filter by region & specialty'}
+              {lang === 'ko'
+                ? `${directoryData.length}명 · 지역·전문분야 검색 · KCPLAA 공인`
+                : `${directoryData.length} attorneys · Filter by region & specialty`}
             </Text>
           </View>
           <Text style={styles.directoryArrow}>›</Text>
@@ -88,6 +91,18 @@ export default function FindScreen() {
               📞 {lang === 'ko' ? '서울노동권익센터 1661-2020' : 'Seoul Labor Rights 1661-2020'}
             </Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Call preparation tip */}
+        <View style={styles.prepTip}>
+          <Text style={styles.prepTipTitle}>
+            {lang === 'ko' ? '💡 전화 전에 준비하면 좋아요' : '💡 Before you call, have ready:'}
+          </Text>
+          <Text style={styles.prepTipBody}>
+            {lang === 'ko'
+              ? '근로계약서 · 급여명세서 · 근무 기간과 시간 · 사장님과 주고받은 메시지. 없어도 상담은 가능합니다.'
+              : 'Employment contract · pay stubs · your work dates and hours · messages with your boss. You can still call without them.'}
+          </Text>
         </View>
 
         {/* Government hotlines */}
@@ -170,6 +185,15 @@ const styles = StyleSheet.create({
   freeConsultBody: { ...typography.bodyS, color: colors.textSecondary, lineHeight: 20, marginBottom: spacing.sm },
   freeConsultBtn: { alignSelf: 'flex-start', backgroundColor: colors.selectedBg, borderRadius: radius.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
   freeConsultBtnText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+
+  prepTip: {
+    backgroundColor: colors.surfaceTint,
+    borderRadius: radius.sm,
+    padding: spacing.md,
+    marginBottom: spacing.base,
+  },
+  prepTipTitle: { ...typography.bodyS, color: colors.text, fontWeight: '700', marginBottom: 2 },
+  prepTipBody: { ...typography.caption, color: colors.textSecondary, lineHeight: 18 },
 
   categoryTitle: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.sm, marginTop: spacing.xs },
   hotlineGroup: { marginBottom: spacing.base },

@@ -56,7 +56,7 @@ const SEARCH_INDEX: SearchItem[] = [
   { type: 'hotline', emoji: '📞', label: { ko: '청소년 근로권익센터 · 1644-3119', en: 'Youth Rights Center · 1644-3119' }, detail: { ko: '만 24세 이하 노무사 무료 상담', en: 'Free help for workers under 24' }, keywords: ['청소년', '알바', '24세', '1644-3119', 'youth', 'young worker'], number: '1644-3119' },
   { type: 'hotline', emoji: '📞', label: { ko: '다누리 · 1577-1366', en: 'Danuri · 1577-1366' }, detail: { ko: '24시간 · 13개 언어', en: '24h · 13 languages' }, keywords: ['다누리', '다문화', '1577', '1366', 'danuri', 'multicultural'], number: '1577-1366' },
   // Directory
-  { type: 'directory', emoji: '🧑‍⚖️', label: { ko: '노무사 찾기 (422명)', en: 'Find a 노무사 (422)' }, detail: { ko: '지역·전문분야 검색 · KCPLAA 공인', en: 'Filter by region & specialty · KCPLAA verified' }, keywords: ['노무사', '노동변호사', '상담', '전문가', 'nomusa', 'labor attorney', 'lawyer', 'consult', 'find'], path: '/directory' },
+  { type: 'directory', emoji: '🧑‍⚖️', label: { ko: `노무사 찾기 (${(directoryData as any[]).length}명)`, en: `Find a 노무사 (${(directoryData as any[]).length})` }, detail: { ko: '지역·전문분야 검색 · KCPLAA 공인', en: 'Filter by region & specialty · KCPLAA verified' }, keywords: ['노무사', '노동변호사', '상담', '전문가', 'nomusa', 'labor attorney', 'lawyer', 'consult', 'find'], path: '/directory' },
 ];
 
 const SITUATIONS = [
@@ -83,7 +83,8 @@ export default function HomeScreen() {
   const [nomusaQuery, setNomusaQuery] = useState('');
   const [nomusaRegion, setNomusaRegion] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
-  const { minWageYear, minWageHourly } = useConfig();
+  const { minWageYear, minWageHourly, minWageMonthly } = useConfig();
+  const nomusaCount = (directoryData as any[]).length;
 
   async function handleLocate() {
     setLocating(true);
@@ -194,7 +195,7 @@ export default function HomeScreen() {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder={lang === 'ko' ? '상황, 권리, 전화번호 검색...' : 'Search situation, rights, hotlines...'}
+            placeholder={lang === 'ko' ? '상황, 권리, 노무사, 전화번호 검색...' : 'Search situations, rights, 노무사, hotlines...'}
             placeholderTextColor={colors.textCaption}
             value={query}
             onChangeText={setQuery}
@@ -371,12 +372,35 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
+          {/* Today's info — current minimum wage */}
+          <TouchableOpacity
+            style={styles.minWageCard}
+            onPress={() => router.push('/rights')}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+          >
+            <View style={styles.minWageLeft}>
+              <Text style={styles.minWageLabel}>
+                {lang === 'ko' ? `${minWageYear}년 최저임금` : `${minWageYear} minimum wage`}
+              </Text>
+              <Text style={styles.minWageValue}>₩{minWageHourly.toLocaleString()}<Text style={styles.minWageUnit}>{lang === 'ko' ? ' /시간' : ' /hour'}</Text></Text>
+            </View>
+            <View style={styles.minWageRight}>
+              <Text style={styles.minWageMonthly}>
+                {lang === 'ko'
+                  ? `월 ₩${minWageMonthly.toLocaleString()} (209시간 기준)`
+                  : `≈ ₩${minWageMonthly.toLocaleString()} /month (209h)`}
+              </Text>
+              <Text style={styles.minWageLink}>{lang === 'ko' ? '권리 가이드 보기 →' : 'See rights guide →'}</Text>
+            </View>
+          </TouchableOpacity>
+
           {/* 노무사 inline search widget */}
           <View style={styles.nomusaWidget}>
             <View style={styles.nomusaWidgetHeader}>
               <Text style={styles.nomusaWidgetTitle}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a certified 노무사'}</Text>
               <TouchableOpacity onPress={() => router.push('/directory')}>
-                <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 422명 →` : 'See all 422 →'}</Text>
+                <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 ${nomusaCount}명 →` : `See all ${nomusaCount} →`}</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.nomusaWidgetSearch}>
@@ -435,14 +459,15 @@ export default function HomeScreen() {
             )}
           </View>
 
-          {/* Situation tiles */}
-          <Text style={styles.sectionTitle}>{lang === 'ko' ? '어떤 상황인가요?' : "What's your situation?"}</Text>
-
-          {/* Quick links — 3 items (노무사 has its own banner above) */}
+          {/* Quick links — 2×2 grid */}
           <View style={styles.quickLinks}>
             <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/rights')} accessibilityRole="button">
               <Text style={styles.quickLinkEmoji}>📖</Text>
               <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '권리 가이드' : 'Rights guide'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/tools' as any)} accessibilityRole="button">
+              <Text style={styles.quickLinkEmoji}>🧮</Text>
+              <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '임금·퇴직금 계산기' : 'Pay calculators'}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/migrant-hub' as any)} accessibilityRole="button">
               <Text style={styles.quickLinkEmoji}>🌏</Text>
@@ -453,6 +478,9 @@ export default function HomeScreen() {
               <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '상담 전화' : 'Hotlines'}</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Situation tiles */}
+          <Text style={styles.sectionTitle}>{lang === 'ko' ? '어떤 상황인가요?' : "What's your situation?"}</Text>
 
           <View style={styles.tilesGrid}>
             {SITUATIONS.map((s) => (
@@ -677,9 +705,30 @@ const styles = StyleSheet.create({
   tileEmoji: { fontSize: 28, marginBottom: spacing.xs },
   tileLabel: { ...typography.bodyS, color: colors.text, fontWeight: '600', lineHeight: 20 },
 
-  quickLinks: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
+  minWageCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.base,
+    marginBottom: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.success,
+    ...shadow.card,
+  },
+  minWageLeft: {},
+  minWageLabel: { ...typography.caption, color: colors.textCaption, fontWeight: '700', marginBottom: 2 },
+  minWageValue: { ...typography.headingM, color: colors.text, fontWeight: '700' },
+  minWageUnit: { ...typography.bodyS, color: colors.textSecondary, fontWeight: '400' },
+  minWageRight: { alignItems: 'flex-end', flexShrink: 1 },
+  minWageMonthly: { ...typography.caption, color: colors.textSecondary, marginBottom: 2, textAlign: 'right' },
+  minWageLink: { ...typography.caption, color: colors.action, fontWeight: '700' },
+
+  quickLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
   quickLink: {
-    flex: 1,
+    width: '48%',
+    flexGrow: 1,
     backgroundColor: colors.white,
     borderRadius: radius.sm,
     padding: spacing.sm,
