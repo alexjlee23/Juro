@@ -1,0 +1,120 @@
+<!-- Jurio 주리오 — Confirm signup email template
+     Styled to match the app's "이메일을 확인해 주세요" screen.
+     Paste into: Supabase Dashboard → Authentication → Email Templates → "Confirm signup"
+     Subject suggestion: [Jurio 주리오] 이메일 인증 / Verify your email -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F8FAFC;padding:32px 16px;">
+  <tr>
+    <td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;width:100%;background-color:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;">
+
+        <!-- Brand -->
+        <tr>
+          <td style="padding:32px 32px 0 32px;text-align:center;">
+            <span style="font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:20px;font-weight:700;color:#2563EB;">Jurio 주리오</span>
+          </td>
+        </tr>
+
+        <!-- Mailbox emoji -->
+        <tr>
+          <td style="padding:28px 32px 0 32px;text-align:center;font-size:56px;line-height:1;">
+            &#128235;
+          </td>
+        </tr>
+
+        <!-- Title -->
+        <tr>
+          <td style="padding:24px 32px 0 32px;text-align:center;">
+            <p style="margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:24px;font-weight:700;color:#0F172A;">
+              이메일을 확인해 주세요
+            </p>
+            <p style="margin:6px 0 0 0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:14px;color:#64748B;">
+              Verify your email
+            </p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:20px 32px 0 32px;text-align:center;">
+            <p style="margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:16px;line-height:26px;color:#334155;">
+              주리오 가입을 환영합니다!<br>
+              아래 버튼을 클릭하면 계정이 활성화됩니다.
+            </p>
+            <p style="margin:10px 0 0 0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#64748B;">
+              Welcome to Jurio! Click the button below to activate your account.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Spam-note strip (matches the app's light-blue band) -->
+        <tr>
+          <td style="padding:24px 0 0 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background-color:#EFF6FF;padding:14px 32px;text-align:center;">
+                  <p style="margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#334155;">
+                    이메일이 안 보이면 스팸 폴더를 확인하세요. · Can't find it? Check your spam folder.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- CTA button (solid blue, rounded — same as app primary button) -->
+        <tr>
+          <td align="center" style="padding:28px 32px 0 32px;">
+            <a href="{{ .ConfirmationURL }}"
+               style="display:inline-block;background-color:#1D4ED8;color:#FFFFFF;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:15px 48px;border-radius:10px;">
+              이메일 인증하기
+            </a>
+          </td>
+        </tr>
+
+        <!-- Secondary: fallback link (outlined-button feel, rendered as link) -->
+        <tr>
+          <td style="padding:20px 32px 0 32px;text-align:center;">
+            <p style="margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#64748B;word-break:break-all;">
+              버튼이 열리지 않으면 이 링크를 복사해 브라우저에 붙여넣으세요.<br>
+              If the button doesn't work, copy this link into your browser:<br>
+              <a href="{{ .ConfirmationURL }}" style="color:#1D4ED8;">{{ .ConfirmationURL }}</a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Trust note -->
+        <tr>
+          <td style="padding:24px 32px 32px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background-color:#EFF6FF;border-left:3px solid #2563EB;border-radius:8px;padding:14px 16px;">
+                  <p style="margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#334155;">
+                    🔒 주리오는 신분증·비자번호를 절대 묻지 않으며, 어디에도 신고하지 않습니다.<br>
+                    We never ask for your ID or visa number, and we never report you.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+
+      <!-- Footer (outside the card) -->
+      <table width="480" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;width:100%;">
+        <tr>
+          <td style="padding:20px 16px;text-align:center;">
+            <p style="margin:0 0 4px 0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#64748B;">
+              본인이 가입하지 않았다면 이 메일을 무시하셔도 됩니다.<br>
+              If you didn't create a Jurio account, you can safely ignore this email.
+            </p>
+            <p style="margin:8px 0 0 0;font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',Helvetica,Arial,sans-serif;font-size:12px;color:#94A3B8;">
+              Jurio 주리오 · <a href="https://juro-gamma.vercel.app" style="color:#64748B;">juro-gamma.vercel.app</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>

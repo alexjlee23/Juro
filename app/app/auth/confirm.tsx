@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ActivityIndicator, ScrollView,
+  SafeAreaView, ActivityIndicator, ScrollView, Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -123,6 +123,7 @@ export default function ConfirmScreen() {
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
+          <Image source={require('../../assets/logo.png')} style={styles.cardLogo} accessibilityLabel="Jurio logo" />
           <Text style={styles.icon}>✅</Text>
           <Text style={styles.title}>{t('이메일 인증 완료!', 'Email confirmed!')}</Text>
           <Text style={styles.body}>
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  cardLogo: { width: 44, height: 44, marginBottom: spacing.sm },
   icon: { fontSize: 56, marginBottom: spacing.base },
   title: { ...typography.headingM, color: colors.text, fontWeight: '700', textAlign: 'center', marginBottom: spacing.md },
   body: { ...typography.bodyM, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: spacing.lg },

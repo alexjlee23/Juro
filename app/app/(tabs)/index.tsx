@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
-  TextInput, Linking, SafeAreaView, ActivityIndicator,
+  TextInput, Linking, SafeAreaView, ActivityIndicator, Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -210,7 +210,10 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safe}>
       {/* Fixed header */}
       <View style={styles.header}>
-        <Text style={styles.appName}>{lang === 'ko' ? '주리오' : 'Jurio'}</Text>
+        <View style={styles.brandRow}>
+          <Image source={require('../../assets/logo.png')} style={styles.brandLogo} accessibilityLabel="Jurio logo" />
+          <Text style={styles.appName}>{lang === 'ko' ? '주리오' : 'Jurio'}</Text>
+        </View>
         <TouchableOpacity
           onPress={() => i18n.changeLanguage(lang === 'ko' ? 'en' : 'ko')}
           style={styles.langToggle}
@@ -521,6 +524,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.base,
     paddingBottom: spacing.sm,
   },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  brandLogo: { width: 30, height: 30 },
   appName: { ...typography.headingM, color: colors.brand, fontWeight: '700' },
   langToggle: { backgroundColor: colors.selectedBg, borderRadius: radius.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
   langText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },

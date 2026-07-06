@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Linking } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Linking, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../constants/theme';
@@ -26,6 +26,7 @@ export default function AboutScreen() {
 
         {/* Hero */}
         <View style={styles.heroCard}>
+          <Image source={require('../assets/logo.png')} style={styles.heroImage} accessibilityLabel="Jurio logo" />
           <Text style={styles.heroLogo}>주리오</Text>
           <Text style={styles.heroTagline}>
             {t('당신의 권리를 알고, 당당하게.', 'Know your rights. Walk with confidence.')}
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.lg,
   },
+  heroImage: { width: 64, height: 64, marginBottom: spacing.sm, backgroundColor: colors.white, borderRadius: 16, },
   heroLogo: { fontSize: 32, fontWeight: '800', color: colors.white, marginBottom: spacing.xs },
   heroTagline: { ...typography.bodyM, color: 'rgba(255,255,255,0.85)', textAlign: 'center', lineHeight: 24, marginBottom: spacing.sm },
   heroVersion: { ...typography.caption, color: 'rgba(255,255,255,0.6)' },

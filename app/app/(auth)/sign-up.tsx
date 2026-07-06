@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView,
+  SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView, Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,7 @@ export default function AuthScreen() {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       return `${window.location.origin}/auth/confirm`;
     }
-    return 'https://jurio-gamma.vercel.app/auth/confirm';
+    return 'https://juro-gamma.vercel.app/auth/confirm';
   };
 
   async function handleSignUp() {
@@ -74,15 +74,48 @@ export default function AuthScreen() {
       });
       if (error) { setSuLoading(false); setSuError(error.message); return; }
       if (!data.user) { setSuLoading(false); setSuError(t('오류가 발생했습니다. 다시 시도해 주세요.', 'Something went wrong. Please try again.')); return; }
-      if (data.session) {
-        await supabase.from('profiles').insert({ id: data.user.id, username: username.trim() });
+
+      // An existing (already-registered) email returns a user with no identities.
+      if (data.user.identities && data.user.identities.length === 0) {
+        setSuLoading(false);
+        setSuError(t('이미 가입된 이메일입니다. 로그인해 주세요.', 'This email is already registered. Please sign in.'));
+        return;
       }
+
       setSuLoading(false);
-      setSentEmail(suEmail.trim());
-      setEmailSent(true);
+      if (data.session) {
+        // Email confirmation is disabled in Supabase — signed in immediately.
+        // Don't show a "check your email" screen for an email that will never come.
+        await supabase.from('profiles').insert({ id: data.user.id, username: username.trim() });
+        router.replace('/(tabs)/community');
+      } else {
+        // Email confirmation required — a verification email is on its way.
+        setSentEmail(suEmail.trim());
+        setEmailSent(true);
+      }
     } catch (err: unknown) {
       setSuLoading(false);
       setSuError(t('오류: ', 'Error: ') + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  // ── Resend verification email (from the email-sent card) ──────────────────
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  async function handleResend() {
+    if (resending || resent) return;
+    setResending(true);
+    try {
+      await supabase.auth.resend({
+        type: 'signup',
+        email: sentEmail,
+        options: { emailRedirectTo: getConfirmRedirectUrl() },
+      });
+      setResent(true);
+      setTimeout(() => setResent(false), 60_000); // allow again after 60s
+    } finally {
+      setResending(false);
     }
   }
 
@@ -96,7 +129,13 @@ export default function AuthScreen() {
     const { error } = await supabase.auth.signInWithPassword({ email: siEmail.trim(), password: siPassword });
     setSiLoading(false);
     if (error) {
-      setSiError(t('이메일 또는 비밀번호가 틀렸습니다.', 'Incorrect email or password.'));
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        // Verified-email requirement: point them back to their inbox with a resend path.
+        setSentEmail(siEmail.trim());
+        setEmailSent(true);
+      } else {
+        setSiError(t('이메일 또는 비밀번호가 틀렸습니다.', 'Incorrect email or password.'));
+      }
     } else {
       router.replace('/(tabs)/community');
     }
@@ -108,6 +147,7 @@ export default function AuthScreen() {
       <SafeAreaView style={styles.safe}>
         <ScrollView contentContainerStyle={styles.centeredContent}>
           <View style={styles.card}>
+            <Image source={require('../../assets/logo.png')} style={styles.cardLogo} accessibilityLabel="Jurio logo" />
             <Text style={styles.cardIcon}>📬</Text>
             <Text style={styles.cardTitle}>{t('이메일을 확인해 주세요', 'Check your email')}</Text>
             <Text style={styles.cardBody}>
@@ -117,8 +157,23 @@ export default function AuthScreen() {
             <View style={styles.noteBox}>
               <Text style={styles.noteText}>{t('이메일이 안 보이면 스팸 폴더를 확인하세요.', "Can't find it? Check your spam folder.")}</Text>
             </View>
-            <TouchableOpacity style={styles.btn} onPress={() => { setEmailSent(false); switchMode('signin'); }}>
-              <Text style={styles.btnText}>{t('로그인 화면으로', 'Go to sign in')}</Text>
+            <TouchableOpacity
+              style={[styles.btn, (resending || resent) && styles.btnDisabled]}
+              onPress={handleResend}
+              disabled={resending || resent}
+              accessibilityRole="button"
+            >
+              {resending
+                ? <ActivityIndicator color={colors.white} />
+                : <Text style={styles.btnText}>
+                    {resent
+                      ? t('✓ 다시 보냈습니다', '✓ Email resent')
+                      : t('인증 메일 다시 보내기', 'Resend verification email')}
+                  </Text>
+              }
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { setEmailSent(false); switchMode('signin'); }}>
+              <Text style={styles.secondaryBtnText}>{t('로그인 화면으로', 'Go to sign in')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryBtn} onPress={() => setEmailSent(false)}>
               <Text style={styles.secondaryBtnText}>{t('다른 이메일로 가입', 'Use a different email')}</Text>
@@ -138,6 +193,12 @@ export default function AuthScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Text style={styles.backText}>← {t('뒤로', 'Back')}</Text>
           </TouchableOpacity>
+
+          {/* Brand */}
+          <View style={styles.brandHeader}>
+            <Image source={require('../../assets/logo.png')} style={styles.brandLogo} accessibilityLabel="Jurio logo" />
+            <Text style={styles.brandName}>{t('주리오', 'Jurio')}</Text>
+          </View>
 
           {/* Tab switcher */}
           <View style={styles.tabs}>
@@ -296,6 +357,11 @@ const styles = StyleSheet.create({
   centeredContent: { paddingHorizontal: spacing.base, paddingTop: spacing.xxxl },
   backBtn: { marginBottom: spacing.lg },
   backText: { ...typography.bodyM, color: colors.action },
+
+  brandHeader: { alignItems: 'center', marginBottom: spacing.lg },
+  brandLogo: { width: 56, height: 56, marginBottom: spacing.xs },
+  brandName: { ...typography.headingM, color: colors.brand, fontWeight: '700' },
+  cardLogo: { width: 44, height: 44, marginBottom: spacing.sm },
 
   // Tabs
   tabs: {
