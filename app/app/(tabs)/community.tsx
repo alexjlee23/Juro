@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
+import BrandHeader from '../../components/ui/BrandHeader';
 
 type Community = {
   id: string;
@@ -138,6 +139,7 @@ export default function CommunityScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <BrandHeader />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

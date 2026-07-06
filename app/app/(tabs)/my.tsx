@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
+import BrandHeader from '../../components/ui/BrandHeader';
 import { useAuth } from '../../context/AuthContext';
 
 const LOGBOOK_KEY = 'juro_logbook_v1';
@@ -126,6 +127,7 @@ export default function MyScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <BrandHeader />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{t('my.title')}</Text>
 

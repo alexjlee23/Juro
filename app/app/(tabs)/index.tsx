@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
-  TextInput, Linking, SafeAreaView, ActivityIndicator, Image,
+  TextInput, Linking, SafeAreaView, ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
+import BrandHeader from '../../components/ui/BrandHeader';
 import { useConfig } from '../../lib/useConfig';
 import directoryData from '../../content/directory.json';
 import { detectNearbyRegion } from '../../lib/locationRegion';
@@ -111,21 +112,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Fixed header */}
-      <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <Image source={require('../../assets/logo.png')} style={styles.brandLogo} accessibilityLabel="Jurio logo" />
-          <Text style={styles.appName}>{lang === 'ko' ? '주리오' : 'Jurio'}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => i18n.changeLanguage(lang === 'ko' ? 'en' : 'ko')}
-          style={styles.langToggle}
-          accessibilityRole="button"
-          accessibilityLabel="Change language"
-        >
-          <Text style={styles.langText}>{lang === 'ko' ? 'EN' : '한'}</Text>
-        </TouchableOpacity>
-      </View>
+      <BrandHeader />
 
       <ScrollView
         style={styles.flex}
@@ -308,20 +295,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.base,
-    paddingTop: spacing.base,
-    paddingBottom: spacing.sm,
-  },
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  brandLogo: { width: 30, height: 30 },
-  appName: { ...typography.headingM, color: colors.brand, fontWeight: '700' },
-  langToggle: { backgroundColor: colors.selectedBg, borderRadius: radius.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
-  langText: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
 
   // Home content
   homeContent: { paddingHorizontal: spacing.base },

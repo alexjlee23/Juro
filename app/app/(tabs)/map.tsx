@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
 import Banner from '../../components/ui/Banner';
+import BrandHeader from '../../components/ui/BrandHeader';
 import hotlines from '../../content/hotlines.json';
 import directoryData from '../../content/directory.json';
 
@@ -46,6 +47,7 @@ export default function FindScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <BrandHeader />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{lang === 'ko' ? '도움 찾기' : 'Find Help'}</Text>
         <Text style={styles.subtitle}>
