@@ -30,7 +30,7 @@ const CATEGORY_LABELS: Record<string, { ko: string; en: string }> = {
   general:   { ko: '💬 자유',        en: '💬 General' },
 };
 
-const CATEGORY_ORDER = ['type', 'region', 'industry', 'situation', 'general'];
+const CATEGORY_ORDER = ['general', 'type', 'situation', 'industry', 'region'];
 
 export default function CommunityScreen() {
   const router = useRouter();
