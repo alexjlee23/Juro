@@ -32,6 +32,12 @@ const CATEGORY_LABELS: Record<string, { ko: string; en: string }> = {
 
 const CATEGORY_ORDER = ['general', 'type', 'situation', 'industry', 'region'];
 
+// Explicit display order for regional communities (capital first, then by city size)
+const REGION_ORDER = [
+  'seoul', 'gyeonggi-incheon', 'daegu-gyeongbuk', 'busan-ulsan-gyeongnam',
+  'daejeon-chungcheong', 'gwangju-jeolla', 'gangwon', 'jeju',
+];
+
 export default function CommunityScreen() {
   const router = useRouter();
   const { i18n } = useTranslation();
@@ -82,6 +88,14 @@ export default function CommunityScreen() {
     acc[c.category].push(c);
     return acc;
   }, {});
+
+  if (grouped.region) {
+    grouped.region.sort((a, b) => {
+      const ai = REGION_ORDER.indexOf(a.slug);
+      const bi = REGION_ORDER.indexOf(b.slug);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+  }
 
   const joinedList = communities.filter(c => joinedIds.has(c.id));
 
