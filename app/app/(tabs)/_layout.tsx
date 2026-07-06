@@ -12,13 +12,17 @@ const TAB_ICONS: Record<string, string> = {
 
 function TabIcon({ emoji, label, focused }: { emoji: string; label: string; focused: boolean }) {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 4 }}>
+    // Fixed width: the tab icon slot is narrow by default and makes
+    // multi-syllable labels (커뮤니티, 내 정보) wrap onto two lines.
+    <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 4, width: 80 }}>
       <Text style={{ fontSize: 20, marginBottom: 2 }}>{emoji}</Text>
       <Text
+        numberOfLines={1}
         style={{
           ...typography.caption,
           color: focused ? colors.action : colors.textCaption,
           fontWeight: focused ? '700' : '400',
+          textAlign: 'center',
         }}
       >
         {label}
