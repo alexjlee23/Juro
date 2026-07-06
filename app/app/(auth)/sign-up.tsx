@@ -45,7 +45,7 @@ export default function AuthScreen() {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       return `${window.location.origin}/auth/confirm`;
     }
-    return 'https://juro-gamma.vercel.app/auth/confirm';
+    return 'https://jurio-gamma.vercel.app/auth/confirm';
   };
 
   async function handleSignUp() {
