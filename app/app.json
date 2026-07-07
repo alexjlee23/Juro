@@ -17,6 +17,7 @@
       "bundleIdentifier": "app.jurio",
       "buildNumber": "1",
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Jurio uses your location to show certified 노무사 (labor attorneys) near you. Your location is processed on your device only and is never sent to our servers.",
         "CFBundleLocalizations": [
           "ko",
