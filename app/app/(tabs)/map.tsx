@@ -82,7 +82,7 @@ export default function FindScreen() {
           <Text style={styles.freeConsultBody}>
             {lang === 'ko'
               ? '국선노무사 · 마을변호사 · 청소년 근로권익센터 (만 24세 이하) · 서울 노동권익센터 지하철 상담'
-              : 'Public labor attorney · 청소년 Rights Center (under 24) · Seoul subway consultations'}
+              : 'Public labor attorney · Youth Worker Rights Center (under 24) · Seoul subway consultations'}
           </Text>
           <TouchableOpacity
             style={styles.freeConsultBtn}
