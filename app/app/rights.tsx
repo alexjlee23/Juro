@@ -14,8 +14,8 @@ const RIGHTS_TOPICS = [
     emoji: '💰',
     ko: '임금 미지급',
     en: 'Unpaid wages',
-    summaryKo: '사용자는 매월 정해진 날에 전액을 직접 지급해야 합니다. 미지급 시 3년 이하 징역 또는 3,000만원 이하 벌금. 퇴직자에게는 연 20% 지연이자가 붙으며, 퇴직 후 3년 이내 청구 가능.',
-    summaryEn: 'Employer must pay in full on the agreed date. Penalty up to 3 years prison or ₩30M fine. Departed workers accrue 20%/yr interest on late pay; claims valid for 3 years.',
+    summaryKo: '사용자는 매월 정해진 날에 전액을 직접 지급해야 합니다. 미지급 시 3년 이하 징역 또는 3,000만원 이하 벌금. 재직·퇴직 불문 연 20% 지연이자(2025.10.부터), 고의 체불은 최대 3배 배상. 3년 이내 청구 가능.',
+    summaryEn: 'Employer must pay in full on the agreed date. Penalty up to 3 years prison or ₩30M fine. 20%/yr late interest for current and former workers alike (since Oct 2025); willful non-payment risks treble damages. Claims valid for 3 years.',
     statute: '근로기준법 43·36·37·49조',
     urls: [
       { article: '제43조', url: 'https://www.law.go.kr/법령/근로기준법/제43조' },
@@ -169,8 +169,8 @@ const RIGHTS_TOPICS = [
     emoji: '👶',
     ko: '출산·육아 휴직',
     en: 'Maternity & parental leave',
-    summaryKo: '출산전후휴가 90일(다태아 120일), 육아휴직 최대 1년(자녀 만 8세 이하). 급여는 고용보험에서 지급. 모든 사업장에 적용되며 거부 시 사업주 처벌.',
-    summaryEn: 'Maternity leave: 90 days (120 for multiples). Parental leave: up to 1 year (child ≤8). Paid via employment insurance. Applies to ALL employers; refusing it is punishable.',
+    summaryKo: '출산전후휴가 90일(다태아 120일·미숙아 100일), 육아휴직 최대 1년(요건 충족 시 1년 6개월), 배우자 출산휴가 20일. 급여는 고용보험에서 지급. 모든 사업장에 적용되며 거부 시 사업주 처벌.',
+    summaryEn: 'Maternity leave: 90 days (120 for multiples, 100 for premature births). Parental leave: up to 1 year (18 months if conditions met). Spousal leave: 20 days. Paid via employment insurance. Applies to ALL employers; refusing it is punishable.',
     statute: '남녀고용평등법 19조',
     urls: [
       { article: '제19조', url: 'https://www.law.go.kr/법령/남녀고용평등과일·가정양립지원에관한법률/제19조' },

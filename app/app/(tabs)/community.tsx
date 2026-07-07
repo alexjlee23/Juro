@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import {
   ScrollView, View, Text, StyleSheet, TouchableOpacity,
   SafeAreaView, ActivityIndicator, RefreshControl,
+  NativeSyntheticEvent, NativeScrollEvent,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,16 @@ export default function CommunityScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState(false);
+
+  // Scroll indicator for the joined-communities chip row
+  const [chipsScrollX, setChipsScrollX] = useState(0);
+  const [chipsContentW, setChipsContentW] = useState(0);
+  const [chipsViewW, setChipsViewW] = useState(0);
+  const chipsOverflow = chipsContentW > chipsViewW + 1;
+
+  function onChipsScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    setChipsScrollX(e.nativeEvent.contentOffset.x);
+  }
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
@@ -187,6 +198,10 @@ export default function CommunityScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.chipsRow}
+              onScroll={onChipsScroll}
+              scrollEventThrottle={16}
+              onContentSizeChange={(w) => setChipsContentW(w)}
+              onLayout={(e) => setChipsViewW(e.nativeEvent.layout.width)}
             >
               {joinedList.map(c => (
                 <TouchableOpacity
@@ -202,6 +217,24 @@ export default function CommunityScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+
+            {/* Scroll-position indicator — only when chips overflow the screen */}
+            {chipsOverflow && (() => {
+              const TRACK_W = 64;
+              const thumbW = Math.max(16, TRACK_W * (chipsViewW / chipsContentW));
+              const maxScroll = chipsContentW - chipsViewW;
+              const progress = maxScroll > 0 ? Math.min(1, Math.max(0, chipsScrollX / maxScroll)) : 0;
+              return (
+                <View style={styles.chipsTrack} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  <View
+                    style={[
+                      styles.chipsThumb,
+                      { width: thumbW, transform: [{ translateX: progress * (TRACK_W - thumbW) }] },
+                    ]}
+                  />
+                </View>
+              );
+            })()}
           </View>
         )}
 
@@ -346,6 +379,20 @@ const styles = StyleSheet.create({
 
   // Horizontal chips for joined communities
   chipsRow: { gap: spacing.sm, paddingBottom: spacing.xs },
+  chipsTrack: {
+    alignSelf: 'center',
+    width: 64,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.border,
+    marginTop: spacing.xs,
+    overflow: 'hidden',
+  },
+  chipsThumb: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.action,
+  },
   chip: {
     width: 88,
     backgroundColor: colors.white,
