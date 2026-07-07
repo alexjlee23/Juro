@@ -66,7 +66,7 @@ export default function AlertsScreen() {
             <Text style={styles.rowEmoji}>🗓️</Text>
             <View style={styles.rowBody}>
               <Text style={styles.rowLabel}>{t('무료 상담 일정 알림', 'Free consultation alerts')}</Text>
-              <Text style={styles.rowDesc}>{t('근처 무료 노무 상담 일정 공지', 'Nearby free 노무사 sessions')}</Text>
+              <Text style={styles.rowDesc}>{t('근처 무료 노무 상담 일정 공지', 'Nearby free labor attorney sessions')}</Text>
             </View>
             <Switch value={consultSchedule} onValueChange={setConsultSchedule} trackColor={{ true: colors.action }} />
           </View>

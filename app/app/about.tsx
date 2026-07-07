@@ -80,7 +80,7 @@ export default function AboutScreen() {
           <Text style={styles.disclaimerText}>
             {t(
               '주리오가 제공하는 정보는 일반적인 법률 정보이며 법률 자문이 아닙니다. 귀하의 구체적인 상황에 대한 법적 판단은 반드시 공인 노무사 또는 변호사와 상담하시기 바랍니다.',
-              'Information provided by Jurio is general legal information, not legal advice. For judgment on your specific situation, always consult a certified 노무사 (labour attorney) or lawyer.'
+              'Information provided by Jurio is general legal information, not legal advice. For judgment on your specific situation, always consult a certified labor attorney (노무사) or lawyer.'
             )}
           </Text>
         </View>

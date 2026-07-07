@@ -2,7 +2,7 @@
   "common": {
     "appName": "Jurio 주리오",
     "tagline": "Know your rights. Walk with confidence.",
-    "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a certified 노무사 or lawyer.",
+    "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a certified labor attorney or lawyer.",
     "close": "Close",
     "back": "Back",
     "next": "Next",
@@ -69,7 +69,7 @@
       "evidenceTitle": "Evidence to gather",
       "talkToPerson": "Talk to a real person",
       "deadlines": "Key deadlines",
-      "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a 노무사 or the labor office shown below."
+      "disclaimer": "This is general legal information, not legal advice. For your situation, talk to a labor attorney or the labor office shown below."
     },
     "q1": {
       "question": "What's unpaid?",
@@ -90,21 +90,21 @@
       "employee": "Employee (regular, part-time, or daily)",
       "platform": "Platform / delivery rider (배민, 쿠팡이츠, etc.)",
       "unsure": "\"Freelancer\" / 3.3% / not sure",
-      "notePlatform": "Riders are usually protected as workers (근로자), so the complaint route often still applies. Confirm with 1350 or a 노무사 if unsure.",
-      "noteUnsure": "The label on your contract doesn't decide it — many \"freelancers\" are legally employees. Worth checking with a 노무사 or 1350."
+      "notePlatform": "Riders are usually protected as workers (근로자), so the complaint route often still applies. Confirm with 1350 or a labor attorney if unsure.",
+      "noteUnsure": "The label on your contract doesn't decide it — many \"freelancers\" are legally employees. Worth checking with a labor attorney or 1350."
     },
     "q3": {
       "question": "Are you still working there?",
       "stillWorking": "Still working",
       "left": "I left / quit / was let go",
-      "noteCurrent": "There are protections against retaliation for claiming unpaid wages. If you're worried, talk to a 노무사 first.",
+      "noteCurrent": "There are protections against retaliation for claiming unpaid wages. If you're worried, talk to a labor attorney first.",
       "noteLeft": "Your final pay must be paid within 14 days of leaving (근로기준법 제36조)."
     },
     "q4": {
       "question": "When did the unpaid work happen?",
       "withinThree": "Within the last 3 years",
       "overThree": "More than 3 years ago",
-      "noteOverThree": "Wage claims expire after 3 years (근로기준법 제49조). Some may be out of time — talk to a 노무사 soon to check what you can still claim."
+      "noteOverThree": "Wage claims expire after 3 years (근로기준법 제49조). Some may be out of time — talk to a labor attorney soon to check what you can still claim."
     },
     "q5": {
       "question": "Anything that changes who can help you fastest?",
@@ -112,7 +112,7 @@
       "youth": "I'm 24 or younger",
       "neither": "Neither / skip",
       "noteMigrant": "Korean labor law protects you regardless of visa status, including if you're undocumented. Unpaid wages is also a recognized reason that can let an E-9 worker change workplaces. Multilingual help: 1644-0644, 1345.",
-      "noteYouth": "The 청소년 근로권익센터 gives free 노무사 help to workers aged 24 and under."
+      "noteYouth": "The Youth Labor Rights Center (청소년 근로권익센터) gives free labor attorney help to workers aged 24 and under."
     }
   },
   "rights": {
@@ -129,7 +129,7 @@
   },
   "map": {
     "title": "Find Help",
-    "subtitle": "Nearby 노무사, worker centers, and hotlines.",
+    "subtitle": "Nearby labor attorneys, worker centers, and hotlines.",
     "searchPlaceholder": "Search by location or issue...",
     "hotlines": "Hotlines",
     "nearby": "Nearby help",

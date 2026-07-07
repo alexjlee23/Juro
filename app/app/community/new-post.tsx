@@ -133,7 +133,7 @@ export default function NewPostScreen() {
             <Text style={styles.disclaimerText}>
               {t(
                 '📢 이 커뮤니티는 노동자 간 정보 공유 공간입니다. 법률 자문이 아니며, 법적 판단은 노무사와 상담하세요.',
-                '📢 This community is for peer information sharing, not legal advice. Consult a 노무사 for legal decisions.'
+                '📢 This community is for peer information sharing, not legal advice. Consult a labor attorney for legal decisions.'
               )}
             </Text>
           </View>

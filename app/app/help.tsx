@@ -19,7 +19,7 @@ const FAQS_KO: FAQ[] = [
 const FAQS_EN: FAQ[] = [
   { q: 'Is Jurio free?', a: 'Yes, completely free. No ads, no hidden costs.' },
   { q: 'Is my information safe?', a: 'We never ask for your ID, visa number, or nationality. Location is processed on-device only and never sent to our servers. Jurio never reports users to any authority.' },
-  { q: 'Does the AI give legal advice?', a: 'No. The Jurio AI only retrieves relevant statutes — it is not legal advice. For judgment on your specific situation, always consult a certified 노무사 or lawyer.' },
+  { q: 'Does the AI give legal advice?', a: 'No. The Jurio AI only retrieves relevant statutes — it is not legal advice. For judgment on your specific situation, always consult a certified labor attorney or lawyer.' },
   { q: 'Can migrant workers use this app?', a: 'Yes. Korean labour law protects all workers in Korea regardless of visa status. The app is available in Korean and English, and we guide you to multilingual hotlines (☎ 1345, ☎ 1644-0644).' },
   { q: 'How do I delete a post?', a: 'Open the post detail screen and use the delete option. To report a problematic post, use the report button on the post.' },
   { q: 'How do I delete my account?', a: 'Go to My → Privacy Center → Delete account.' },

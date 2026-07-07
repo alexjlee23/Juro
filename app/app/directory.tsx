@@ -68,7 +68,7 @@ export default function DirectoryScreen() {
             <TouchableOpacity onPress={() => router.back()} accessibilityRole="button">
               <Text style={styles.backText}>←</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>{lang === 'ko' ? '노무사 찾기' : 'Find a 노무사'}</Text>
+            <Text style={styles.title}>{lang === 'ko' ? '노무사 찾기' : 'Find a Labor Attorney'}</Text>
             <Text style={styles.count}>{filtered.length}</Text>
           </View>
 
@@ -84,7 +84,7 @@ export default function DirectoryScreen() {
                 <ActivityIndicator size="small" color={colors.action} />
               ) : (
                 <Text style={styles.locateBtnText}>
-                  📍 {lang === 'ko' ? '내 주변 노무사 찾기' : 'Find 노무사 near me'}
+                  📍 {lang === 'ko' ? '내 주변 노무사 찾기' : 'Find labor attorneys near me'}
                 </Text>
               )}
             </TouchableOpacity>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   locatedChipX: { ...typography.bodyS, color: 'rgba(255,255,255,0.75)' },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.white, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md, marginBottom: spacing.sm, minHeight: 44 },
   searchIcon: { fontSize: 16, marginRight: spacing.sm },
-  searchInput: { flex: 1, ...typography.bodyM, color: colors.text },
+  searchInput: { flex: 1, ...typography.bodyM, lineHeight: undefined, color: colors.text },
   clearBtn: { ...typography.bodyS, color: colors.textCaption, padding: spacing.xs },
   chips: { marginBottom: spacing.xs },
   chip: { backgroundColor: colors.white, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: 6, marginRight: spacing.xs, borderWidth: 1, borderColor: colors.border },

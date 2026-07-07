@@ -63,7 +63,7 @@ export default function FindScreen() {
           <Text style={styles.directoryCtaEmoji}>🧑‍⚖️</Text>
           <View style={styles.directoryCtaText}>
             <Text style={styles.directoryCtaTitle}>
-              {lang === 'ko' ? '노무사 찾기' : 'Find a 노무사'}
+              {lang === 'ko' ? '노무사 찾기' : 'Find a Labor Attorney'}
             </Text>
             <Text style={styles.directoryCtaDetail}>
               {lang === 'ko'

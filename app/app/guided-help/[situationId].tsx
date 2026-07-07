@@ -138,7 +138,7 @@ export default function GuidedHelpFlow() {
             accessibilityRole="button"
           >
             <Text style={styles.hotlineEmoji}>🧑‍⚖️</Text>
-            <Text style={styles.hotlineLabel}>{lang === 'ko' ? '노무사 찾기 (422명 · 지역별 검색)' : 'Find a 노무사 (422 attorneys)'}</Text>
+            <Text style={styles.hotlineLabel}>{lang === 'ko' ? '노무사 찾기 (422명 · 지역별 검색)' : 'Find a labor attorney (directory)'}</Text>
             <Text style={styles.hotlineArrow}>›</Text>
           </TouchableOpacity>
 

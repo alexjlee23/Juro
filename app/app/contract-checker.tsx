@@ -218,7 +218,7 @@ export default function ContractCheckerScreen() {
                 <Text style={styles.resultBody}>
                   {lang === 'ko'
                     ? '모든 필수 항목이 있고 주의 조항도 없습니다. 불분명한 부분은 노무사에게 확인하세요.'
-                    : 'All required items are present and no red flags. For anything unclear, consult a 노무사.'}
+                    : 'All required items are present and no red flags. For anything unclear, consult a labor attorney.'}
                 </Text>
               </>
             )}
@@ -236,7 +236,7 @@ export default function ContractCheckerScreen() {
                 <Text style={styles.resultBody}>
                   {lang === 'ko'
                     ? '표시된 조항은 법적으로 무효일 수 있습니다. 서명 전 반드시 노무사와 상담하세요.'
-                    : 'Flagged clauses may be legally void. Consult a 노무사 before signing.'}
+                    : 'Flagged clauses may be legally void. Consult a labor attorney before signing.'}
                 </Text>
               </>
             )}
@@ -258,7 +258,7 @@ export default function ContractCheckerScreen() {
             <Text style={styles.helpText}>📞 {lang === 'ko' ? '고용노동부 1350 (계약서 검토)' : 'Labor Ministry 1350 (contract review)'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.helpRow} onPress={() => router.push('/directory')} accessibilityRole="button">
-            <Text style={styles.helpText}>🧑‍⚖️ {lang === 'ko' ? '노무사 찾기 (422명)' : 'Find a 노무사 (422 attorneys)'}</Text>
+            <Text style={styles.helpText}>🧑‍⚖️ {lang === 'ko' ? '노무사 찾기 (422명)' : 'Find a labor attorney'}</Text>
           </TouchableOpacity>
         </View>
 

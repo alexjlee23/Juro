@@ -404,6 +404,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.md,
     ...typography.bodyM,
+    // lineHeight inside TextInput clips character bottoms on iOS
+    lineHeight: undefined,
     color: colors.text,
     marginBottom: spacing.base,
   },

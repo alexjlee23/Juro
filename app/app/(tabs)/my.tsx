@@ -103,7 +103,7 @@ export default function MyScreen() {
       lines.push('-'.repeat(40));
       lines.push(lang === 'ko'
         ? '이 문서는 노동부 진정 또는 노무사 상담에 활용할 수 있습니다.'
-        : 'This document can be used for a labor complaint or 노무사 consultation.');
+        : 'This document can be used for a labor complaint or labor attorney consultation.');
       lines.push(lang === 'ko' ? '고용노동부: ☎1350 · labor.moel.go.kr' : 'Ministry of Labor: ☎1350 · labor.moel.go.kr');
       lines.push(lang === 'ko' ? '외국인 노동자: ☎1644-0644 · ☎1345' : 'Migrant workers: ☎1644-0644 · ☎1345');
       lines.push('', lang === 'ko' ? `내보낸 날짜: ${new Date().toLocaleString('ko-KR')}` : `Exported: ${new Date().toLocaleString('en-GB')}`);

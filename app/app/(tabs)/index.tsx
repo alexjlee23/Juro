@@ -126,7 +126,7 @@ export default function HomeScreen() {
           <Text style={styles.greetingSubtitle}>
             {lang === 'ko'
               ? '아래에서 공인노무사를 찾거나, 상황을 골라 단계별 안내를 받으세요.'
-              : 'Find a certified 노무사 below, or pick your situation for step-by-step guidance.'}
+              : 'Find a certified labor attorney below, or pick your situation for step-by-step guidance.'}
           </Text>
         </View>
 
@@ -180,7 +180,7 @@ export default function HomeScreen() {
         {/* 노무사 inline search widget */}
         <View style={styles.nomusaWidget}>
           <View style={styles.nomusaWidgetHeader}>
-            <Text style={styles.nomusaWidgetTitle}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a certified 노무사'}</Text>
+            <Text style={styles.nomusaWidgetTitle}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a certified labor attorney'}</Text>
             <TouchableOpacity onPress={() => router.push('/directory')}>
               <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 ${nomusaCount}명 →` : `See all ${nomusaCount} →`}</Text>
             </TouchableOpacity>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     minHeight: 40,
   },
   nomusaWidgetSearchIcon: { fontSize: 14, marginRight: spacing.xs },
-  nomusaWidgetInput: { flex: 1, ...typography.bodyS, color: colors.text },
+  nomusaWidgetInput: { flex: 1, ...typography.bodyS, lineHeight: undefined, color: colors.text },
   nomusaWidgetClear: { ...typography.bodyS, color: colors.textCaption, paddingLeft: spacing.xs },
   nomusaEmpty: { ...typography.bodyS, color: colors.textCaption, textAlign: 'center', paddingVertical: spacing.sm },
   nomusaLocRow: { flexDirection: 'row', marginBottom: spacing.xs },

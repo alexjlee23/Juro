@@ -271,7 +271,7 @@ export default function LogbookScreen() {
     lines.push('-'.repeat(40));
     lines.push(lang === 'ko'
       ? '이 문서는 노동부 진정 또는 노무사 상담에 활용할 수 있습니다.'
-      : 'This document can be used for a labor complaint or 노무사 consultation.');
+      : 'This document can be used for a labor complaint or labor attorney consultation.');
     lines.push(lang === 'ko' ? '고용노동부: ☎1350 · labor.moel.go.kr' : 'Ministry of Labor: ☎1350 · labor.moel.go.kr');
     lines.push(lang === 'ko' ? '외국인 노동자: ☎1644-0644 · ☎1345' : 'Migrant workers: ☎1644-0644 · ☎1345');
     lines.push('');
@@ -352,7 +352,7 @@ export default function LogbookScreen() {
               <Text style={styles.emptyBody}>
                 {lang === 'ko'
                   ? '근무 날짜, 시간, 약속 임금과 실제 지급 금액을 기록해두세요. 노동부 진정이나 노무사 상담에 활용할 수 있습니다.'
-                  : 'Record your shifts, hours, and pay. This creates an evidence log you can use for a labor complaint or 노무사 consultation.'}
+                  : 'Record your shifts, hours, and pay. This creates an evidence log you can use for a labor complaint or labor attorney consultation.'}
               </Text>
             </View>
           ) : (
@@ -366,7 +366,7 @@ export default function LogbookScreen() {
             <Text style={styles.tipBody}>
               {lang === 'ko'
                 ? '• 내보내기 → 노동부 진정 자료\n• 미지급 금액 자동 계산\n• 노무사 상담 전 정리 자료\n• 모든 데이터는 기기에만 저장됩니다'
-                : '• Export → evidence for a labor complaint\n• Auto-calculates unpaid amounts\n• Summary for a 노무사 consultation\n• All data stored only on your device'}
+                : '• Export → evidence for a labor complaint\n• Auto-calculates unpaid amounts\n• Summary for a labor attorney consultation\n• All data stored only on your device'}
             </Text>
           </View>
 

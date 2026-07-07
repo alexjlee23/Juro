@@ -531,7 +531,7 @@ export default function RightsScreen() {
             <Text style={styles.ctaBtnText}>{lang === 'ko' ? '상황별 안내 시작하기 →' : 'Start guided help →'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.ctaBtnSecondary} onPress={() => router.push('/directory')} accessibilityRole="button">
-            <Text style={styles.ctaBtnSecondaryText}>{lang === 'ko' ? '노무사 찾기 →' : 'Find a 노무사 →'}</Text>
+            <Text style={styles.ctaBtnSecondaryText}>{lang === 'ko' ? '노무사 찾기 →' : 'Find a labor attorney →'}</Text>
           </TouchableOpacity>
         </View>
 

@@ -917,7 +917,7 @@ const styles = StyleSheet.create({
     ...shadow.card,
   },
   searchIcon: { fontSize: 16, marginRight: spacing.sm },
-  searchInput: { flex: 1, ...typography.bodyM, color: colors.text },
+  searchInput: { flex: 1, ...typography.bodyM, lineHeight: undefined, color: colors.text },
   clearBtn: { fontSize: 14, color: colors.textCaption, paddingLeft: spacing.sm },
 
   categoryHeader: {
