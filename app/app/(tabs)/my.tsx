@@ -161,7 +161,7 @@ export default function MyScreen() {
         {/* Tools */}
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '도구' : 'Tools'}</Text>
         <View style={styles.section}>
-          <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 (임금·퇴직금)' : 'Calculators (wage & severance)'} onPress={() => router.push('/tools' as any)} />
+          <SettingRow emoji="🧮" label={lang === 'ko' ? '계산기 모음 (임금·연차·실업급여 등)' : 'Calculators (pay, leave, benefits...)'} onPress={() => router.push('/tools' as any)} />
           <SettingRow emoji="📋" label={lang === 'ko' ? '근로계약서 점검' : 'Contract checker'} onPress={() => router.push('/contract-checker' as any)} />
           <SettingRow emoji="📓" label={t('my.logbook')} onPress={() => router.push('/logbook' as any)} />
           <SettingRow

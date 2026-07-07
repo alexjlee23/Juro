@@ -233,7 +233,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/tools' as any)} accessibilityRole="button">
             <Text style={styles.quickLinkEmoji}>🧮</Text>
-            <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '임금·퇴직금 계산기' : 'Pay calculators'}</Text>
+            <Text style={styles.quickLinkLabel}>{lang === 'ko' ? '계산기 모음' : 'Calculators'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.quickLink} onPress={() => router.push('/glossary' as any)} accessibilityRole="button">
             <Text style={styles.quickLinkEmoji}>📚</Text>
