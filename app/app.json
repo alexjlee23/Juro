@@ -7,32 +7,34 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#F8FAFC"
     },
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.jurio",
       "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Jurio uses your location to show certified 노무사 (labor attorneys) near you. Your location is processed on your device only and is never sent to our servers.",
-        "CFBundleLocalizations": ["ko", "en"],
+        "CFBundleLocalizations": [
+          "ko",
+          "en"
+        ],
         "CFBundleDevelopmentRegion": "ko"
       },
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
           {
             "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
-            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
           }
         ]
       }
     },
-
     "android": {
       "package": "app.jurio",
       "versionCode": 1,
@@ -47,12 +49,10 @@
         "android.permission.ACCESS_COARSE_LOCATION"
       ]
     },
-
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -70,6 +70,13 @@
           "locationWhenInUsePermission": "Jurio uses your location to show certified 노무사 (labor attorneys) near you. Your location stays on your device and is never sent to a server."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a020b183-32a2-43ae-977e-d9e1165079e9"
+      }
+    },
+    "owner": "alexjlee23"
   }
 }
