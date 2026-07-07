@@ -830,45 +830,53 @@ export default function GlossaryScreen() {
           )}
         </View>
 
-        {/* Terms grouped by category */}
+        {/* Terms grouped by category — 2-column grid; tapping opens a full-width detail panel */}
         {CATEGORY_ORDER.map((cat) => {
           const list = filtered.filter(t => t.cat === cat);
           if (!list.length) return null;
+          const rows: (typeof list)[] = [];
+          for (let i = 0; i < list.length; i += 2) rows.push(list.slice(i, i + 2));
           return (
             <View key={cat}>
               <Text style={styles.categoryHeader}>{CATEGORIES[cat][lang]}</Text>
-              {list.map((term) => {
-                const isOpen = expanded === term.id;
+              {rows.map((pair, ri) => {
+                const openTerm = pair.find(t => t.id === expanded);
                 return (
-                  <TouchableOpacity
-                    key={term.id}
-                    style={[styles.termCard, isOpen && styles.termCardOpen]}
-                    onPress={() => setExpanded(isOpen ? null : term.id)}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: isOpen }}
-                  >
-                    <View style={styles.termHeader}>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.termKo}>{term.ko}</Text>
-                        <Text style={styles.termEn}>{term.en}</Text>
-                      </View>
-                      <Text style={styles.chevron}>{isOpen ? '▲' : '▼'}</Text>
+                  <View key={`${cat}-${ri}`}>
+                    <View style={styles.gridRow}>
+                      {pair.map((term) => {
+                        const isOpen = expanded === term.id;
+                        return (
+                          <TouchableOpacity
+                            key={term.id}
+                            style={[styles.gridCard, isOpen && styles.gridCardOpen]}
+                            onPress={() => setExpanded(isOpen ? null : term.id)}
+                            accessibilityRole="button"
+                            accessibilityState={{ expanded: isOpen }}
+                          >
+                            <Text style={styles.gridKo} numberOfLines={2}>{term.ko}</Text>
+                            <Text style={styles.gridEn} numberOfLines={2}>{term.en}</Text>
+                            <Text style={[styles.gridChevron, isOpen && styles.gridChevronOpen]}>{isOpen ? '▲' : '▼'}</Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                      {pair.length === 1 && <View style={styles.gridPlaceholder} />}
                     </View>
 
-                    {isOpen && (
-                      <View style={styles.termBody}>
-                        <Text style={styles.defText}>{lang === 'ko' ? term.defKo : term.defEn}</Text>
+                    {openTerm && (
+                      <View style={styles.detailPanel}>
+                        <Text style={styles.defText}>{lang === 'ko' ? openTerm.defKo : openTerm.defEn}</Text>
                         <TouchableOpacity
                           style={styles.sourceRow}
-                          onPress={() => Linking.openURL(term.url)}
+                          onPress={() => Linking.openURL(openTerm.url)}
                           accessibilityRole="link"
                         >
-                          <Text style={styles.sourceText}>📜 {term.statute}</Text>
+                          <Text style={styles.sourceText}>📜 {openTerm.statute}</Text>
                           <Text style={styles.sourceLink}>{lang === 'ko' ? '원문 →' : 'Source →'}</Text>
                         </TouchableOpacity>
                       </View>
                     )}
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>
@@ -920,20 +928,31 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
 
-  termCard: {
+  gridRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
+  gridCard: {
+    flex: 1,
     backgroundColor: colors.white,
     borderRadius: radius.md,
-    padding: spacing.base,
-    marginBottom: spacing.xs,
+    padding: spacing.md,
     ...shadow.card,
   },
-  termCardOpen: { borderLeftWidth: 3, borderLeftColor: colors.brand },
-  termHeader: { flexDirection: 'row', alignItems: 'flex-start' },
-  termKo: { ...typography.bodyM, color: colors.text, fontWeight: '700' },
-  termEn: { ...typography.bodyS, color: colors.textSecondary, marginTop: 2 },
-  chevron: { ...typography.caption, color: colors.textCaption, marginTop: 4, marginLeft: spacing.sm },
+  gridCardOpen: { borderWidth: 1.5, borderColor: colors.brand },
+  gridPlaceholder: { flex: 1 },
+  gridKo: { ...typography.bodyS, color: colors.text, fontWeight: '700', lineHeight: 19 },
+  gridEn: { fontSize: 11, color: colors.textSecondary, marginTop: 2, lineHeight: 15 },
+  gridChevron: { fontSize: 9, color: colors.textCaption, marginTop: spacing.xs },
+  gridChevronOpen: { color: colors.action },
 
-  termBody: { marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+  detailPanel: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.brand,
+    padding: spacing.base,
+    marginTop: -4,
+    marginBottom: spacing.sm,
+    ...shadow.card,
+  },
   defText: { ...typography.bodyM, color: colors.text, lineHeight: 26, marginBottom: spacing.md },
   sourceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sourceText: { ...typography.caption, color: colors.textCaption, flex: 1 },
