@@ -54,7 +54,6 @@ export default function MyScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const lang = i18n.language as 'ko' | 'en';
-  const [largeText, setLargeText] = useState(false);
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const { user, profile, signOut } = useAuth();
 
@@ -190,14 +189,12 @@ export default function MyScreen() {
             label={`${t('my.language')}: ${lang === 'ko' ? '한국어' : 'English'}`}
             onPress={() => i18n.changeLanguage(lang === 'ko' ? 'en' : 'ko')}
           />
-          <SettingRow
-            emoji="🔤"
-            label={t('my.largeText')}
-            isSwitch
-            value={largeText}
-            onPress={() => setLargeText(!largeText)}
-          />
           <SettingRow emoji="🔔" label={t('my.alerts')} onPress={() => router.push('/alerts' as any)} />
+          <SettingRow
+            emoji="🚫"
+            label={lang === 'ko' ? '차단한 사용자' : 'Blocked users'}
+            onPress={() => router.push('/blocked-users' as any)}
+          />
         </View>
 
         {/* Privacy & Legal */}

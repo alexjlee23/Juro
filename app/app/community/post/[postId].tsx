@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import { colors, typography, spacing, radius, shadow } from '../../../constants/theme';
+import ReportModal from '../../../components/ui/ReportModal';
+import { checkContent, getBlockedIds, blockUser } from '../../../lib/moderation';
 
 type Post = {
   id: string; community_id: string; title: string; body: string;
@@ -59,10 +61,18 @@ export default function PostDetailScreen() {
   const [anonymous, setAnonymous] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<{ id: string; username: string } | null>(null);
+  const [contentError, setContentError] = useState<string | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: string } | null>(null);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  useEffect(() => { load(); }, [postId]);
+  useEffect(() => { load(); getBlockedIds().then(setBlockedIds); }, [postId]);
+
+  async function handleBlock(userId: string) {
+    await blockUser(userId);
+    setBlockedIds(await getBlockedIds());
+  }
 
   async function load() {
     setLoading(true);
@@ -140,6 +150,11 @@ export default function PostDetailScreen() {
   async function handleComment() {
     if (!user || !post) { router.push('/(auth)/sign-up' as any); return; }
     if (!commentText.trim()) return;
+
+    // Content filter (store compliance — objectionable content check before publish)
+    const violation = checkContent(commentText, lang);
+    if (violation) { setContentError(violation); return; }
+    setContentError(null);
     setSubmitting(true);
 
     const { data: newComment } = await supabase.from('comments').insert({
@@ -187,9 +202,11 @@ export default function PostDetailScreen() {
     ? t('익명', 'Anonymous')
     : (post.profiles?.username ?? t('알 수 없음', 'Unknown'));
 
-  // Separate top-level comments from replies for threaded display
-  const topLevel = comments.filter(c => !c.parent_comment_id);
-  const repliesFor = (id: string) => comments.filter(c => c.parent_comment_id === id);
+  // Separate top-level comments from replies for threaded display.
+  // Comments from blocked users are hidden entirely.
+  const visibleComments = comments.filter(c => !blockedIds.has(c.author_id));
+  const topLevel = visibleComments.filter(c => !c.parent_comment_id);
+  const repliesFor = (id: string) => visibleComments.filter(c => c.parent_comment_id === id);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -206,6 +223,16 @@ export default function PostDetailScreen() {
           </TouchableOpacity>
 
           {/* ── Post ── */}
+          {blockedIds.has(post.author_id) ? (
+            <View style={styles.postCard}>
+              <Text style={styles.blockedText}>
+                🚫 {t('차단한 사용자의 게시글입니다.', 'Post from a user you blocked.')}
+              </Text>
+              <TouchableOpacity onPress={() => router.push('/blocked-users' as any)}>
+                <Text style={styles.blockedManageLink}>{t('차단 관리 →', 'Manage blocks →')}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
           <View style={styles.postCard}>
             <Text style={styles.postTitle}>{post.title}</Text>
             <View style={styles.postMeta}>
@@ -237,8 +264,27 @@ export default function PostDetailScreen() {
                   <Text style={styles.commentQuickBtnText}>✏️ {t('댓글', 'Comment')}</Text>
                 </TouchableOpacity>
               )}
+              <View style={styles.modRow}>
+                <TouchableOpacity
+                  onPress={() => setReportTarget({ type: 'post', id: post.id })}
+                  hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.modBtnText}>🚩 {t('신고', 'Report')}</Text>
+                </TouchableOpacity>
+                {(!user || user.id !== post.author_id) && (
+                  <TouchableOpacity
+                    onPress={() => handleBlock(post.author_id)}
+                    hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.modBtnText}>🚫 {t('차단', 'Block')}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
+          )}
 
           {/* ── Threaded comments ── */}
           <Text style={styles.sectionTitle}>
@@ -267,9 +313,19 @@ export default function PostDetailScreen() {
                         <Text style={styles.commentTime}>{timeAgo(c.created_at, lang)}</Text>
                       </View>
                       <Text style={styles.commentBody}>{c.body}</Text>
-                      <TouchableOpacity style={styles.replyBtn} onPress={() => startReply(c)}>
-                        <Text style={styles.replyBtnText}>{t('↩ 답글', '↩ Reply')}</Text>
-                      </TouchableOpacity>
+                      <View style={styles.commentActions}>
+                        <TouchableOpacity style={styles.replyBtn} onPress={() => startReply(c)}>
+                          <Text style={styles.replyBtnText}>{t('↩ 답글', '↩ Reply')}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.replyBtn} onPress={() => setReportTarget({ type: 'comment', id: c.id })}>
+                          <Text style={styles.replyBtnText}>🚩 {t('신고', 'Report')}</Text>
+                        </TouchableOpacity>
+                        {(!user || user.id !== c.author_id) && (
+                          <TouchableOpacity style={styles.replyBtn} onPress={() => handleBlock(c.author_id)}>
+                            <Text style={styles.replyBtnText}>🚫 {t('차단', 'Block')}</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     </View>
 
                     {/* Replies to this comment */}
@@ -288,9 +344,19 @@ export default function PostDetailScreen() {
                                   <Text style={styles.commentTime}>{timeAgo(r.created_at, lang)}</Text>
                                 </View>
                                 <Text style={styles.commentBody}>{r.body}</Text>
-                                <TouchableOpacity style={styles.replyBtn} onPress={() => startReply(r)}>
-                                  <Text style={styles.replyBtnText}>{t('↩ 답글', '↩ Reply')}</Text>
-                                </TouchableOpacity>
+                                <View style={styles.commentActions}>
+                                  <TouchableOpacity style={styles.replyBtn} onPress={() => startReply(r)}>
+                                    <Text style={styles.replyBtnText}>{t('↩ 답글', '↩ Reply')}</Text>
+                                  </TouchableOpacity>
+                                  <TouchableOpacity style={styles.replyBtn} onPress={() => setReportTarget({ type: 'comment', id: r.id })}>
+                                    <Text style={styles.replyBtnText}>🚩 {t('신고', 'Report')}</Text>
+                                  </TouchableOpacity>
+                                  {(!user || user.id !== r.author_id) && (
+                                    <TouchableOpacity style={styles.replyBtn} onPress={() => handleBlock(r.author_id)}>
+                                      <Text style={styles.replyBtnText}>🚫 {t('차단', 'Block')}</Text>
+                                    </TouchableOpacity>
+                                  )}
+                                </View>
                               </View>
                             </View>
                           );
@@ -342,6 +408,11 @@ export default function PostDetailScreen() {
                 multiline
                 maxLength={500}
               />
+              {contentError && (
+                <View style={styles.contentErrorBox}>
+                  <Text style={styles.contentErrorText}>⚠️ {contentError}</Text>
+                </View>
+              )}
               <View style={styles.inputFooter}>
                 <Text style={styles.charCount}>{commentText.length}/500</Text>
                 <TouchableOpacity
@@ -372,6 +443,13 @@ export default function PostDetailScreen() {
           <View style={{ height: spacing.xxxl }} />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <ReportModal
+        target={reportTarget}
+        reporterId={user?.id ?? null}
+        lang={lang}
+        onClose={() => setReportTarget(null)}
+      />
     </SafeAreaView>
   );
 }
@@ -435,6 +513,20 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   commentQuickBtnText: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
+  modRow: { flexDirection: 'row', gap: spacing.md, marginLeft: 'auto' },
+  modBtnText: { ...typography.caption, color: colors.textCaption, fontWeight: '600' },
+  commentActions: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
+  blockedText: { ...typography.bodyM, color: colors.textSecondary, marginBottom: spacing.sm },
+  blockedManageLink: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
+  contentErrorBox: {
+    backgroundColor: '#FEF2F2',
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    padding: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  contentErrorText: { ...typography.caption, color: '#B91C1C', lineHeight: 18 },
 
   // Comment section
   sectionTitle: { ...typography.bodyM, color: colors.text, fontWeight: '700', marginBottom: spacing.sm },

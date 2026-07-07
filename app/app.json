@@ -70,12 +70,6 @@
           "locationWhenInUsePermission": "Jurio uses your location to show certified 노무사 (labor attorneys) near you. Your location stays on your device and is never sent to a server."
         }
       ]
-    ],
-
-    "extra": {
-      "eas": {
-        "projectId": "REPLACE_WITH_YOUR_EAS_PROJECT_ID"
-      }
-    }
+    ]
   }
 }

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
+import { checkContent } from '../../lib/moderation';
 
 export default function NewPostScreen() {
   const { communityId } = useLocalSearchParams<{ communityId: string }>();
@@ -46,6 +47,13 @@ export default function NewPostScreen() {
     }
     if (!body.trim()) {
       Alert.alert(t('내용 필요', 'Body required'), t('내용을 입력하세요.', 'Please enter some content.'));
+      return;
+    }
+
+    // Content filter (store compliance — objectionable content check before publish)
+    const violation = checkContent(`${title}\n${body}`, lang);
+    if (violation) {
+      Alert.alert(t('게시할 수 없습니다', 'Cannot post'), violation);
       return;
     }
 
