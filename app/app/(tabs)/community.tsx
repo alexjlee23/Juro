@@ -109,7 +109,20 @@ export default function CommunityScreen() {
     });
   }
 
-  const joinedList = communities.filter(c => joinedIds.has(c.id));
+  // Joined chips follow the same order as the browse section:
+  // 자유 → 근로자 유형 → 상황별 → 업종별 → 지역별 (regions last, in fixed order)
+  const joinedList = communities
+    .filter(c => joinedIds.has(c.id))
+    .sort((a, b) => {
+      const catDiff = CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category);
+      if (catDiff !== 0) return catDiff;
+      if (a.category === 'region') {
+        const ai = REGION_ORDER.indexOf(a.slug);
+        const bi = REGION_ORDER.indexOf(b.slug);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      }
+      return a.name_ko.localeCompare(b.name_ko, 'ko');
+    });
 
   // Only show communities in the browse section that haven't been joined yet
   const hasUnjoined = CATEGORY_ORDER.some(cat =>
