@@ -396,8 +396,8 @@ function GridCard({
       <View style={styles.gridCardTop}>
         <Text style={styles.gridEmoji}>{topic.emoji}</Text>
         <View style={styles.badgeCol}>
-          {topic.section === 'five_plus' && <Text style={styles.badge5Plus}>5인+</Text>}
-          {topic.migrant && <Text style={styles.badgeMigrant}>외국인</Text>}
+          {topic.section === 'five_plus' && <Text style={styles.badge5Plus}>{lang === 'ko' ? '5인+' : '5+ only'}</Text>}
+          {topic.migrant && <Text style={styles.badgeMigrant}>{lang === 'ko' ? '외국인' : 'Migrant'}</Text>}
         </View>
       </View>
       <Text style={styles.gridTitle}>{lang === 'ko' ? topic.ko : topic.en}</Text>
@@ -475,11 +475,11 @@ export default function RightsScreen() {
 
         <View style={styles.legend}>
           <View style={styles.legendItem}>
-            <Text style={styles.legendBadge5Plus}>5인+</Text>
-            <Text style={styles.legendText}>{lang === 'ko' ? '5인 이상 사업장에만 적용' : 'Applies only to 5+ workplaces'}</Text>
+            <Text style={styles.legendBadge5Plus}>{lang === 'ko' ? '5인+' : '5+ only'}</Text>
+            <Text style={styles.legendText}>{lang === 'ko' ? '5인 이상 사업장에만 적용' : 'Applies only to 5+ employee workplaces'}</Text>
           </View>
           <View style={styles.legendItem}>
-            <Text style={styles.legendBadgeMigrant}>외국인</Text>
+            <Text style={styles.legendBadgeMigrant}>{lang === 'ko' ? '외국인' : 'Migrant'}</Text>
             <Text style={styles.legendText}>{lang === 'ko' ? '외국인 근로자 주요 항목' : 'Key for migrant workers'}</Text>
           </View>
         </View>

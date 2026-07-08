@@ -180,9 +180,9 @@ export default function HomeScreen() {
         {/* 노무사 inline search widget */}
         <View style={styles.nomusaWidget}>
           <View style={styles.nomusaWidgetHeader}>
-            <Text style={styles.nomusaWidgetTitle}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a certified labor attorney'}</Text>
+            <Text style={styles.nomusaWidgetTitle} numberOfLines={1}>🧑‍⚖️ {lang === 'ko' ? '공인노무사 찾기' : 'Find a Labor Attorney'}</Text>
             <TouchableOpacity onPress={() => router.push('/directory')}>
-              <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 ${nomusaCount}명 →` : `See all ${nomusaCount} →`}</Text>
+              <Text style={styles.nomusaSeeAll}>{lang === 'ko' ? `전체 ${nomusaCount}명 →` : `All ${nomusaCount} →`}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.nomusaWidgetSearch}>
@@ -337,9 +337,9 @@ const styles = StyleSheet.create({
     borderColor: colors.brand,
     ...shadow.card,
   },
-  nomusaWidgetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm },
-  nomusaWidgetTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700' },
-  nomusaSeeAll: { ...typography.bodyS, color: colors.action, fontWeight: '600' },
+  nomusaWidgetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm, gap: spacing.sm },
+  nomusaWidgetTitle: { ...typography.bodyM, color: colors.brand, fontWeight: '700', flex: 1 },
+  nomusaSeeAll: { ...typography.bodyS, color: colors.action, fontWeight: '600', flexShrink: 0 },
   nomusaWidgetSearch: {
     flexDirection: 'row',
     alignItems: 'center',
