@@ -201,6 +201,7 @@ export default function MyScreen() {
         <Text style={styles.sectionLabel}>{lang === 'ko' ? '개인정보 & 법률' : 'Privacy & Legal'}</Text>
         <View style={styles.section}>
           <SettingRow emoji="🛡️" label={t('my.privacyCenter')} onPress={() => router.push('/privacy')} />
+          <SettingRow emoji="📜" label={lang === 'ko' ? '이용약관' : 'Terms of Use'} onPress={() => router.push('/terms' as any)} />
           <SettingRow emoji="❓" label={t('my.help')} onPress={() => router.push('/help' as any)} />
           <SettingRow emoji="ℹ️" label={t('my.about')} onPress={() => router.push('/about' as any)} />
         </View>

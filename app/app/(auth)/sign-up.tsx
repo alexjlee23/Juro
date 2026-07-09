@@ -26,6 +26,7 @@ export default function AuthScreen() {
   const [suError, setSuError] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState('');
+  const [agreedTerms, setAgreedTerms] = useState(false);
 
   // Sign-in fields
   const [siEmail, setSiEmail] = useState('');
@@ -60,6 +61,10 @@ export default function AuthScreen() {
     }
     if (suPassword.length < 6) {
       setSuError(t('비밀번호는 6자 이상이어야 합니다.', 'Password must be at least 6 characters.'));
+      return;
+    }
+    if (!agreedTerms) {
+      setSuError(t('이용약관에 동의해야 가입할 수 있습니다.', 'You must agree to the Terms of Use to sign up.'));
       return;
     }
     setSuLoading(true);
@@ -268,6 +273,29 @@ export default function AuthScreen() {
                 placeholderTextColor={colors.textCaption}
               />
 
+              {/* Terms of Use agreement — required before registration (App Review 1.2) */}
+              <View style={styles.termsBox}>
+                <TouchableOpacity
+                  style={styles.termsRow}
+                  onPress={() => setAgreedTerms(!agreedTerms)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: agreedTerms }}
+                >
+                  <View style={[styles.termsCheckbox, agreedTerms && styles.termsCheckboxOn]}>
+                    {agreedTerms && <Text style={styles.termsCheckmark}>✓</Text>}
+                  </View>
+                  <Text style={styles.termsLabel}>
+                    {t(
+                      '이용약관에 동의합니다. 부적절한 콘텐츠와 악성 사용자에 대해 무관용 원칙이 적용됨을 이해합니다.',
+                      'I agree to the Terms of Use and understand there is zero tolerance for objectionable content or abusive users.'
+                    )}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/terms' as any)} accessibilityRole="link">
+                  <Text style={styles.termsLink}>{t('이용약관 전문 보기 →', 'Read the full Terms of Use →')}</Text>
+                </TouchableOpacity>
+              </View>
+
               {!!suError && (
                 <View style={styles.errorBox}>
                   <Text style={styles.errorText}>⚠️ {suError}</Text>
@@ -275,14 +303,14 @@ export default function AuthScreen() {
               )}
 
               <TouchableOpacity
-                style={[styles.btn, suLoading && styles.btnDisabled]}
+                style={[styles.btn, (suLoading || !agreedTerms) && styles.btnDisabled]}
                 onPress={handleSignUp}
-                disabled={suLoading}
+                disabled={suLoading || !agreedTerms}
                 accessibilityRole="button"
               >
                 {suLoading
                   ? <ActivityIndicator color={colors.white} />
-                  : <Text style={styles.btnText}>{t('가입하기', 'Create account')}</Text>
+                  : <Text style={styles.btnText}>{t('동의하고 가입하기', 'Agree & create account')}</Text>
                 }
               </TouchableOpacity>
 
@@ -334,6 +362,13 @@ export default function AuthScreen() {
                   ? <ActivityIndicator color={colors.white} />
                   : <Text style={styles.btnText}>{t('로그인', 'Sign in')}</Text>
                 }
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => router.push('/terms' as any)} accessibilityRole="link" style={styles.signinTermsRow}>
+                <Text style={styles.signinTermsText}>
+                  {t('로그인하면 이용약관에 동의하는 것으로 간주됩니다. ', 'By signing in you agree to the Terms of Use. ')}
+                  <Text style={styles.termsLink}>{t('약관 보기', 'View terms')}</Text>
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.switchRow} onPress={() => switchMode('signup')}>
@@ -409,6 +444,29 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: spacing.base,
   },
+  // Terms agreement (required for registration)
+  termsBox: {
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  termsRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, marginBottom: spacing.sm },
+  termsCheckbox: {
+    width: 22, height: 22, borderRadius: 5,
+    borderWidth: 2, borderColor: colors.border,
+    alignItems: 'center', justifyContent: 'center',
+    marginTop: 1,
+  },
+  termsCheckboxOn: { backgroundColor: colors.action, borderColor: colors.action },
+  termsCheckmark: { color: colors.white, fontSize: 13, fontWeight: '700' },
+  termsLabel: { ...typography.bodyS, color: colors.text, flex: 1, lineHeight: 20 },
+  termsLink: { ...typography.bodyS, color: colors.action, fontWeight: '700' },
+  signinTermsRow: { marginTop: -spacing.sm, marginBottom: spacing.base, alignItems: 'center' },
+  signinTermsText: { ...typography.caption, color: colors.textCaption, textAlign: 'center', lineHeight: 18 },
+
   errorBox: {
     backgroundColor: '#FEF2F2',
     borderRadius: radius.sm,
