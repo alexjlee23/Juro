@@ -296,8 +296,8 @@ export default function CommunityScreen() {
         <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
             {t(
-              '커뮤니티 글은 노동자 간 정보 공유이며 법률 자문이 아닙니다.\n부적절한 콘텐츠는 각 게시글의 🚩 신고 버튼 또는 help@jurio.app 으로 알려주세요. 24시간 이내에 검토·삭제하며, 위반 사용자의 계정은 정지됩니다.',
-              'Community posts are peer information sharing, not legal advice.\nReport inappropriate content via the 🚩 button on any post or help@jurio.app. Reports are reviewed within 24 hours; violating content is removed and offending accounts suspended.'
+              '커뮤니티 글은 노동자 간 정보 공유이며 법률 자문이 아닙니다.\n부적절한 콘텐츠는 각 게시글의 🚩 신고 버튼 또는 help@jurio.dev 으로 알려주세요. 24시간 이내에 검토·삭제하며, 위반 사용자의 계정은 정지됩니다.',
+              'Community posts are peer information sharing, not legal advice.\nReport inappropriate content via the 🚩 button on any post or help@jurio.dev. Reports are reviewed within 24 hours; violating content is removed and offending accounts suspended.'
             )}
           </Text>
         </View>

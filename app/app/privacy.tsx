@@ -39,15 +39,15 @@ export default function PrivacyScreen() {
       await supabase.from('profiles').delete().eq('id', user.id);
       // Clear local data
       await AsyncStorage.removeItem('juro_logbook_v1');
-      // Sign out (auth user deletion requires a server-side function — emailed to privacy@jurio.app)
+      // Sign out (auth user deletion requires a server-side function — emailed to privacy@jurio.dev)
       await signOut();
       router.replace('/');
     } catch {
       Alert.alert(
         lang === 'ko' ? '오류' : 'Error',
         lang === 'ko'
-          ? '삭제 중 오류가 발생했습니다. privacy@jurio.app으로 문의해주세요.'
-          : 'Something went wrong. Email privacy@jurio.app for help.'
+          ? '삭제 중 오류가 발생했습니다. privacy@jurio.dev으로 문의해주세요.'
+          : 'Something went wrong. Email privacy@jurio.dev for help.'
       );
     } finally {
       setDeleting(false);
@@ -108,7 +108,7 @@ export default function PrivacyScreen() {
         {/* Contact */}
         <View style={styles.block}>
           <Text style={styles.blockTitle}>{t('privacy.contact')}</Text>
-          <Text style={styles.item}>privacy@jurio.app</Text>
+          <Text style={styles.item}>privacy@jurio.dev</Text>
         </View>
 
         <Banner />

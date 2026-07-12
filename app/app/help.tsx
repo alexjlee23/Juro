@@ -68,11 +68,11 @@ export default function HelpScreen() {
 
         <Text style={styles.sectionLabel}>{t('문의하기', 'Contact us')}</Text>
         <View style={styles.contactCard}>
-          <TouchableOpacity style={styles.contactRow} onPress={() => Linking.openURL('mailto:help@jurio.app')}>
+          <TouchableOpacity style={styles.contactRow} onPress={() => Linking.openURL('mailto:help@jurio.dev')}>
             <Text style={styles.contactEmoji}>✉️</Text>
             <View style={styles.contactBody}>
               <Text style={styles.contactLabel}>{t('이메일 문의', 'Email support')}</Text>
-              <Text style={styles.contactValue}>help@jurio.app</Text>
+              <Text style={styles.contactValue}>help@jurio.dev</Text>
             </View>
             <Text style={styles.arrow}>›</Text>
           </TouchableOpacity>

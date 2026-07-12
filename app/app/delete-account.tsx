@@ -21,7 +21,7 @@ export default function DeleteAccountScreen() {
   async function handleDelete() {
     if (!user) {
       // Not logged in — direct to email
-      Linking.openURL('mailto:privacy@jurio.app?subject=Account%20Deletion%20Request');
+      Linking.openURL('mailto:privacy@jurio.dev?subject=Account%20Deletion%20Request');
       return;
     }
     setStep('deleting');
@@ -80,18 +80,18 @@ export default function DeleteAccountScreen() {
         <View style={styles.noteBox}>
           <Text style={styles.noteText}>
             {lang === 'ko'
-              ? '앱에 로그인되어 있지 않은 경우, privacy@jurio.app으로 이메일을 보내시면 48시간 이내에 처리됩니다.'
-              : 'If you are not logged into the app, email privacy@jurio.app and we will process your request within 48 hours.'}
+              ? '앱에 로그인되어 있지 않은 경우, privacy@jurio.dev으로 이메일을 보내시면 48시간 이내에 처리됩니다.'
+              : 'If you are not logged into the app, email privacy@jurio.dev and we will process your request within 48 hours.'}
           </Text>
         </View>
 
         {!user && (
           <TouchableOpacity
             style={styles.emailBtn}
-            onPress={() => Linking.openURL('mailto:privacy@jurio.app?subject=Account%20Deletion%20Request')}
+            onPress={() => Linking.openURL('mailto:privacy@jurio.dev?subject=Account%20Deletion%20Request')}
           >
             <Text style={styles.emailBtnText}>
-              ✉️ {lang === 'ko' ? 'privacy@jurio.app 으로 요청' : 'Request via privacy@jurio.app'}
+              ✉️ {lang === 'ko' ? 'privacy@jurio.dev 으로 요청' : 'Request via privacy@jurio.dev'}
             </Text>
           </TouchableOpacity>
         )}

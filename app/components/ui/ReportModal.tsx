@@ -51,8 +51,8 @@ export default function ReportModal({
               <Text style={styles.title}>✅ {t('신고가 접수되었습니다', 'Report received')}</Text>
               <Text style={styles.body}>
                 {t(
-                  '이 콘텐츠는 회원님의 화면에서 즉시 숨겨졌습니다. 24시간 이내에 검토하며, 규칙을 위반한 콘텐츠는 삭제되고 작성자 계정은 정지됩니다. 문의: help@jurio.app',
-                  'This content has been hidden from your feed immediately. We review reports within 24 hours; violating content is removed and the author\'s account suspended. Contact: help@jurio.app'
+                  '이 콘텐츠는 회원님의 화면에서 즉시 숨겨졌습니다. 24시간 이내에 검토하며, 규칙을 위반한 콘텐츠는 삭제되고 작성자 계정은 정지됩니다. 문의: help@jurio.dev',
+                  'This content has been hidden from your feed immediately. We review reports within 24 hours; violating content is removed and the author\'s account suspended. Contact: help@jurio.dev'
                 )}
               </Text>
               <TouchableOpacity style={styles.primaryBtn} onPress={close} accessibilityRole="button">

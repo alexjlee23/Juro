@@ -205,8 +205,8 @@ export default function AuthScreen() {
             </Text>
             <Text style={styles.gatePoint}>
               🛡️ {t(
-                '모든 게시글·댓글을 신고하거나 작성자를 차단할 수 있습니다. 문의: help@jurio.app',
-                'You can report any post/comment or block any user. Contact: help@jurio.app'
+                '모든 게시글·댓글을 신고하거나 작성자를 차단할 수 있습니다. 문의: help@jurio.dev',
+                'You can report any post/comment or block any user. Contact: help@jurio.dev'
               )}
             </Text>
             <Text style={styles.gatePoint}>
