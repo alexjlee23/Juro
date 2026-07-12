@@ -10,7 +10,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import { colors, typography, spacing, radius, shadow } from '../../../constants/theme';
 import ReportModal from '../../../components/ui/ReportModal';
-import { checkContent, getBlockedIds, blockUser } from '../../../lib/moderation';
+import { checkContent, getBlockedIds, blockUser, getHiddenIds, hideContent } from '../../../lib/moderation';
 
 type Post = {
   id: string; community_id: string; title: string; body: string;
@@ -64,14 +64,25 @@ export default function PostDetailScreen() {
   const [contentError, setContentError] = useState<string | null>(null);
   const [reportTarget, setReportTarget] = useState<{ type: 'post' | 'comment'; id: string } | null>(null);
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
   const t = (ko: string, en: string) => lang === 'ko' ? ko : en;
 
-  useEffect(() => { load(); getBlockedIds().then(setBlockedIds); }, [postId]);
+  useEffect(() => {
+    load();
+    getBlockedIds().then(setBlockedIds);
+    getHiddenIds().then(setHiddenIds);
+  }, [postId]);
 
   async function handleBlock(userId: string) {
     await blockUser(userId);
     setBlockedIds(await getBlockedIds());
+  }
+
+  // Reported content disappears from this user's feed immediately (App Review 1.2)
+  async function handleReported(target: { type: 'post' | 'comment'; id: string }) {
+    await hideContent(target.id);
+    setHiddenIds(await getHiddenIds());
   }
 
   async function load() {
@@ -203,8 +214,8 @@ export default function PostDetailScreen() {
     : (post.profiles?.username ?? t('알 수 없음', 'Unknown'));
 
   // Separate top-level comments from replies for threaded display.
-  // Comments from blocked users are hidden entirely.
-  const visibleComments = comments.filter(c => !blockedIds.has(c.author_id));
+  // Comments from blocked users and reported (hidden) comments are removed entirely.
+  const visibleComments = comments.filter(c => !blockedIds.has(c.author_id) && !hiddenIds.has(c.id));
   const topLevel = visibleComments.filter(c => !c.parent_comment_id);
   const repliesFor = (id: string) => visibleComments.filter(c => c.parent_comment_id === id);
 
@@ -223,7 +234,13 @@ export default function PostDetailScreen() {
           </TouchableOpacity>
 
           {/* ── Post ── */}
-          {blockedIds.has(post.author_id) ? (
+          {hiddenIds.has(post.id) ? (
+            <View style={styles.postCard}>
+              <Text style={styles.blockedText}>
+                🚩 {t('신고되어 회원님의 화면에서 숨겨진 게시글입니다.', 'This post was reported and is hidden from your feed.')}
+              </Text>
+            </View>
+          ) : blockedIds.has(post.author_id) ? (
             <View style={styles.postCard}>
               <Text style={styles.blockedText}>
                 🚫 {t('차단한 사용자의 게시글입니다.', 'Post from a user you blocked.')}
@@ -449,6 +466,7 @@ export default function PostDetailScreen() {
         reporterId={user?.id ?? null}
         lang={lang}
         onClose={() => setReportTarget(null)}
+        onReported={handleReported}
       />
     </SafeAreaView>
   );

@@ -36,7 +36,7 @@ export default function TermsScreen() {
     },
     {
       title: '7. 약관의 변경 및 문의',
-      body: '약관이 변경되면 앱 내에 공지합니다. 문의: 앱 내 도움말·문의 페이지 또는 jurio-gamma.vercel.app/help',
+      body: '약관이 변경되면 앱 내에 공지합니다. 부적절한 콘텐츠·활동 신고 및 문의: help@jurio.app (24시간 이내 조치) 또는 앱 내 도움말·문의 페이지.',
     },
   ] : [
     {
@@ -65,7 +65,7 @@ export default function TermsScreen() {
     },
     {
       title: '7. Changes & Contact',
-      body: 'Changes to these terms will be announced in the app. Contact: the in-app Help page or jurio-gamma.vercel.app/help',
+      body: 'Changes to these terms will be announced in the app. To report inappropriate content or activity, or for any inquiry: help@jurio.app (actioned within 24 hours) or the in-app Help page.',
     },
   ];
 

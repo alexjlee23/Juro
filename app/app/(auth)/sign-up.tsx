@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView, Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { colors, typography, spacing, radius } from '../../constants/theme';
+
+const TERMS_GATE_KEY = 'juro_terms_gate_v1';
 
 type Mode = 'signup' | 'signin';
 
@@ -27,6 +30,17 @@ export default function AuthScreen() {
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
+
+  // Terms gate: the EULA must be presented and accepted BEFORE the sign-in or
+  // sign-up forms are usable (App Review Guideline 1.2).
+  const [gateAccepted, setGateAccepted] = useState<boolean | null>(null);
+  useEffect(() => {
+    AsyncStorage.getItem(TERMS_GATE_KEY).then(v => setGateAccepted(v === 'yes'));
+  }, []);
+  async function acceptGate() {
+    await AsyncStorage.setItem(TERMS_GATE_KEY, 'yes');
+    setGateAccepted(true);
+  }
 
   // Sign-in fields
   const [siEmail, setSiEmail] = useState('');
@@ -144,6 +158,80 @@ export default function AuthScreen() {
     } else {
       router.replace('/(tabs)/community');
     }
+  }
+
+  // ── Terms gate — shown before the sign-in/sign-up forms ──────────────────
+  if (gateAccepted === null) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.gateCenter}><ActivityIndicator color={colors.action} /></View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!gateAccepted) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Text style={styles.backText}>← {t('뒤로', 'Back')}</Text>
+          </TouchableOpacity>
+
+          <View style={styles.brandHeader}>
+            <Image source={require('../../assets/logo.png')} style={styles.brandLogo} accessibilityLabel="Jurio logo" />
+            <Text style={styles.brandName}>{t('주리오', 'Jurio')}</Text>
+          </View>
+
+          <Text style={styles.gateTitle}>{t('이용약관 동의', 'Terms of Use Agreement')}</Text>
+          <Text style={styles.gateSubtitle}>
+            {t(
+              '로그인 또는 회원가입 전에 아래 약관에 동의해 주세요.',
+              'Please agree to the terms below before signing in or creating an account.'
+            )}
+          </Text>
+
+          <View style={styles.gateCard}>
+            <Text style={styles.gatePoint}>
+              🚫 {t(
+                '부적절한 콘텐츠와 악성 사용자에 대한 무관용 원칙: 욕설·혐오, 괴롭힘, 음란물, 스팸, 사기, 개인정보 노출은 금지됩니다.',
+                'Zero tolerance for objectionable content and abusive users: abuse, hate, harassment, sexual content, spam, scams, and exposing personal data are prohibited.'
+              )}
+            </Text>
+            <Text style={styles.gatePoint}>
+              🚩 {t(
+                '신고된 콘텐츠는 24시간 이내 검토 후 삭제되며, 위반한 사용자의 계정은 예고 없이 정지·삭제됩니다.',
+                'Reported content is reviewed within 24 hours and removed; violating users\' accounts are suspended or terminated without notice.'
+              )}
+            </Text>
+            <Text style={styles.gatePoint}>
+              🛡️ {t(
+                '모든 게시글·댓글을 신고하거나 작성자를 차단할 수 있습니다. 문의: help@jurio.app',
+                'You can report any post/comment or block any user. Contact: help@jurio.app'
+              )}
+            </Text>
+            <Text style={styles.gatePoint}>
+              ⚖️ {t(
+                '주리오의 정보는 일반 법률 정보이며 법률 자문이 아닙니다.',
+                'Jurio provides general legal information, not legal advice.'
+              )}
+            </Text>
+          </View>
+
+          <TouchableOpacity onPress={() => router.push('/terms' as any)} accessibilityRole="link" style={{ marginBottom: spacing.base }}>
+            <Text style={styles.termsLink}>{t('이용약관 전문 보기 →', 'Read the full Terms of Use →')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btn} onPress={acceptGate} accessibilityRole="button">
+            <Text style={styles.btnText}>{t('동의합니다', 'I Agree')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={() => router.back()} accessibilityRole="button">
+            <Text style={styles.secondaryBtnText}>{t('동의하지 않습니다', 'I Do Not Agree')}</Text>
+          </TouchableOpacity>
+
+          <View style={{ height: spacing.xxxl }} />
+        </ScrollView>
+      </SafeAreaView>
+    );
   }
 
   // ── Email-sent confirmation state ─────────────────────────────────────────
@@ -444,6 +532,21 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: spacing.base,
   },
+  // Terms gate (pre-auth)
+  gateCenter: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  gateTitle: { ...typography.headingL, color: colors.text, fontWeight: '700', marginBottom: spacing.xs, textAlign: 'center' },
+  gateSubtitle: { ...typography.bodyS, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.base, lineHeight: 20 },
+  gateCard: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    padding: spacing.base,
+    marginBottom: spacing.base,
+    gap: spacing.md,
+  },
+  gatePoint: { ...typography.bodyS, color: colors.text, lineHeight: 21 },
+
   // Terms agreement (required for registration)
   termsBox: {
     backgroundColor: colors.white,

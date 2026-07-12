@@ -57,6 +57,25 @@ export async function submitReport(params: {
   return !error;
 }
 
+// ── Hidden content (reported items disappear from the reporter's feed at once,
+//    per App Review 1.2: "immediately remove posts from the feed") ────────────
+const HIDDEN_KEY = 'juro_hidden_content_v1';
+
+export async function getHiddenIds(): Promise<Set<string>> {
+  try {
+    const raw = await AsyncStorage.getItem(HIDDEN_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export async function hideContent(targetId: string): Promise<void> {
+  const ids = await getHiddenIds();
+  ids.add(targetId);
+  await AsyncStorage.setItem(HIDDEN_KEY, JSON.stringify([...ids]));
+}
+
 // ── Block list (on-device, works for guests too) ─────────────────────────────
 const BLOCK_KEY = 'juro_blocked_users_v1';
 

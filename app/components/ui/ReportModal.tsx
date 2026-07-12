@@ -10,12 +10,14 @@ type Target = { type: 'post' | 'comment'; id: string } | null;
  * Reports are reviewed within 24 hours; content that violates the rules is removed.
  */
 export default function ReportModal({
-  target, reporterId, lang, onClose,
+  target, reporterId, lang, onClose, onReported,
 }: {
   target: Target;
   reporterId?: string | null;
   lang: 'ko' | 'en';
   onClose: () => void;
+  /** Called after a report is accepted — hide the content from this user's feed immediately. */
+  onReported?: (target: { type: 'post' | 'comment'; id: string }) => void;
 }) {
   const [selected, setSelected] = useState<ReportReason | null>(null);
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
@@ -36,6 +38,7 @@ export default function ReportModal({
       reason: selected,
       reporterId,
     });
+    if (ok) onReported?.(target);
     setState(ok ? 'done' : 'error');
   }
 
@@ -48,8 +51,8 @@ export default function ReportModal({
               <Text style={styles.title}>✅ {t('신고가 접수되었습니다', 'Report received')}</Text>
               <Text style={styles.body}>
                 {t(
-                  '24시간 이내에 검토하며, 규칙을 위반한 콘텐츠는 삭제됩니다. 신고해 주셔서 감사합니다.',
-                  'We review reports within 24 hours and remove content that breaks the rules. Thank you.'
+                  '이 콘텐츠는 회원님의 화면에서 즉시 숨겨졌습니다. 24시간 이내에 검토하며, 규칙을 위반한 콘텐츠는 삭제되고 작성자 계정은 정지됩니다. 문의: help@jurio.app',
+                  'This content has been hidden from your feed immediately. We review reports within 24 hours; violating content is removed and the author\'s account suspended. Contact: help@jurio.app'
                 )}
               </Text>
               <TouchableOpacity style={styles.primaryBtn} onPress={close} accessibilityRole="button">

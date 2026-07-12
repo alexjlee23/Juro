@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { colors, typography, spacing, radius, shadow } from '../../constants/theme';
-import { getBlockedIds } from '../../lib/moderation';
+import { getBlockedIds, getHiddenIds } from '../../lib/moderation';
 
 type Community = {
   id: string; name_ko: string; name_en: string;
@@ -67,16 +67,17 @@ export default function CommunityBoardScreen() {
     setLoading(true);
     setPostsError(false);
 
-    const [{ data: comm }, { data: fetchedPosts, error: postErr }, blocked] = await Promise.all([
+    const [{ data: comm }, { data: fetchedPosts, error: postErr }, blocked, hidden] = await Promise.all([
       supabase.from('communities').select('*').eq('id', id).single(),
       supabase.from('posts').select('*')
         .eq('community_id', id)
         .order('created_at', { ascending: false })
         .limit(50),
       getBlockedIds(),
+      getHiddenIds(),
     ]);
-    // Hide posts from users this reader has blocked (store compliance: UGC blocking)
-    const rawPosts = fetchedPosts?.filter((p: any) => !blocked.has(p.author_id));
+    // Hide posts from blocked users and posts this reader has reported (UGC compliance)
+    const rawPosts = fetchedPosts?.filter((p: any) => !blocked.has(p.author_id) && !hidden.has(p.id));
 
     setCommunity(comm ?? null);
 
